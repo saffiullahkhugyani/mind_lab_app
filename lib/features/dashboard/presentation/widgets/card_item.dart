@@ -17,24 +17,26 @@ class CardItem extends StatelessWidget {
       onTap: () {
         onTap();
       },
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all()),
-        height: 150,
-        width: 150,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(height: 100, width: 100, image),
-            Text(
-                style: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20,
-                ),
-                text),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all()),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(height: 80, width: 80, image),
+              const SizedBox(height: 10),
+              Text(
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                  text),
+            ],
+          ),
         ),
       ),
     );

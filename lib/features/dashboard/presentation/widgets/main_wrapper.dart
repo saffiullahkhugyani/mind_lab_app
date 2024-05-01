@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/bottom_nav_cubit.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/profile_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -15,6 +17,27 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   late PageController pageController;
+  final supabase = Supabase.instance.client;
+
+  Future<void> _signOut() async {
+    try {
+      await supabase.auth.signOut();
+    } on AuthException catch (error) {
+      SnackBar(
+        content: Text(error.message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      );
+    } catch (error) {
+      SnackBar(
+        content: const Text('Unexpected error occurred'),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      );
+    } finally {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed(loginRoute);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -136,7 +159,9 @@ class _MainWrapperState extends State<MainWrapper> {
   // Floating Action Button - Main Wrapper
   FloatingActionButton _mainWrapperFab() {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed(addProjectRoute);
+      },
       shape: const CircleBorder(),
       child: const Icon(
         IconlyBold.plus,
@@ -151,7 +176,7 @@ class _MainWrapperState extends State<MainWrapper> {
       title: const Text("Mind Lab App"),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: _signOut,
           icon: const Icon(IconlyLight.logout),
         ),
       ],

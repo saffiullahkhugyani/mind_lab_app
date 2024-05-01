@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/theme/app_pallete.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -42,6 +43,12 @@ class _LoginPageState extends State<LoginPage> {
             if (state is AuthFailure) {
               showSnackBar(context, state.message);
               print(state.message);
+            } else if (state is AuthSuccess) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                homePageRoute,
+                (route) => false,
+              );
             }
           },
           builder: (context, state) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/theme/app_pallete.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -49,7 +50,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 if (state is AuthFailure) {
                   showSnackBar(context, state.message);
                 } else if (state is AuthSuccess) {
-                  showSnackBar(context, state.user.name);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    homePageRoute,
+                    (route) => false,
+                  );
                 }
               },
               builder: (context, state) {

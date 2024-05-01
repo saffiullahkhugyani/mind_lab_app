@@ -4,12 +4,14 @@ class BluetoothConnectionButton extends StatelessWidget {
   final Color connectionStatusColor;
   final String image;
   final Function() onTap;
+  final IconData icon;
 
   const BluetoothConnectionButton(
       {super.key,
       required this.connectionStatusColor,
       required this.image,
-      required this.onTap});
+      required this.onTap,
+      required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -28,19 +30,19 @@ class BluetoothConnectionButton extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Container(
-                child: Row(
-                  children: [
-                    Container(
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: connectionStatusColor,
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 20,
+                    width: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: connectionStatusColor,
                     ),
-                  ],
-                ),
+                  ),
+                  Icon(icon)
+                ],
               ),
               Image.asset(height: 100, width: 100, image),
             ],
