@@ -7,6 +7,7 @@ import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dar
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mind_lab_app/features/home_master/presentation/cubit/home_master_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'features/auth/domain/usecases/user_sign_in.dart';
@@ -68,4 +69,13 @@ void _initAuth() {
       appUserCubit: serviceLocator(),
     ),
   );
+
+  // home master cubit
+  // serviceLocator
+  //     .registerFactoryParam<HomeMasterCubit, HomeMasterInitialParams, dynamic>(
+  //   (params, _) => HomeMasterCubit(
+  //     params,
+  //     serviceLocator(),
+  //   ),
+  // );
 }

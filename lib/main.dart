@@ -79,6 +79,9 @@ class _MyAppState extends State<MyApp> {
           },
           builder: (context, isLoggedIn) {
             if (isLoggedIn) {
+              // return HomeMasterPage(
+              //   cubit: serviceLocator(param1: const HomeMasterInitialParams()),
+              // )
               return const HomePage();
             }
             return const LoginPage();

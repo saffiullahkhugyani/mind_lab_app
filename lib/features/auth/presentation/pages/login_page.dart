@@ -9,6 +9,9 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
+import 'package:mind_lab_app/features/home_master/presentation/cubit/home_master_cubit.dart';
+import 'package:mind_lab_app/features/home_master/presentation/pages/home_master_page.dart';
+import 'package:mind_lab_app/init_dependencies.dart';
 
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -44,6 +47,14 @@ class _LoginPageState extends State<LoginPage> {
               showSnackBar(context, state.message);
               print(state.message);
             } else if (state is AuthSuccess) {
+              // Navigator.of(context).pushAndRemoveUntil(
+              //     MaterialPageRoute(
+              //       builder: (context) => HomeMasterPage(
+              //         cubit: serviceLocator(
+              //             param1: const HomeMasterInitialParams()),
+              //       ),
+              //     ),
+              //     (route) => false);
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 homePageRoute,
