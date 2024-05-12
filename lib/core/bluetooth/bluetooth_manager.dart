@@ -56,6 +56,7 @@ class BluetoothManager with ChangeNotifier {
   }
 
   void startScan() {
+    print('start scan');
     _scanResults.clear();
     _flutterBlueClassicPlugin.startScan();
     _isScanning = true;

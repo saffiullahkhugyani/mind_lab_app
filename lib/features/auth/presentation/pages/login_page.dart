@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
-import 'package:mind_lab_app/core/constants/routes.dart';
-import 'package:mind_lab_app/core/theme/app_pallete.dart';
+import 'package:mind_lab_app/core/theme/theme_data.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
-import 'package:mind_lab_app/features/home_master/presentation/cubit/home_master_cubit.dart';
-import 'package:mind_lab_app/features/home_master/presentation/pages/home_master_page.dart';
-import 'package:mind_lab_app/init_dependencies.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -45,21 +41,10 @@ class _LoginPageState extends State<LoginPage> {
           listener: (context, state) {
             if (state is AuthFailure) {
               showSnackBar(context, state.message);
-              print(state.message);
             } else if (state is AuthSuccess) {
-              // Navigator.of(context).pushAndRemoveUntil(
-              //     MaterialPageRoute(
-              //       builder: (context) => HomeMasterPage(
-              //         cubit: serviceLocator(
-              //             param1: const HomeMasterInitialParams()),
-              //       ),
-              //     ),
-              //     (route) => false);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                homePageRoute,
-                (route) => false,
-              );
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const ProjectPage()),
+                  (route) => false);
             }
           },
           builder: (context, state) {
@@ -71,15 +56,22 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Image.asset(
+                      height: 100,
+                      width: 100,
+                      'lib/assets/images/main_logo.png'),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   const Text(
-                    'Sign In.',
+                    'Sign In',
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
                   AuthField(
                     hintText: 'Email',
@@ -130,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                  color: AppPallete.gradient2,
+                                  color: darkBlueGrey,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),

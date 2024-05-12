@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mind_lab_app/core/theme/app_pallete.dart';
+import 'package:mind_lab_app/core/theme/theme_data.dart';
 
 class AuthGradientButton extends StatelessWidget {
   final String buttonText;
@@ -16,8 +17,8 @@ class AuthGradientButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            AppPallete.gradient1,
-            AppPallete.gradient2,
+            darkBlueGrey,
+            blueGrey,
           ],
           begin: Alignment.bottomLeft,
           end: Alignment.topRight,

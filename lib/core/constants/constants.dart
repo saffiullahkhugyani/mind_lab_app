@@ -11,3 +11,5 @@ String kFrontDefault = 'front_default';
 String kFrontShiny = 'front_shiny';
 
 String appTitle = 'Mind Lab App';
+
+String noConnectionErrorMessage = 'Not connected to a network!';

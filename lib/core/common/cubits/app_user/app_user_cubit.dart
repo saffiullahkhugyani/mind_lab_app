@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/entities/user.dart';
 
@@ -10,11 +8,8 @@ class AppUserCubit extends Cubit<AppUserState> {
 
   void updateUser(User? user) {
     if (user == null) {
-      log('in if because user is null');
       emit(AppUserInitial());
     } else {
-      log('in else for app userLoggedIn');
-      log(user.name);
       emit(AppUserLoggedIn(user));
     }
   }

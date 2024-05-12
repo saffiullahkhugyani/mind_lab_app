@@ -9,13 +9,14 @@ import 'package:mind_lab_app/core/theme/theme.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/pages/subscribe_project_page.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/pages/dashboard_page.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/pages/home_page.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/pages/project_details_page.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
+import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
+import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,15 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<ProjectBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<ProjectListBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<UserDetailBloc>(),
         ),
       ],
       child: const MyApp(),
@@ -65,13 +75,10 @@ class _MyAppState extends State<MyApp> {
         routes: {
           loginRoute: (context) => const LoginPage(),
           registerRoute: (context) => const SignUpPage(),
-          homePageRoute: (context) => const HomePage(),
-          dashboardRoute: (context) => const DashboardPage(),
           roverMainPageRoute: (context) => const RoverMainPage(),
           roverControllerRoute: (context) => const RoverControllerPage(),
           bluetoothDevicesRoute: (context) => const BluetoothPage(),
-          addProjectRoute: (context) => const AddPorjectpage(),
-          projectDetailsRoute: (context) => const ProjectDetailsPage(),
+          projectDetailRoute: (context) => const ProjectDetailPage(),
         },
         home: BlocSelector<AppUserCubit, AppUserState, bool>(
           selector: (state) {
@@ -79,10 +86,7 @@ class _MyAppState extends State<MyApp> {
           },
           builder: (context, isLoggedIn) {
             if (isLoggedIn) {
-              // return HomeMasterPage(
-              //   cubit: serviceLocator(param1: const HomeMasterInitialParams()),
-              // )
-              return const HomePage();
+              return const ProjectPage();
             }
             return const LoginPage();
           },

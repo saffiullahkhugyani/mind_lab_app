@@ -8,4 +8,4 @@ const roverMainPageRoute = '/rover-main-page/';
 const roverControllerRoute = '/rover-controller-page/';
 const bluetoothDevicesRoute = '/bluetooth-page/';
 const addProjectRoute = '/add-project-page/';
-const projectDetailsRoute = '/project-details-page/';
+const projectDetailRoute = '/project-detail-page/';

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
-import 'package:mind_lab_app/core/theme/app_pallete.dart';
+import 'package:mind_lab_app/core/theme/theme_data.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
@@ -66,6 +65,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Image.asset(
+                          height: 100,
+                          width: 100,
+                          'lib/assets/images/main_logo.png'),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       const Text(
                         'Sign Up.',
                         style: TextStyle(
@@ -113,7 +119,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: 20,
                       ),
                       AuthGradientButton(
-                        buttonText: 'Sing Up',
+                        buttonText: 'Sign Up',
                         onPressed: () {
                           context.read<AuthBloc>().add(
                                 AuthSignUp(
@@ -144,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     .textTheme
                                     .titleMedium
                                     ?.copyWith(
-                                      color: AppPallete.gradient2,
+                                      color: darkBlueGrey,
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
