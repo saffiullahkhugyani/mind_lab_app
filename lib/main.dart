@@ -4,6 +4,7 @@ import 'package:mind_lab_app/core/bluetooth/bluetooth_manager.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/constants/constants.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
+import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
 import 'package:mind_lab_app/core/theme/theme.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
+import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
 import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
@@ -66,7 +68,8 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => BluetoothManager()),
-        ChangeNotifierProvider(create: (context) => CommandList())
+        ChangeNotifierProvider(create: (context) => CommandList()),
+        ChangeNotifierProvider(create: (context) => FlutterBluetoothPlus())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -79,6 +82,7 @@ class _MyAppState extends State<MyApp> {
           roverControllerRoute: (context) => const RoverControllerPage(),
           bluetoothDevicesRoute: (context) => const BluetoothPage(),
           projectDetailRoute: (context) => const ProjectDetailPage(),
+          flutterBluePlusRoute: (context) => const BluetoothPlusPage(),
         },
         home: BlocSelector<AppUserCubit, AppUserState, bool>(
           selector: (state) {

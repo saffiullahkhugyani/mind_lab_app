@@ -9,3 +9,4 @@ const roverControllerRoute = '/rover-controller-page/';
 const bluetoothDevicesRoute = '/bluetooth-page/';
 const addProjectRoute = '/add-project-page/';
 const projectDetailRoute = '/project-detail-page/';
+const flutterBluePlusRoute = '/bluetooth-plus-page/';

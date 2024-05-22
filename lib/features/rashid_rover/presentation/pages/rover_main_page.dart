@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mind_lab_app/core/bluetooth/bluetooth_manager.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
+import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/widgets/bt_connection_button.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/widgets/rover_buttons.dart';
@@ -32,13 +32,12 @@ class _RoverMainPageState extends State<RoverMainPage> {
       appBar: AppBar(
         title: const Text('Rashid Rover'),
       ),
-      body: Consumer2<BluetoothManager, CommandList>(
+      body: Consumer2<FlutterBluetoothPlus, CommandList>(
         builder: (context, bluetoothManager, commandList, child) {
           bool isConnected = false;
           var commands = commandList.commands;
-
-          if (bluetoothManager.bluetoothConnection != null) {
-            isConnected = bluetoothManager.bluetoothConnection!.isConnected;
+          if (bluetoothManager.connectedDevice != null) {
+            isConnected = bluetoothManager.connectedDevice!.isConnected;
           }
           return Center(
             child: Column(
@@ -49,7 +48,7 @@ class _RoverMainPageState extends State<RoverMainPage> {
                       isConnected ? Colors.green : Colors.red,
                   image: 'lib/assets/images/rashid_rover.png',
                   onTap: () {
-                    Navigator.pushNamed(context, bluetoothDevicesRoute);
+                    Navigator.pushNamed(context, flutterBluePlusRoute);
                   },
                   icon: sendingCommand == 'f'
                       ? Icons.arrow_upward
@@ -63,7 +62,8 @@ class _RoverMainPageState extends State<RoverMainPage> {
                 ),
                 const SizedBox(height: 10),
                 if (isConnected)
-                  Text('Connected to ${bluetoothManager.connectedDevice!.name}')
+                  Text(
+                      'Connected to ${bluetoothManager.connectedDevice?.advName}')
                 else
                   const Text('Disconnected'),
                 const SizedBox(height: 40),
@@ -73,11 +73,10 @@ class _RoverMainPageState extends State<RoverMainPage> {
                     if (commands.isNotEmpty && isConnected) {
                       for (var command in commands) {
                         await Future.delayed(const Duration(seconds: 1), () {
-                          bluetoothManager.sendCommands(command);
+                          bluetoothManager.sendCommand(command);
                           setState(() {
                             // print(sendingCommand);
                             sendingCommand = command;
-                            print(sendingCommand);
                           });
                         });
                       }
@@ -85,7 +84,7 @@ class _RoverMainPageState extends State<RoverMainPage> {
                       sendingCommand = 's';
                     }
                     await Future.delayed(const Duration(seconds: 1));
-                    bluetoothManager.sendCommands(sendingCommand);
+                    bluetoothManager.sendCommand(sendingCommand);
                   },
                   buttonColor: Colors.green,
                 ),
