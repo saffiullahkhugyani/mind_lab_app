@@ -58,6 +58,7 @@ class FlutterBluetoothPlus with ChangeNotifier {
     _isScanningSubsctiption.cancel();
     _scanResultSubscription.cancel();
     super.dispose();
+    notifyListeners();
   }
 
   // method to start scan

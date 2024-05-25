@@ -36,9 +36,9 @@ dependencies:
   data_connection_checker_tv: ^0.3.5-nullsafety
   bloc: ^8.1.4
   flutter_bloc: ^8.1.5
-  cloud_firestore: ^4.15.9
-  firebase_auth: ^4.17.9
-  firebase_core: ^2.27.1
+  # cloud_firestore: ^4.15.9
+  # firebase_auth: ^4.17.9
+  # firebase_core: ^2.27.1
   equatable: ^2.0.5
   fpdart: ^1.1.0
   supabase_flutter: ^2.3.4
@@ -109,7 +109,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: "AppIcon"
