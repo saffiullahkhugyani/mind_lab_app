@@ -44,6 +44,9 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+	<true/><key>NSPhotoLibraryUsageDescription</key>
+	<string>Photos from gallery required</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Photos from camera</string>
 </dict>
 </plist>

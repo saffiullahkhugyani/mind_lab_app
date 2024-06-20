@@ -18,6 +18,7 @@ import 'package:mind_lab_app/features/project_list/presentation/bloc/project_lis
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
+import 'package:mind_lab_app/features/rashid_rover/presentation/pages/step_duration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,7 @@ class _MyAppState extends State<MyApp> {
           bluetoothDevicesRoute: (context) => const BluetoothPage(),
           projectDetailRoute: (context) => const ProjectDetailPage(),
           flutterBluePlusRoute: (context) => const BluetoothPlusPage(),
+          stepDurationRoute: (context) => const StepDurationPage(),
         },
         home: BlocSelector<AppUserCubit, AppUserState, bool>(
           selector: (state) {

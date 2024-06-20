@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 20,
                   ),
                   AuthGradientButton(
-                    buttonText: 'Login',
+                    buttonText: 'Sign In',
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         context.read<AuthBloc>().add(

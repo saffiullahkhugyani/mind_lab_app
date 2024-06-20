@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
@@ -14,6 +17,17 @@ class UserDetailPage extends StatefulWidget {
 }
 
 class _UserDetailPageState extends State<UserDetailPage> {
+  File? image;
+
+  void selectImage() async {
+    final pickedImage = await pickImage();
+    if (pickedImage != null) {
+      setState(() {
+        image = pickedImage;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,15 +57,86 @@ class _UserDetailPageState extends State<UserDetailPage> {
           return ListView(
             children: [
               //profile picture
+
               const SizedBox(height: 50),
-              const Icon(size: 72, Icons.person),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    selectImage();
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      image != null
+                          ? Container(
+                              width: 130,
+                              height: 130,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 4, color: Colors.white),
+                                boxShadow: [
+                                  BoxShadow(
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    color: Colors.black.withOpacity(0.1),
+                                  ),
+                                ],
+                                shape: BoxShape.circle,
+                              ),
+                              child: CircleAvatar(
+                                backgroundImage: FileImage(image!),
+                              ),
+                            )
+                          : Container(
+                              width: 130,
+                              height: 130,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 4, color: Colors.white),
+                                boxShadow: [
+                                  BoxShadow(
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    color: Colors.black.withOpacity(0.1),
+                                  ),
+                                ],
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                    fit: BoxFit.scaleDown,
+                                    image: AssetImage(
+                                        'lib/assets/images/no-user-image.png')),
+                              ),
+                            ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 4,
+                                color: Colors.white,
+                              ),
+                              color: Colors.grey),
+                          child: const Icon(Icons.edit),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
               Text(
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[700]),
-                userEmail,
+                style: TextStyle(
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
+                userDetail.name,
               ),
               const SizedBox(height: 50),
               Padding(
@@ -61,8 +146,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
               ),
               MyTextbox(text: userDetail.id, sectionName: 'User ID'),
               MyTextbox(
-                text: userDetail.name,
-                sectionName: 'User Name',
+                text: userEmail,
+                sectionName: 'User Email',
               ),
               MyTextbox(text: userDetail.age, sectionName: 'Age'),
               MyTextbox(text: userDetail.mobile, sectionName: 'Mobile'),
