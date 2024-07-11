@@ -26,8 +26,13 @@ import 'package:mind_lab_app/features/project_list/presentation/bloc/project_lis
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
 import 'package:mind_lab_app/features/user_detail/data/repositories/user_detail_repository_impl.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -183,28 +188,71 @@ void _initAuth() {
     ),
   );
 
-  // init user detail
+  // dependencies for user detail
+  // remote datasource
   serviceLocator.registerFactory<UserDetailRemoteDataSource>(
     () => UserDetailRemoteDataSourceImpl(
       serviceLocator(),
     ),
   );
 
+  // repository
   serviceLocator.registerFactory<UserDetailRepository>(
     () => UserDetailRepositoryImpl(
       serviceLocator(),
     ),
   );
 
+  // get user details use case
   serviceLocator.registerFactory(
     () => GetUserDetail(
       serviceLocator(),
     ),
   );
 
+  // user detail bloc
   serviceLocator.registerLazySingleton(
     () => UserDetailBloc(
       getUserDetail: serviceLocator(),
+    ),
+  );
+
+  // dependencies for add certificate bloc
+  // get skills use case
+  serviceLocator.registerFactory(
+    () => GetSkills(
+      serviceLocator(),
+    ),
+  );
+
+  // get skill hashtags use case
+  serviceLocator.registerFactory(
+    () => GetSkillHashtags(
+      serviceLocator(),
+    ),
+  );
+
+  // get skill categories use case
+  serviceLocator.registerFactory(
+    () => GetSkillCategories(
+      serviceLocator(),
+    ),
+  );
+
+  // upload certificate use case
+  serviceLocator.registerFactory(
+    () => UploadCertificate(
+      serviceLocator(),
+    ),
+  );
+
+  //  add certificate bloc
+  serviceLocator.registerLazySingleton(
+    () => AddCertificateBloc(
+      getSKills: serviceLocator(),
+      getSkillHashtags: serviceLocator(),
+      getSkillCategories: serviceLocator(),
+      uploadCertificate: serviceLocator(),
     ),
   );
 }

@@ -19,7 +19,10 @@ import 'package:mind_lab_app/features/project_list/presentation/pages/project_de
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/step_duration_page.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/pages/add_certificate_page.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/pages/update_profile_page.dart';
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +46,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<UserDetailBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<AddCertificateBloc>(),
         ),
       ],
       child: const MyApp(),
@@ -85,6 +91,8 @@ class _MyAppState extends State<MyApp> {
           projectDetailRoute: (context) => const ProjectDetailPage(),
           flutterBluePlusRoute: (context) => const BluetoothPlusPage(),
           stepDurationRoute: (context) => const StepDurationPage(),
+          addCertificateRoute: (context) => const AddCertificate(),
+          updateProfileRoute: (context) => const UpdataProfilePage(),
         },
         home: BlocSelector<AppUserCubit, AppUserState, bool>(
           selector: (state) {

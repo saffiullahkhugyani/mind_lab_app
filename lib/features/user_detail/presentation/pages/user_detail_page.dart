@@ -1,12 +1,15 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
 
 class UserDetailPage extends StatefulWidget {
@@ -34,14 +37,33 @@ class _UserDetailPageState extends State<UserDetailPage> {
     context.read<UserDetailBloc>().add(UserDetailFetchUserDetail());
   }
 
+  void handleSelected(int item) {
+    switch (item) {
+      case 0:
+        Navigator.pushNamed(context, updateProfileRoute);
+        break;
+      case 1:
+        Navigator.pushNamed(context, addCertificateRoute);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var userEmail =
         (context.read<AppUserCubit>().state as AppUserLoggedIn).user.email;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Details Page'),
-      ),
+      appBar: AppBar(title: const Text('User Details Page'), actions: [
+        PopupMenuButton<int>(
+            icon: const Icon(Icons.menu),
+            onSelected: (item) => handleSelected(item),
+            itemBuilder: (context) => [
+                  const PopupMenuItem<int>(
+                      value: 0, child: Text("Update profile")),
+                  const PopupMenuItem<int>(
+                      value: 1, child: Text("Add a certificate")),
+                ])
+      ]),
       body: BlocConsumer<UserDetailBloc, UserDetailState>(
           listener: (context, state) {
         if (state is UserDetailFailure) {

@@ -58,6 +58,7 @@ dependencies:
   path_provider: ^2.1.0
   flutter_blue_plus: ^1.32.7
   image_picker: ^1.1.2
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
