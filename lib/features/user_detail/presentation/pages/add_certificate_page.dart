@@ -162,7 +162,6 @@ class _AddCertificateState extends State<AddCertificate> {
                     ),
                     DropdownButtonFormField<SkillCategoryEntity>(
                       decoration: const InputDecoration(
-                        focusedErrorBorder: OutlineInputBorder(),
                         label: Text("Select a skill category"),
                       ),
                       value: selectedCategoryEntity,
@@ -194,7 +193,6 @@ class _AddCertificateState extends State<AddCertificate> {
                     ),
                     DropdownButtonFormField<SkillHashTagEntity>(
                       decoration: const InputDecoration(
-                        focusedErrorBorder: OutlineInputBorder(),
                         label: Text("Select a hashtag"),
                       ),
                       onChanged: (value) {
@@ -217,9 +215,8 @@ class _AddCertificateState extends State<AddCertificate> {
                       height: 20,
                     ),
                     DropdownButtonFormField<SkillEntity>(
-                      decoration: const InputDecoration(
-                          focusedErrorBorder: OutlineInputBorder(),
-                          label: Text("Select a skill")),
+                      decoration:
+                          const InputDecoration(label: Text("Select a skill")),
                       onChanged: (value) {
                         setState(() {
                           selectedSkillEntity = value;

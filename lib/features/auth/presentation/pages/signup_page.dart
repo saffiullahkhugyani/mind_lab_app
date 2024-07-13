@@ -121,15 +121,17 @@ class _SignUpPageState extends State<SignUpPage> {
                       AuthGradientButton(
                         buttonText: 'Sign Up',
                         onPressed: () {
-                          context.read<AuthBloc>().add(
-                                AuthSignUp(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                  name: nameController.text.trim(),
-                                  age: ageController.text.trim(),
-                                  mobile: mobileController.text.trim(),
-                                ),
-                              );
+                          if (formKey.currentState!.validate()) {
+                            context.read<AuthBloc>().add(
+                                  AuthSignUp(
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim(),
+                                    name: nameController.text.trim(),
+                                    age: ageController.text.trim(),
+                                    mobile: mobileController.text.trim(),
+                                  ),
+                                );
+                          }
                         },
                       ),
                       const SizedBox(

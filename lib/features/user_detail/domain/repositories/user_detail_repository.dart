@@ -8,6 +8,8 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 
+import '../entities/update_profile_entity.dart';
+
 abstract interface class UserDetailRepository {
   Future<Either<ServerFailure, List<UserDetailEntity>>> getUserDetails();
   Future<Either<ServerFailure, List<SkillEntity>>> getSkills();
@@ -17,5 +19,12 @@ abstract interface class UserDetailRepository {
     required String userId,
     required String skillId,
     required File certificateImage,
+  });
+  Future<Either<ServerFailure, UpdateProfileEntity>> updateProfile({
+    String? userId,
+    String? name,
+    String? number,
+    String? dateOfBirth,
+    File? profileImageFile,
   });
 }

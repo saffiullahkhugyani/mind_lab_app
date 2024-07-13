@@ -33,6 +33,7 @@ class AppTheme {
       ThemeData(useMaterial3: false, primarySwatch: primaryBlack).copyWith(
     inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.all(20),
+        border: _border(),
         enabledBorder: _border(),
         focusedBorder: _border(blueGrey),
         errorBorder: _border(AppPallete.errorColor)),

@@ -40,7 +40,13 @@ class _UserDetailPageState extends State<UserDetailPage> {
   void handleSelected(int item) {
     switch (item) {
       case 0:
-        Navigator.pushNamed(context, updateProfileRoute);
+        Navigator.pushNamed(context, updateProfileRoute).then(
+          (_) => setState(
+            () {
+              context.read<UserDetailBloc>().add(UserDetailFetchUserDetail());
+            },
+          ),
+        );
         break;
       case 1:
         Navigator.pushNamed(context, addCertificateRoute);
@@ -76,77 +82,56 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
         if (state is UserDetailDisplaySuccess) {
           var userDetail = state.userDetail.first;
+          print(userDetail.imageUrl);
           return ListView(
             children: [
               //profile picture
 
               const SizedBox(height: 50),
               Center(
-                child: GestureDetector(
-                  onTap: () {
-                    selectImage();
-                  },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      image != null
-                          ? Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 4, color: Colors.white),
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    color: Colors.black.withOpacity(0.1),
-                                  ),
-                                ],
-                                shape: BoxShape.circle,
-                              ),
-                              child: CircleAvatar(
-                                backgroundImage: FileImage(image!),
-                              ),
-                            )
-                          : Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 4, color: Colors.white),
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    color: Colors.black.withOpacity(0.1),
-                                  ),
-                                ],
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                    fit: BoxFit.scaleDown,
-                                    image: AssetImage(
-                                        'lib/assets/images/no-user-image.png')),
-                              ),
-                            ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    userDetail.imageUrl.isNotEmpty
+                        ? Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 4, color: Colors.white),
+                              boxShadow: [
+                                BoxShadow(
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  color: Colors.black.withOpacity(0.1),
+                                ),
+                              ],
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 4,
-                                color: Colors.white,
-                              ),
-                              color: Colors.grey),
-                          child: const Icon(Icons.edit),
-                        ),
-                      ),
-                    ],
-                  ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(userDetail.imageUrl),
+                            ),
+                          )
+                        : Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 4, color: Colors.white),
+                              boxShadow: [
+                                BoxShadow(
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  color: Colors.black.withOpacity(0.1),
+                                ),
+                              ],
+                              shape: BoxShape.circle,
+                              image: const DecorationImage(
+                                  fit: BoxFit.fitWidth,
+                                  image: AssetImage(
+                                      'lib/assets/images/no-user-image.png')),
+                            ),
+                          ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -171,7 +156,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 text: userEmail,
                 sectionName: 'User Email',
               ),
-              MyTextbox(text: userDetail.age, sectionName: 'Age'),
+              MyTextbox(text: userDetail.age, sectionName: 'Date of birth'),
               MyTextbox(text: userDetail.mobile, sectionName: 'Mobile'),
             ],
           );

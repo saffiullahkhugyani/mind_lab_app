@@ -26,6 +26,8 @@ import 'package:mind_lab_app/features/user_detail/presentation/pages/update_prof
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
 
+import 'features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
@@ -49,6 +51,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<AddCertificateBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<UpdateProfileBloc>(),
         ),
       ],
       child: const MyApp(),

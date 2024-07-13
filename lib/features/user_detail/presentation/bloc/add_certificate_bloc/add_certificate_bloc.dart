@@ -24,7 +24,11 @@ class AddCertificateBloc
         _getSkillCategories = getSkillCategories,
         _uploadCertificate = uploadCertificate,
         super(InitialState()) {
-    on<AddCertificateEvent>(((event, emit) => emit(SkillDataLoading())));
+    on<AddCertificateEvent>(
+      (event, emit) => emit(
+        SkillDataLoading(),
+      ),
+    );
     on<FetchSkillData>(_onFetchSkillData);
     on<UploadCertificateEvent>(_onUploadCertificate);
   }

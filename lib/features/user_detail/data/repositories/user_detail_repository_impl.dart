@@ -4,11 +4,13 @@ import 'package:fpdart/src/either.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/upload_certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -87,6 +89,39 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       return right(uploadedCertificate);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, UpdateProfileEntity>> updateProfile({
+    String? userId,
+    String? name,
+    String? number,
+    String? dateOfBirth,
+    File? profileImageFile,
+  }) async {
+    try {
+      UpdateProfileModel updateProfileModel = UpdateProfileModel(
+        userId: userId,
+        name: name,
+        dateOfBirth: dateOfBirth,
+        number: number,
+        profileImageUrl: "",
+      );
+      final imageUrl = await userDetailRemoteDataSource.updateProfileImage(
+          imageFile: profileImageFile, profileModel: updateProfileModel);
+
+      updateProfileModel =
+          updateProfileModel.copyWith(profileImageUrl: imageUrl);
+
+      final updatedProfileData =
+          await userDetailRemoteDataSource.updateProfile(updateProfileModel);
+
+      return right(updatedProfileData);
+    } on ServerException catch (e) {
+      return left(
+        ServerFailure(errorMessage: e.message),
+      );
     }
   }
 }

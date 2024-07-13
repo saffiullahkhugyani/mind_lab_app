@@ -30,8 +30,10 @@ import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_cate
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/update_profile.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -253,6 +255,21 @@ void _initAuth() {
       getSkillHashtags: serviceLocator(),
       getSkillCategories: serviceLocator(),
       uploadCertificate: serviceLocator(),
+    ),
+  );
+
+  // dependencies for update profile
+  // update user profile use case
+  serviceLocator.registerFactory(
+    () => UpdateProfile(
+      serviceLocator(),
+    ),
+  );
+
+  // update student profile bloc
+  serviceLocator.registerLazySingleton(
+    () => UpdateProfileBloc(
+      updateProfile: serviceLocator(),
     ),
   );
 }
