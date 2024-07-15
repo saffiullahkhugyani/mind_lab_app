@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
@@ -68,8 +66,10 @@ class _AddCertificateState extends State<AddCertificate> {
       body: BlocConsumer<AddCertificateBloc, AddCertificateState>(
         listener: (context, state) {
           if (state is SkillDataFailure) {
-            showSnackBar(context, state.error);
-            log(state.error);
+            if (state.error == "Duplicate") {
+              showSnackBar(context, "Certificate already exists");
+            }
+            Navigator.of(context).pop();
           } else if (state is UploadCertificateSuccess) {
             showSnackBar(context,
                 "Certificate of ${selectedSkillEntity!.name} uploaded successfully");

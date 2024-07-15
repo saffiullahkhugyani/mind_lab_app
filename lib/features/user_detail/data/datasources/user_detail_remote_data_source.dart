@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:mind_lab_app/core/errors/exceptions.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_hashtag_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_model.dart';
@@ -16,6 +17,7 @@ abstract interface class UserDetailRemoteDataSource {
   Future<List<SkillModel>> getSkills();
   Future<List<SkillHashtagModel>> getSkillsHashtag();
   Future<List<SkillCategoryModel>> getSkillCategories();
+  Future<List<CertificateModel>> getCertificates();
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel);
   Future<String> uploadCertificateImage({
@@ -43,7 +45,30 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
           .from('profiles')
           .select('*')
           .match({'id': userUid});
+
       return userDetail.map((json) => UserDetailModel.fromJson(json)).toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<CertificateModel>> getCertificates() async {
+    try {
+      // getting user UID
+      final userUid = supabaseClient.auth.currentUser!.id;
+
+      // fetching user certificates
+      final userCertificates = await supabaseClient
+          .from('upload_certificate')
+          .select('id, user_id, skills(id,name), certificate_image_url')
+          .match({'user_id': userUid});
+
+      return userCertificates
+          .map((json) => CertificateModel.fromJson(json))
+          .toList();
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
@@ -115,13 +140,15 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }) async {
     try {
       final path = '${certificateModel.userId}/${certificateModel.skillId}';
-      supabaseClient.storage.from('certificate_images').upload(path, imageFile);
+      await supabaseClient.storage
+          .from('certificate_images')
+          .upload(path, imageFile);
 
       return supabaseClient.storage
           .from('certificate_images')
           .getPublicUrl(path);
-    } catch (e) {
-      throw ServerException(e.toString());
+    } on StorageException catch (e) {
+      throw ServerException(e.error!);
     }
   }
 

@@ -107,13 +107,33 @@ class _ProjectPageState extends State<ProjectPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-          icon: const Icon(CupertinoIcons.add),
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const ProjectListPage()));
-          },
-          label: const Text('Add Project')),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+              icon: const Icon(CupertinoIcons.add),
+              heroTag: 'herotag1',
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ProjectListPage()));
+              },
+              label: const Text('Add Project')),
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton.extended(
+              icon: const Icon(CupertinoIcons.doc),
+              heroTag: 'herotag2',
+              onPressed: () {
+                // Navigator.of(context).push(MaterialPageRoute(
+                //     builder: (context) => const ProjectListPage()));
+
+                Navigator.pushNamed(context, addCertificateRoute);
+              },
+              label: const Text('Upload Certificate')),
+        ],
+      ),
     );
   }
 }

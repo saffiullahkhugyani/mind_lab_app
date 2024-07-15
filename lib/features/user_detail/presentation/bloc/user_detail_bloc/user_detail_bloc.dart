@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 
 part 'user_detail_event.dart';

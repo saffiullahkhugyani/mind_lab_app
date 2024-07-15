@@ -1,8 +1,5 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
@@ -81,8 +78,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
         }
 
         if (state is UserDetailDisplaySuccess) {
-          var userDetail = state.userDetail.first;
-          print(userDetail.imageUrl);
+          final userInfo = state.userDetail.userDetails.first;
+          final userCertificates = state.userDetail.certificates;
           return ListView(
             children: [
               //profile picture
@@ -92,7 +89,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    userDetail.imageUrl.isNotEmpty
+                    userInfo.imageUrl.isNotEmpty
                         ? Container(
                             width: 200,
                             height: 200,
@@ -108,8 +105,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               shape: BoxShape.circle,
                             ),
                             child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(userDetail.imageUrl),
+                              backgroundImage: NetworkImage(userInfo.imageUrl),
                             ),
                           )
                         : Container(
@@ -143,21 +139,82 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     color: Colors.grey[700],
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
-                userDetail.name,
+                userInfo.name,
               ),
               const SizedBox(height: 50),
-              Padding(
-                padding: const EdgeInsets.only(left: 25.0),
-                child: Text('My Details',
-                    style: TextStyle(color: Colors.grey[600])),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 25.0),
+                      child: Text(
+                        'My Details',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    MyTextbox(text: userInfo.id, sectionName: 'User ID'),
+                    MyTextbox(
+                      text: userEmail,
+                      sectionName: 'User Email',
+                    ),
+                    MyTextbox(text: userInfo.age, sectionName: 'Date of birth'),
+                    MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
+                  ],
+                ),
               ),
-              MyTextbox(text: userDetail.id, sectionName: 'User ID'),
-              MyTextbox(
-                text: userEmail,
-                sectionName: 'User Email',
+              const SizedBox(height: 30),
+              Container(
+                padding: const EdgeInsets.all(10),
+                color: Colors.grey[300],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15.0, top: 10, bottom: 10),
+                      child: Text(' My Certificates',
+                          style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    userCertificates.isNotEmpty
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: userCertificates.length,
+                            itemBuilder: (context, index) {
+                              final certificate = userCertificates[index];
+                              return Card(
+                                child: ListTile(
+                                  title: Text(certificate.skill.name),
+                                  leading: CircleAvatar(
+                                    child: Text(
+                                      (index + 1).toString(),
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  trailing: const Icon(Icons.description),
+                                ),
+                              );
+                            },
+                          )
+                        : Padding(
+                            padding:
+                                const EdgeInsets.only(left: 25.0, top: 10.0),
+                            child: Text('No certificates added yet.',
+                                style: TextStyle(color: Colors.grey[600])),
+                          ),
+                  ],
+                ),
               ),
-              MyTextbox(text: userDetail.age, sectionName: 'Date of birth'),
-              MyTextbox(text: userDetail.mobile, sectionName: 'Mobile'),
             ],
           );
         }

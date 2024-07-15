@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:fpdart/src/either.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
@@ -11,18 +10,22 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 import 'package:uuid/uuid.dart';
 
 class UserDetailRepositoryImpl implements UserDetailRepository {
   final UserDetailRemoteDataSource userDetailRemoteDataSource;
   UserDetailRepositoryImpl(this.userDetailRemoteDataSource);
   @override
-  Future<Either<ServerFailure, List<UserDetailEntity>>> getUserDetails() async {
+  Future<Either<ServerFailure, UserDetailResult>> getUserDetails() async {
     try {
       final userDetail = await userDetailRemoteDataSource.getUserDetails();
-      return right(userDetail);
+      final userCertificate =
+          await userDetailRemoteDataSource.getCertificates();
+
+      return right(UserDetailResult(
+          userDetails: userDetail, certificates: userCertificate));
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }
