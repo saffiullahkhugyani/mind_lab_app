@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/theme/theme_data.dart';
@@ -8,6 +12,8 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
+
+import '../../../../core/utils/pick_image.dart';
 
 class SignUpPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -20,12 +26,35 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final ageGroupListData = [
+    'Under 6 years',
+    '6-13 years',
+    '14-18 years',
+    '19-25 years',
+    'Above 25 years'
+  ];
+
+  final genderData = ['Male', 'Female'];
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final mobileController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  String? phoneNumber;
+  String? gender;
+  String? ageGroup;
+  File? avatarImage;
+
+  void selectImage() async {
+    final pickedImage = await pickImage();
+    if (pickedImage != null) {
+      setState(() {
+        avatarImage = pickedImage;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -80,40 +109,163 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                       const SizedBox(
+                        height: 20,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          selectImage();
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            avatarImage != null
+                                ? Container(
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 4, color: Colors.white),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          color: Colors.black.withOpacity(0.1),
+                                        ),
+                                      ],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundImage: FileImage(avatarImage!),
+                                    ),
+                                  )
+                                : Container(
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 4, color: Colors.white),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          color: Colors.black.withOpacity(0.1),
+                                        ),
+                                      ],
+                                      shape: BoxShape.circle,
+                                      image: const DecorationImage(
+                                          fit: BoxFit.fitWidth,
+                                          image: AssetImage(
+                                              'lib/assets/images/no-user-image.png')),
+                                    ),
+                                  ),
+                            Positioned(
+                              bottom: 10,
+                              right: 10,
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 4,
+                                      color: Colors.white,
+                                    ),
+                                    color: Colors.grey),
+                                child: const Icon(Icons.edit),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
                         height: 30,
                       ),
                       AuthField(
                         hintText: 'Name',
                         controller: nameController,
+                        icon: Icons.person_2_outlined,
                       ),
                       const SizedBox(
                         height: 15,
                       ),
                       AuthField(
-                        hintText: 'Email',
-                        controller: emailController,
-                      ),
+                          hintText: 'Email',
+                          controller: emailController,
+                          icon: Icons.email_outlined),
                       const SizedBox(
                         height: 15,
                       ),
                       AuthField(
                         hintText: 'Password',
                         controller: passwordController,
+                        icon: Icons.lock_outline,
                         isObscureText: true,
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      AuthField(
-                        hintText: 'Age',
-                        controller: ageController,
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                            label: Text("Select age Group")),
+                        items: ageGroupListData
+                            .map<DropdownMenuItem<String>>(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "Please select an age group";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          ageGroup = value;
+                        },
                       ),
                       const SizedBox(
                         height: 15,
                       ),
-                      AuthField(
-                        hintText: 'Mobile',
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.male),
+                            label: Text("Select a gender")),
+                        items: genderData
+                            .map<DropdownMenuItem<String>>(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "Please select your gender";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          gender = value;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      IntlPhoneField(
+                        initialCountryCode: 'AE',
                         controller: mobileController,
+                        validator: (value) {
+                          if (value!.number.toString().isEmpty) {
+                            return "Enter a valid number";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          phoneNumber = value.completeNumber;
+                        },
                       ),
                       const SizedBox(
                         height: 20,
@@ -121,16 +273,21 @@ class _SignUpPageState extends State<SignUpPage> {
                       AuthGradientButton(
                         buttonText: 'Sign Up',
                         onPressed: () {
-                          if (formKey.currentState!.validate()) {
+                          if (formKey.currentState!.validate() &&
+                              avatarImage != null) {
                             context.read<AuthBloc>().add(
                                   AuthSignUp(
                                     email: emailController.text.trim(),
                                     password: passwordController.text.trim(),
                                     name: nameController.text.trim(),
-                                    age: ageController.text.trim(),
-                                    mobile: mobileController.text.trim(),
+                                    ageGroup: ageGroup!,
+                                    mobile: phoneNumber!,
+                                    gender: gender!,
+                                    imageFile: avatarImage!,
                                   ),
                                 );
+                          } else {
+                            showSnackBar(context, "Please fill all the fields");
                           }
                         },
                       ),

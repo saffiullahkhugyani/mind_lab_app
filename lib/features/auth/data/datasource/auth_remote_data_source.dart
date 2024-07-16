@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,8 +11,14 @@ abstract interface class AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
-    required String age,
+    required String ageGroup,
     required String mobile,
+    required String gender,
+  });
+
+  Future<String> uploadUserImage({
+    required File imageFile,
+    required UserModel userModel,
   });
 
   Future<UserModel> loginWithEmailPassword({
@@ -56,8 +64,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
-    required String age,
+    required String ageGroup,
     required String mobile,
+    required String gender,
   }) async {
     try {
       final response = await supabaseClient.auth.signUp(
@@ -65,16 +74,45 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         data: {
           'name': name,
-          'age': age,
+          'age': ageGroup,
           'mobile': mobile,
+          'gender': gender,
         },
       );
       if (response.user == null) {
         throw const ServerException('User is null');
       }
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<String> uploadUserImage({
+    required File imageFile,
+    required UserModel userModel,
+  }) async {
+    try {
+      final path = '${userModel.id}/${userModel.id}-image';
+
+      await supabaseClient.storage
+          .from('profile-images')
+          .upload(path, imageFile);
+
+      final imageUrl =
+          supabaseClient.storage.from('profile-images').getPublicUrl(path);
+      await supabaseClient
+          .from('profiles')
+          .update({"profile_image_url": imageUrl}).eq('id', userModel.id);
+
+      return imageUrl;
+    } on StorageException catch (e) {
+      throw (ServerException(e.message));
+    } catch (e) {
+      throw (ServerException(e.toString()));
     }
   }
 

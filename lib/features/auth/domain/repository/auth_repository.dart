@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/common/entities/user.dart';
@@ -9,8 +11,10 @@ abstract interface class AuthRepository {
     required String name,
     required String email,
     required String password,
-    required String age,
+    required String ageGroup,
     required String mobile,
+    required String gender,
+    required File imageFile,
   });
 
   Future<Either<ServerFailure, User>> signInWithEmailPassword({

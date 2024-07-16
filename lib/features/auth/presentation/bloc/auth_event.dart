@@ -7,15 +7,19 @@ final class AuthSignUp extends AuthEvent {
   final String email;
   final String password;
   final String name;
-  final String age;
+  final String ageGroup;
   final String mobile;
+  final String gender;
+  final File imageFile;
 
   AuthSignUp({
     required this.email,
     required this.password,
     required this.name,
-    required this.age,
+    required this.ageGroup,
     required this.mobile,
+    required this.gender,
+    required this.imageFile,
   });
 }
 

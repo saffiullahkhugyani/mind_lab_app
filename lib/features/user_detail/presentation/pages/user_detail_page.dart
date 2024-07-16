@@ -162,7 +162,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       text: userEmail,
                       sectionName: 'User Email',
                     ),
-                    MyTextbox(text: userInfo.age, sectionName: 'Date of birth'),
+                    MyTextbox(text: userInfo.age, sectionName: 'Age Group'),
                     MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
                   ],
                 ),

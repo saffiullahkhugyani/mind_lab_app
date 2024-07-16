@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fpdart/src/either.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
@@ -28,11 +30,13 @@ class AuthRepositoryImpl implements AuthRepository {
         }
 
         return right(UserModel(
-            id: session.user.id,
-            email: session.user.email ?? '',
-            name: '',
-            age: '',
-            mobile: ''));
+          id: session.user.id,
+          email: session.user.email ?? '',
+          name: '',
+          ageGroup: '',
+          mobile: '',
+          gender: '',
+        ));
       }
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
@@ -60,18 +64,29 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String email,
     required String password,
-    required String age,
+    required String ageGroup,
     required String mobile,
+    required String gender,
+    required File imageFile,
   }) async {
-    return _getUser(
-      () async => await remoteDataSource.signUpWithEmailPassword(
+    return _getUser(() async {
+      final user = await remoteDataSource.signUpWithEmailPassword(
         name: name,
         email: email,
         password: password,
-        age: age,
+        ageGroup: ageGroup,
         mobile: mobile,
-      ),
-    );
+        gender: gender,
+      );
+
+      // upload user profile picture
+      final imageUrl = await remoteDataSource.uploadUserImage(
+          imageFile: imageFile, userModel: user);
+
+      print(imageUrl);
+
+      return user;
+    });
   }
 
   Future<Either<ServerFailure, User>> _getUser(

@@ -1,4 +1,6 @@
-import 'package:fpdart/src/either.dart';
+import 'dart:io';
+
+import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
@@ -15,8 +17,10 @@ class UserSignUp implements UseCase<User, UserSignUpParams> {
       name: params.name,
       email: params.email,
       password: params.password,
-      age: params.age,
+      ageGroup: params.ageGroup,
       mobile: params.mobile,
+      gender: params.gender,
+      imageFile: params.imageFile,
     );
   }
 }
@@ -25,14 +29,18 @@ class UserSignUpParams {
   final String email;
   final String password;
   final String name;
-  final String age;
+  final String ageGroup;
   final String mobile;
+  final String gender;
+  final File imageFile;
 
   UserSignUpParams({
     required this.email,
     required this.password,
     required this.name,
-    required this.age,
+    required this.ageGroup,
     required this.mobile,
+    required this.gender,
+    required this.imageFile,
   });
 }
