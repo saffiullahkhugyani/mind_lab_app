@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_provider.dart';
 import 'package:mind_lab_app/core/theme/theme_data.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -24,6 +26,37 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool rememeberMe = false;
+  bool hidePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // fetching if value exist in shared preference
+    final notifier = Provider.of<UserCredentials>(context, listen: false);
+    notifier.addListener(_updatedControllers);
+    _updatedControllers();
+  }
+
+  void _updatedControllers() {
+    final notifier = Provider.of<UserCredentials>(context, listen: false);
+    if (notifier.email.isNotEmpty) {
+      emailController.text = notifier.email;
+    }
+
+    if (notifier.password.isNotEmpty) {
+      passwordController.text = notifier.password;
+    }
+  }
+
+  void saveEmailAndPassword() async {
+    final notifier = Provider.of<UserCredentials>(context, listen: false);
+    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      await notifier.updateUserEmail(emailController.text.trim());
+      await notifier.updateUserPassword(passwordController.text.trim());
+    }
+  }
 
   @override
   void dispose() {
@@ -74,9 +107,10 @@ class _LoginPageState extends State<LoginPage> {
                     height: 10,
                   ),
                   AuthField(
-                      hintText: 'Email',
-                      controller: emailController,
-                      icon: Icons.email),
+                    hintText: 'Email',
+                    controller: emailController,
+                    icon: Icons.email,
+                  ),
                   const SizedBox(
                     height: 15,
                   ),
@@ -84,7 +118,29 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: 'Password',
                     controller: passwordController,
                     icon: Icons.lock,
-                    isObscureText: true,
+                    sufixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          hidePassword = !hidePassword;
+                        });
+                      },
+                      icon: hidePassword
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                    ),
+                    isObscureText: hidePassword,
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: rememeberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememeberMe = !rememeberMe;
+                            });
+                          }),
+                      const Text("Remember me")
+                    ],
                   ),
                   const SizedBox(
                     height: 20,
@@ -92,6 +148,9 @@ class _LoginPageState extends State<LoginPage> {
                   AuthGradientButton(
                     buttonText: 'Sign In',
                     onPressed: () {
+                      if (rememeberMe) {
+                        saveEmailAndPassword();
+                      }
                       if (formKey.currentState!.validate()) {
                         context.read<AuthBloc>().add(
                               AuthLogin(

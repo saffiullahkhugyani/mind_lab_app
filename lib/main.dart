@@ -5,6 +5,7 @@ import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/constants/constants.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
+import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_provider.dart';
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
 import 'package:mind_lab_app/core/theme/theme.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -81,7 +82,8 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (context) => BluetoothManager()),
         ChangeNotifierProvider(create: (context) => CommandList()),
-        ChangeNotifierProvider(create: (context) => FlutterBluetoothPlus())
+        ChangeNotifierProvider(create: (context) => FlutterBluetoothPlus()),
+        ChangeNotifierProvider(create: (context) => UserCredentials()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
