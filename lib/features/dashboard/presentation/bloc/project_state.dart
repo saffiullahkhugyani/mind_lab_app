@@ -13,7 +13,11 @@ final class ProjectFailure extends ProjectState {
 }
 
 final class ProjectDisplaySuccess extends ProjectState {
-  final List<Subscription> projectList;
+  final List<Subscription> subscribedProjectList;
+  final List<Project> projectList;
 
-  ProjectDisplaySuccess(this.projectList);
+  ProjectDisplaySuccess(
+    this.subscribedProjectList,
+    this.projectList,
+  );
 }

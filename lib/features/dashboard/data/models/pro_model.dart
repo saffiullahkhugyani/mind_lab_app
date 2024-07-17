@@ -4,12 +4,14 @@ class ProjectModel extends Project {
   ProjectModel({
     required super.id,
     required super.name,
+    required super.description,
   });
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'description': description,
     };
   }
 
@@ -17,6 +19,7 @@ class ProjectModel extends Project {
     return ProjectModel(
       id: json['id'],
       name: json['name'],
+      description: json['description'] ?? "",
     );
   }
 }

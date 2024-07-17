@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +12,24 @@ import 'package:mind_lab_app/features/dashboard/presentation/widgets/card_item.d
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_list_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/user_detail_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final listProjectImages = [
+  {"id": 1, "image_asset": 'lib/assets/images/rashid_rover.png'},
+  {"id": 2, "image_asset": 'lib/assets/images/modish.png'},
+  {"id": 3, "image_asset": 'lib/assets/images/mecanum_car.png'},
+  {"id": 4, "image_asset": 'lib/assets/images/battle_bot.png'},
+  {"id": 5, "image_asset": 'lib/assets/images/airplane.png'},
+  {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
+];
+
+final listProjectIcons = [
+  {"id": 1, "image_asset": 'lib/assets/icons/moon-rover.png'},
+  {"id": 2, "image_asset": 'lib/assets/icons/robot.png'},
+  {"id": 3, "image_asset": 'lib/assets/icons/car.png'},
+  {"id": 4, "image_asset": 'lib/assets/icons/bot.png'},
+  {"id": 5, "image_asset": 'lib/assets/icons/aircraft.png'},
+  {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
+];
 
 class ProjectPage extends StatefulWidget {
   const ProjectPage({super.key});
@@ -50,7 +70,7 @@ class _ProjectPageState extends State<ProjectPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscribed Projects'),
+        title: const Text('Home Page'),
         actions: [
           IconButton(
             onPressed: () {
@@ -75,6 +95,7 @@ class _ProjectPageState extends State<ProjectPage> {
       body: BlocConsumer<ProjectBloc, ProjectState>(
         listener: (context, state) {
           if (state is ProjectFailure) {
+            log(state.error);
             showSnackBar(context, 'Error while loading subscribed projects!');
           }
         },
@@ -85,6 +106,7 @@ class _ProjectPageState extends State<ProjectPage> {
 
           if (state is ProjectDisplaySuccess) {
             return GridView.builder(
+              padding: const EdgeInsets.only(top: 20),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: (MediaQuery.of(context).orientation ==
                           Orientation.portrait)
@@ -93,11 +115,33 @@ class _ProjectPageState extends State<ProjectPage> {
               itemCount: state.projectList.length,
               itemBuilder: (BuildContext context, index) {
                 final project = state.projectList[index];
+                final subscribedProjects = state.subscribedProjectList;
+                final imageAsset = listProjectImages
+                    .firstWhere((element) => element['id'] == project.id);
+
+                final isSubscribed = subscribedProjects.any(
+                    (subscribedProject) =>
+                        subscribedProject.project.id == project.id);
+
                 return CardItem(
-                    text: project.project.name,
-                    image: 'lib/assets/images/rashid_rover.png',
-                    onTap: () =>
-                        Navigator.pushNamed(context, roverMainPageRoute));
+                    color: isSubscribed
+                        ? Colors.grey.withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.1),
+                    elevation: isSubscribed ? 2 : 0,
+                    text: project.name,
+                    image: imageAsset['image_asset'].toString(),
+                    onTap: () {
+                      if (isSubscribed) {
+                        switch (project.id) {
+                          case 1:
+                            Navigator.pushNamed(context, roverMainPageRoute);
+                            break;
+                        }
+                      } else {
+                        showSnackBar(
+                            context, 'Please subscribe to the project');
+                      }
+                    });
               },
             );
           }
