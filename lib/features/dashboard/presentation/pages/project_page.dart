@@ -138,8 +138,7 @@ class _ProjectPageState extends State<ProjectPage> {
                             break;
                         }
                       } else {
-                        showSnackBar(
-                            context, 'Please subscribe to the project');
+                        showSnackBar(context, 'Feature Coming soon');
                       }
                     });
               },
@@ -162,7 +161,7 @@ class _ProjectPageState extends State<ProjectPage> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ProjectListPage()));
               },
-              label: const Text('Add Project')),
+              label: const Text('Request Project')),
           const SizedBox(
             height: 10,
           ),
