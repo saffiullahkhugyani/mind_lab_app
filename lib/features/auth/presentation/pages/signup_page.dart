@@ -296,7 +296,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(context, LoginPage.route());
+                          Navigator.pushAndRemoveUntil(
+                              context, LoginPage.route(), (route) => false);
                         },
                         child: RichText(
                           text: TextSpan(

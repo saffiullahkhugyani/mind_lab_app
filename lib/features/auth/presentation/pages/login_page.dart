@@ -68,132 +68,137 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthFailure) {
-              showSnackBar(context, state.message);
-            } else if (state is AuthSuccess) {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const ProjectPage()),
-                  (route) => false);
-            }
-          },
-          builder: (context, state) {
-            if (state is AuthLoading) {
-              return const Loader();
-            }
-            return Form(
-              key: formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                      height: 100,
-                      width: 100,
-                      'lib/assets/images/main_logo.png'),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text(
-                    'Sign In',
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  AuthField(
-                    hintText: 'Email',
-                    controller: emailController,
-                    icon: Icons.email,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  AuthField(
-                    hintText: 'Password',
-                    controller: passwordController,
-                    icon: Icons.lock,
-                    sufixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          hidePassword = !hidePassword;
-                        });
-                      },
-                      icon: hidePassword
-                          ? const Icon(Icons.visibility_off)
-                          : const Icon(Icons.visibility),
-                    ),
-                    isObscureText: hidePassword,
-                  ),
-                  Row(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthFailure) {
+                  showSnackBar(context, state.message);
+                } else if (state is AuthSuccess) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => const ProjectPage()),
+                      (route) => false);
+                }
+              },
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return const Loader();
+                }
+                return Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Checkbox(
-                          value: rememeberMe,
-                          onChanged: (value) {
+                      Image.asset(
+                          height: 100,
+                          width: 100,
+                          'lib/assets/images/main_logo.png'),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        'Sign In',
+                        style: TextStyle(
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      AuthField(
+                        hintText: 'Email',
+                        controller: emailController,
+                        icon: Icons.email,
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      AuthField(
+                        hintText: 'Password',
+                        controller: passwordController,
+                        icon: Icons.lock,
+                        sufixIcon: IconButton(
+                          onPressed: () {
                             setState(() {
-                              rememeberMe = !rememeberMe;
+                              hidePassword = !hidePassword;
                             });
-                          }),
-                      const Text("Remember me")
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  AuthGradientButton(
-                    buttonText: 'Sign In',
-                    onPressed: () {
-                      if (rememeberMe) {
-                        saveEmailAndPassword();
-                      }
-                      if (formKey.currentState!.validate()) {
-                        context.read<AuthBloc>().add(
-                              AuthLogin(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                              ),
-                            );
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        SignUpPage.route(),
-                      );
-                    },
-                    child: RichText(
-                      text: TextSpan(
-                        text: 'Dont\' have an account? ',
-                        style: Theme.of(context).textTheme.titleMedium,
+                          },
+                          icon: hidePassword
+                              ? const Icon(Icons.visibility_off)
+                              : const Icon(Icons.visibility),
+                        ),
+                        isObscureText: hidePassword,
+                      ),
+                      Row(
                         children: [
-                          TextSpan(
-                            text: 'Sign Up',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: darkBlueGrey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
+                          Checkbox(
+                              value: rememeberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  rememeberMe = !rememeberMe;
+                                });
+                              }),
+                          const Text("Remember me")
                         ],
                       ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          },
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AuthGradientButton(
+                        buttonText: 'Sign In',
+                        onPressed: () {
+                          if (rememeberMe) {
+                            saveEmailAndPassword();
+                          }
+                          if (formKey.currentState!.validate()) {
+                            context.read<AuthBloc>().add(
+                                  AuthLogin(
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim(),
+                                  ),
+                                );
+                          }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            SignUpPage.route(),
+                          );
+                        },
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'Dont\' have an account? ',
+                            style: Theme.of(context).textTheme.titleMedium,
+                            children: [
+                              TextSpan(
+                                text: 'Sign Up',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: darkBlueGrey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

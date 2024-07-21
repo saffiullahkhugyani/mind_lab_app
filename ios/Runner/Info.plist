@@ -45,8 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/><key>NSPhotoLibraryUsageDescription</key>
-	<string>Photos from gallery required</string>
+	<string>The app requires access to photos in order to select profile images or certificates</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Photos from camera</string>
+	<string>The app requires access to photos in order to capture profile images or certificates</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>The app requires bluetooth access in order to connect to micro controllers</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>The app requires bluetooth access in order to connect to micro controllers</string>
 </dict>
 </plist>
