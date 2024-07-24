@@ -41,7 +41,7 @@ dependencies:
   # firebase_core: ^2.27.1
   equatable: ^2.0.5
   fpdart: ^1.1.0
-  supabase_flutter: ^2.3.4
+  supabase_flutter: ^2.5.9
   get_it: ^7.6.7
   google_fonts: ^6.2.1
   flutter_iconly: ^1.0.2

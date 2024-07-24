@@ -27,6 +27,7 @@ import 'package:mind_lab_app/features/project_list/presentation/bloc/project_lis
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
 import 'package:mind_lab_app/features/user_detail/data/repositories/user_detail_repository_impl.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/delete_account.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
@@ -210,6 +211,7 @@ void _initAuth() {
   serviceLocator.registerFactory<UserDetailRepository>(
     () => UserDetailRepositoryImpl(
       serviceLocator(),
+      serviceLocator(),
     ),
   );
 
@@ -220,10 +222,18 @@ void _initAuth() {
     ),
   );
 
+  // delete user account
+  serviceLocator.registerFactory(
+    () => DeleteAccount(
+      serviceLocator(),
+    ),
+  );
+
   // user detail bloc
   serviceLocator.registerLazySingleton(
     () => UserDetailBloc(
       getUserDetail: serviceLocator(),
+      deleteAccount: serviceLocator(),
     ),
   );
 

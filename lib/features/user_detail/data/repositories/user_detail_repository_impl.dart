@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
@@ -13,13 +14,22 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/network/connection_checker.dart';
 
 class UserDetailRepositoryImpl implements UserDetailRepository {
   final UserDetailRemoteDataSource userDetailRemoteDataSource;
-  UserDetailRepositoryImpl(this.userDetailRemoteDataSource);
+  final ConnectionChecker connectionChecker;
+
+  UserDetailRepositoryImpl(
+      this.userDetailRemoteDataSource, this.connectionChecker);
   @override
   Future<Either<ServerFailure, UserDetailResult>> getUserDetails() async {
     try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
+
       final userDetail = await userDetailRemoteDataSource.getUserDetails();
       final userCertificate =
           await userDetailRemoteDataSource.getCertificates();
@@ -27,6 +37,7 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       return right(UserDetailResult(
           userDetails: userDetail, certificates: userCertificate));
     } on ServerException catch (e) {
+      log((e.message));
       return left(ServerFailure(errorMessage: e.message));
     }
   }
@@ -125,6 +136,25 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       return left(
         ServerFailure(errorMessage: e.message),
       );
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, String>> deleteAccount() async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(ServerFailure(
+            errorMessage:
+                "Please check your internet connection, and try again later."));
+      }
+
+      final message = await userDetailRemoteDataSource.deleteAccount();
+
+      await userDetailRemoteDataSource.signOut();
+
+      return right(message);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.toString()));
     }
   }
 }

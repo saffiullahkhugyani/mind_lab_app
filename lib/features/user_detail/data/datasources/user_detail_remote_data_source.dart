@@ -29,6 +29,8 @@ abstract interface class UserDetailRemoteDataSource {
     File? imageFile,
     UpdateProfileModel? profileModel,
   });
+  Future<String> deleteAccount();
+  Future<void> signOut();
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -161,7 +163,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       final userDetail = await supabaseClient
           .from('profiles')
           .select('*')
-          .match({'id': profileModel.userId});
+          .match({'id': profileModel.userId!});
 
       final UpdateProfileModel model =
           UpdateProfileModel.fromJson(userDetail.first);
@@ -241,6 +243,41 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
 
       return '$url?t=${DateTime.now().millisecondsSinceEpoch}';
     } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<String> deleteAccount() async {
+    try {
+      final user = supabaseClient.auth.currentUser;
+      final response = await Supabase.instance.client.rpc('delete_user');
+
+      if (user != null) {
+        if (response != null) {
+          log("Remote Data source: $response");
+
+          return response.toString();
+        }
+      }
+      throw ServerException(response);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    try {
+      await supabaseClient.auth.signOut();
+      log("data source: try");
+    } on AuthException catch (e) {
+      log("data source: AuthException  ${e.message}");
+      throw ServerException(e.message);
+    } catch (e) {
+      log("data source: catch  $e");
       throw ServerException(e.toString());
     }
   }

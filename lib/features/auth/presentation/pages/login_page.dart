@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _updatedControllers() {
-    final notifier = Provider.of<UserCredentials>(context, listen: false);
+    final notifier = Provider.of<UserCredentials>(context, listen: true);
     if (notifier.email.isNotEmpty) {
       emailController.text = notifier.email;
     }
@@ -51,10 +51,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void saveEmailAndPassword() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
     final notifier = Provider.of<UserCredentials>(context, listen: false);
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      await notifier.updateUserEmail(emailController.text.trim());
-      await notifier.updateUserPassword(passwordController.text.trim());
+      await notifier.updateUserEmail(email);
+      await notifier.updateUserPassword(password);
     }
   }
 

@@ -16,3 +16,14 @@ class UserDetailDisplaySuccess extends UserDetailState {
 
   UserDetailDisplaySuccess(this.userDetail);
 }
+
+class UserDeleteAccountFailure extends UserDetailState {
+  final String errorMessage;
+  UserDeleteAccountFailure(this.errorMessage);
+}
+
+class UserDeleteAccountSuccess extends UserDetailState {
+  final String successMessage;
+
+  UserDeleteAccountSuccess(this.successMessage);
+}

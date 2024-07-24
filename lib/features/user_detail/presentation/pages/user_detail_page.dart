@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
@@ -6,6 +7,8 @@ import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
+import 'package:mind_lab_app/core/widgets/show_dialog.dart';
+import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
 
@@ -48,6 +51,23 @@ class _UserDetailPageState extends State<UserDetailPage> {
       case 1:
         Navigator.pushNamed(context, addCertificateRoute);
         break;
+      case 2:
+        deleteAccount(context);
+        break;
+    }
+  }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    final action = await Dialogs.yesAbortDialog(context, "Delete Account",
+        "Are you sure you want to delete you account? This action cannot be undone.");
+    if (context.mounted) {
+      _handleDeleteAccount(context, action);
+    }
+  }
+
+  void _handleDeleteAccount(BuildContext context, DialogAction action) {
+    if (action == DialogAction.yes) {
+      context.read<UserDetailBloc>().add(UserDeleteAccount());
     }
   }
 
@@ -56,21 +76,36 @@ class _UserDetailPageState extends State<UserDetailPage> {
     var userEmail =
         (context.read<AppUserCubit>().state as AppUserLoggedIn).user.email;
     return Scaffold(
-      appBar: AppBar(title: const Text('User Details Page'), actions: [
-        PopupMenuButton<int>(
-            icon: const Icon(Icons.menu),
-            onSelected: (item) => handleSelected(item),
-            itemBuilder: (context) => [
-                  const PopupMenuItem<int>(
-                      value: 0, child: Text("Update profile")),
-                  const PopupMenuItem<int>(
-                      value: 1, child: Text("Add a certificate")),
-                ])
-      ]),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          PopupMenuButton<int>(
+              icon: const Icon(Icons.menu),
+              onSelected: (item) => handleSelected(item),
+              itemBuilder: (context) => [
+                    const PopupMenuItem<int>(
+                        value: 0, child: Text("Update profile")),
+                    const PopupMenuItem<int>(
+                        value: 1, child: Text("Add a certificate")),
+                    const PopupMenuItem<int>(
+                        value: 2, child: Text("Delete account")),
+                  ])
+        ],
+      ),
       body: BlocConsumer<UserDetailBloc, UserDetailState>(
           listener: (context, state) {
         if (state is UserDetailFailure) {
           showSnackBar(context, state.error);
+        }
+
+        if (state is UserDeleteAccountFailure) {
+          showSnackBar(context, state.errorMessage);
+        }
+
+        if (state is UserDeleteAccountSuccess) {
+          showSnackBar(context, state.successMessage);
+          Navigator.of(context)
+              .pushAndRemoveUntil(LoginPage.route(), (route) => false);
         }
       }, builder: (context, state) {
         if (state is UserDetailLoading) {

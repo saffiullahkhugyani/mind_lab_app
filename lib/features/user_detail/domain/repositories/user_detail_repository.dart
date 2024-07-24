@@ -28,4 +28,5 @@ abstract interface class UserDetailRepository {
     String? dateOfBirth,
     File? profileImageFile,
   });
+  Future<Either<ServerFailure, String>> deleteAccount();
 }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:fpdart/src/either.dart';
@@ -40,7 +41,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
-        return left(ServerFailure(errorMessage: "User Not Logged In!"));
+        return left(ServerFailure(errorMessage: "Please sign in!"));
       }
       return right(user);
     } on ServerException catch (e) {
@@ -83,7 +84,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final imageUrl = await remoteDataSource.uploadUserImage(
           imageFile: imageFile, userModel: user);
 
-      print(imageUrl);
+      log(imageUrl);
 
       return user;
     });
