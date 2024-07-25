@@ -1,7 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
@@ -12,8 +15,11 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
+import 'package:mind_lab_app/features/auth/presentation/widgets/privcy_policy.dart';
+import 'package:mind_lab_app/features/auth/presentation/widgets/terms_and_condition.dart';
 
 import '../../../../core/utils/pick_image.dart';
+import '../../../../core/widgets/show_bottom_sheet.dart';
 
 class SignUpPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -266,6 +272,54 @@ class _SignUpPageState extends State<SignUpPage> {
                         onChanged: (value) {
                           phoneNumber = value.completeNumber;
                         },
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        child: RichText(
+                          text: TextSpan(
+                              text: "By clicking sign up, you agree to our ",
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              children: [
+                                TextSpan(
+                                  text: "Privacy Policy",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: darkBlueGrey,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      BottomSheets.yesAbortBottonSheet(
+                                        const TermsAndCondition(),
+                                        context,
+                                      );
+                                    },
+                                ),
+                                const TextSpan(
+                                  text: " and ",
+                                ),
+                                TextSpan(
+                                  text: "Terms and  Condition.",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: darkBlueGrey,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      BottomSheets.yesAbortBottonSheet(
+                                          const PrivacyPolicy(), context);
+                                      log("Terms and Condition clicked");
+                                    },
+                                ),
+                              ]),
+                        ),
                       ),
                       const SizedBox(
                         height: 20,
