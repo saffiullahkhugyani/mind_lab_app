@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _updatedControllers() {
-    final notifier = Provider.of<UserCredentials>(context, listen: true);
+    final notifier = Provider.of<UserCredentials>(context, listen: false);
     if (notifier.email.isNotEmpty) {
       emailController.text = notifier.email;
     }

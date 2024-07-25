@@ -41,7 +41,12 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Either<ServerFailure, List<Project>>> getAllProjects() async {
     try {
+      if (!await connectionChecker.isConnected) {
+        final projectList = projectLocalDataSource.loadAllProjects();
+        return right(projectList);
+      }
       final projectList = await projectRemoteDataSource.getAllProjects();
+      projectLocalDataSource.uploadAllProjects(allProjects: projectList);
 
       return right(projectList);
     } on ServerException catch (e) {

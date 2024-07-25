@@ -1,9 +1,12 @@
 import 'package:hive/hive.dart';
+import 'package:mind_lab_app/features/dashboard/data/models/pro_model.dart';
 import 'package:mind_lab_app/features/dashboard/data/models/subs_model.dart';
 
 abstract interface class ProjectLocalDataSource {
   void uploadLocalProjects({required List<SubscriptionModel> projects});
   List<SubscriptionModel> loadProjects();
+  void uploadAllProjects({required List<ProjectModel> allProjects});
+  List<ProjectModel> loadAllProjects();
 }
 
 class ProjectLocalDataSourceImpl implements ProjectLocalDataSource {
@@ -15,8 +18,10 @@ class ProjectLocalDataSourceImpl implements ProjectLocalDataSource {
     List<SubscriptionModel> projects = [];
     box.read(() {
       for (int i = 0; i < box.length; i++) {
-        projects.add(
-            SubscriptionModel.fromJson(box.get('project_${i.toString()}')));
+        final subscribedProjects = box.get('project_${i.toString()}');
+        if (subscribedProjects != null) {
+          projects.add(SubscriptionModel.fromJson(subscribedProjects));
+        }
       }
     });
 
@@ -32,6 +37,33 @@ class ProjectLocalDataSourceImpl implements ProjectLocalDataSource {
     box.write(() {
       for (int i = 0; i < projects.length; i++) {
         box.put('project_${i.toString()}', projects[i].toJson());
+      }
+    });
+  }
+
+  @override
+  List<ProjectModel> loadAllProjects() {
+    List<ProjectModel> allProjects = [];
+    box.read(() {
+      for (int i = 0; i < box.length; i++) {
+        final ubsubscribedProject =
+            box.get('unsubscribed_project_${i.toString()}');
+        if (ubsubscribedProject != null) {
+          allProjects.add(ProjectModel.fromJson(
+              box.get('unsubscribed_project_${i.toString()}')));
+        }
+      }
+    });
+    return allProjects;
+  }
+
+  @override
+  void uploadAllProjects({required List<ProjectModel> allProjects}) {
+    // storing the the lattest subscribed project for offline use
+    box.write(() {
+      for (int i = 0; i < allProjects.length; i++) {
+        box.put(
+            'unsubscribed_project_${i.toString()}', allProjects[i].toJson());
       }
     });
   }
