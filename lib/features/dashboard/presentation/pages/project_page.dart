@@ -7,6 +7,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
+import 'package:mind_lab_app/core/widgets/app_upgrader_dialog.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/widgets/card_item.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_list_page.dart';
@@ -39,6 +40,8 @@ class ProjectPage extends StatefulWidget {
 }
 
 class _ProjectPageState extends State<ProjectPage> {
+  final _upgrader = AppUpgrader(
+      debugLogging: true, durationUntilAlertAgain: const Duration(hours: 3));
   Future<void> _signOut() async {
     try {
       final supabase = Supabase.instance.client;
@@ -92,63 +95,66 @@ class _ProjectPageState extends State<ProjectPage> {
           ),
         ],
       ),
-      body: BlocConsumer<ProjectBloc, ProjectState>(
-        listener: (context, state) {
-          if (state is ProjectFailure) {
-            log(state.error);
-            showSnackBar(context, 'Error while loading subscribed projects!');
-          }
-        },
-        builder: (context, state) {
-          if (state is ProjectLoading) {
-            return const Loader();
-          }
+      body: AppUpgraderDialog(
+        upgrader: _upgrader,
+        child: BlocConsumer<ProjectBloc, ProjectState>(
+          listener: (context, state) {
+            if (state is ProjectFailure) {
+              log(state.error);
+              showSnackBar(context, 'Error while loading subscribed projects!');
+            }
+          },
+          builder: (context, state) {
+            if (state is ProjectLoading) {
+              return const Loader();
+            }
 
-          if (state is ProjectDisplaySuccess) {
-            return GridView.builder(
-              padding: const EdgeInsets.only(top: 20),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: (MediaQuery.of(context).orientation ==
-                          Orientation.portrait)
-                      ? 2
-                      : 3),
-              itemCount: state.projectList.length,
-              itemBuilder: (BuildContext context, index) {
-                final project = state.projectList[index];
-                final subscribedProjects = state.subscribedProjectList;
-                final imageAsset = listProjectImages
-                    .firstWhere((element) => element['id'] == project.id);
+            if (state is ProjectDisplaySuccess) {
+              return GridView.builder(
+                padding: const EdgeInsets.only(top: 20),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: (MediaQuery.of(context).orientation ==
+                            Orientation.portrait)
+                        ? 2
+                        : 3),
+                itemCount: state.projectList.length,
+                itemBuilder: (BuildContext context, index) {
+                  final project = state.projectList[index];
+                  final subscribedProjects = state.subscribedProjectList;
+                  final imageAsset = listProjectImages
+                      .firstWhere((element) => element['id'] == project.id);
 
-                final isSubscribed = subscribedProjects.any(
-                    (subscribedProject) =>
-                        subscribedProject.project.id == project.id);
+                  final isSubscribed = subscribedProjects.any(
+                      (subscribedProject) =>
+                          subscribedProject.project.id == project.id);
 
-                return CardItem(
-                    color: isSubscribed
-                        ? Colors.grey.withOpacity(0.3)
-                        : Colors.grey.withOpacity(0.1),
-                    elevation: isSubscribed ? 2 : 0,
-                    text: project.name,
-                    image: imageAsset['image_asset'].toString(),
-                    onTap: () {
-                      if (isSubscribed) {
-                        switch (project.id) {
-                          case 1:
-                            Navigator.pushNamed(context, roverMainPageRoute);
-                            break;
+                  return CardItem(
+                      color: isSubscribed
+                          ? Colors.grey.withOpacity(0.3)
+                          : Colors.grey.withOpacity(0.1),
+                      elevation: isSubscribed ? 2 : 0,
+                      text: project.name,
+                      image: imageAsset['image_asset'].toString(),
+                      onTap: () {
+                        if (isSubscribed) {
+                          switch (project.id) {
+                            case 1:
+                              Navigator.pushNamed(context, roverMainPageRoute);
+                              break;
+                          }
+                        } else {
+                          showSnackBar(context, 'Feature Coming soon');
                         }
-                      } else {
-                        showSnackBar(context, 'Feature Coming soon');
-                      }
-                    });
-              },
-            );
-          }
+                      });
+                },
+              );
+            }
 
-          return const Center(
-            child: Text("To get access, Please subscribe to a project"),
-          );
-        },
+            return const Center(
+              child: Text("To get access, Please subscribe to a project"),
+            );
+          },
+        ),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,

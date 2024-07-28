@@ -58,8 +58,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   Future<void> deleteAccount(BuildContext context) async {
-    final action = await Dialogs.yesAbortDialog(context, "Delete Account",
-        "Are you sure you want to delete you account? This action cannot be undone.");
+    final action = await Dialogs.yesAbortDialog(
+      context,
+      "Delete Account",
+      "Are you sure you want to delete you account? This action cannot be undone.",
+      abortBtnText: "Cancel",
+      yesButtonText: "Delete",
+      icon: Icons.delete,
+    );
     if (context.mounted) {
       _handleDeleteAccount(context, action);
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mind_lab_app/core/theme/app_pallete.dart';
 
 class RoverButton extends StatelessWidget {
   final String buttonText;
@@ -16,28 +15,29 @@ class RoverButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: buttonColor,
-        border: Border.all(width: 1),
-        borderRadius: BorderRadius.circular(
-          28,
-        ),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          fixedSize: const Size(
-            300,
-            55,
-          ),
-          backgroundColor: AppPallete.transparentColor,
-          shadowColor: AppPallete.transparentColor,
-        ),
-        child: Text(
-          buttonText,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppPallete.whiteColor,
+      margin: const EdgeInsets.all(8),
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(8),
+        color: buttonColor,
+        child: InkWell(
+          onTap: () => onPressed(),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: 200,
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.transparent),
+            child: Center(
+                child: Text(
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                    ),
+                    buttonText)),
           ),
         ),
       ),

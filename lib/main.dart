@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/bluetooth/bluetooth_manager.dart';
@@ -8,6 +10,7 @@ import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.da
 import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_provider.dart';
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
 import 'package:mind_lab_app/core/theme/theme.dart';
+import 'package:mind_lab_app/core/widgets/app_upgrader_dialog.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
@@ -26,6 +29,7 @@ import 'package:mind_lab_app/features/user_detail/presentation/pages/add_certifi
 import 'package:mind_lab_app/features/user_detail/presentation/pages/update_profile_page.dart';
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
+import 'package:upgrader/upgrader.dart';
 
 import 'features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
 
@@ -70,6 +74,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final _upgrader = Upgrader(
+      debugLogging: true, durationUntilAlertAgain: const Duration(hours: 3));
+
   @override
   void initState() {
     super.initState();
@@ -101,16 +108,21 @@ class _MyAppState extends State<MyApp> {
           addCertificateRoute: (context) => const AddCertificate(),
           updateProfileRoute: (context) => const UpdataProfilePage(),
         },
-        home: BlocSelector<AppUserCubit, AppUserState, bool>(
-          selector: (state) {
-            return state is AppUserLoggedIn;
-          },
-          builder: (context, isLoggedIn) {
-            if (isLoggedIn) {
-              return const ProjectPage();
-            }
-            return const LoginPage();
-          },
+        home: AppUpgraderDialog(
+          shouldPopScope: () => false,
+          upgrader: _upgrader,
+          child: BlocSelector<AppUserCubit, AppUserState, bool>(
+            selector: (state) {
+              log("Bloc selector: $state");
+              return state is AppUserLoggedIn;
+            },
+            builder: (context, isLoggedIn) {
+              if (isLoggedIn) {
+                return const ProjectPage();
+              }
+              return const LoginPage();
+            },
+          ),
         ),
       ),
     );
