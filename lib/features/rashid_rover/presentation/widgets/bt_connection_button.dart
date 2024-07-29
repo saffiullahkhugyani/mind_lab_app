@@ -15,37 +15,44 @@ class BluetoothConnectionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onTap();
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all()),
-        height: 150,
-        width: 150,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: connectionStatusColor,
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      margin: const EdgeInsets.all(8),
+      child: Material(
+        color: Colors.grey[300],
+        elevation: 3,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () {
+            onTap();
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 20,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: connectionStatusColor,
+                      ),
                     ),
-                  ),
-                  Icon(icon)
-                ],
-              ),
-              Image.asset(height: 100, width: 100, image),
-            ],
+                    Icon(icon)
+                  ],
+                ),
+                Image.asset(height: 100, width: 100, image),
+              ],
+            ),
           ),
         ),
       ),

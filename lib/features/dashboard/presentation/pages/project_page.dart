@@ -101,7 +101,11 @@ class _ProjectPageState extends State<ProjectPage> {
           listener: (context, state) {
             if (state is ProjectFailure) {
               log(state.error);
-              showSnackBar(context, 'Error while loading subscribed projects!');
+              showFlushBar(
+                context,
+                'Error while loading subscribed projects!',
+                FlushBarAction.error,
+              );
             }
           },
           builder: (context, state) {
@@ -143,7 +147,8 @@ class _ProjectPageState extends State<ProjectPage> {
                               break;
                           }
                         } else {
-                          showSnackBar(context, 'Feature Coming soon');
+                          showFlushBar(context, 'Feature Coming soon',
+                              FlushBarAction.info);
                         }
                       });
                 },

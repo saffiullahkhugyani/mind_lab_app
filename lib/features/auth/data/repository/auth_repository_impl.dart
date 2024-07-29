@@ -25,7 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       if (!await (connectionChecker.isConnected)) {
         final session = remoteDataSource.currentUserSession;
-
+        log(session.toString());
         if (session == null) {
           return left(ServerFailure(errorMessage: 'User not logged in.'));
         }

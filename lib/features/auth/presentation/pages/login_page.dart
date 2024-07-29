@@ -77,8 +77,12 @@ class _LoginPageState extends State<LoginPage> {
             child: BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthFailure) {
-                  showSnackBar(context, state.message);
+                  showFlushBar(context, state.message, FlushBarAction.error);
+                } else if (state is AuthUserNotLoggedIn) {
+                  showFlushBar(context, state.message, FlushBarAction.info);
                 } else if (state is AuthSuccess) {
+                  showFlushBar(context, "Welcome ${state.user.name}",
+                      FlushBarAction.success);
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => const ProjectPage()),

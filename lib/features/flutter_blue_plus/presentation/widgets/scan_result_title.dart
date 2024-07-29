@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
+import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
 class ScanResultTile extends StatefulWidget {
@@ -57,6 +58,7 @@ class _ScanResultTileState extends State<ScanResultTile> {
 
   @override
   Widget build(BuildContext context) {
+    final String deviceName = widget.result.device.advName;
     return Consumer<FlutterBluetoothPlus>(
       builder: (context, bluetoothManager, child) {
         return Container(
@@ -80,10 +82,11 @@ class _ScanResultTileState extends State<ScanResultTile> {
                         await bluetoothManager
                             .onConnectPressed(widget.result.device);
                         Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                'Connected to ${widget.result.device.advName}')));
+                        showFlushBar(context, 'Connected to ${deviceName}',
+                            FlushBarAction.success);
                       } else {
+                        showFlushBar(context, '$deviceName is Disconnected',
+                            FlushBarAction.warning);
                         bluetoothManager
                             .onDisconnectPressed(widget.result.device);
                       }

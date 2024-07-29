@@ -19,36 +19,38 @@ class _RoverArrowButtonState extends State<RoverArrowButton> {
   bool isTouching = false;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {});
-        widget.onTap();
-      },
-      child: Listener(
-        child: Container(
-          decoration: BoxDecoration(
-            color: isTouching == true ? Colors.grey.shade400 : Colors.grey,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(),
-          ),
-          width: 100,
-          height: 100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(size: 50.0, widget.arrowIcon),
-              Text(widget.text),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      margin: const EdgeInsets.all(8),
+      child: Material(
+        color: Colors.grey[300],
+        elevation: 2,
+        borderRadius: BorderRadius.circular(9),
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.transparent),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(widget.arrowIcon),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(widget.text),
+                ],
+              ),
+            ),
           ),
         ),
-        onPointerDown: (event) => setState(
-          () {
-            isTouching = true;
-          },
-        ),
-        onPointerUp: (event) {
-          isTouching = false;
-        },
       ),
     );
   }

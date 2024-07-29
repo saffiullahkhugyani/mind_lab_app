@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
+import 'package:mind_lab_app/core/theme/app_pallete.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/widgets/rover_arrow_button.dart';
+import 'package:mind_lab_app/features/rashid_rover/presentation/widgets/rover_buttons.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/widgets/step_stored_card.dart';
 import 'package:provider/provider.dart';
 
@@ -31,11 +33,13 @@ class _RoverControllerPageState extends State<RoverControllerPage> {
                       fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 20),
-                ElevatedButton(
-                    onPressed: () {
-                      commandList.deleteLastCommand();
-                    },
-                    child: const Text('Cancel last step')),
+                RoverButton(
+                  buttonColor: AppPallete.errorColor,
+                  onPressed: () {
+                    commandList.deleteLastCommand();
+                  },
+                  buttonText: 'Cancel last step',
+                ),
               ],
             ),
             const SizedBox(
@@ -59,7 +63,7 @@ class _RoverControllerPageState extends State<RoverControllerPage> {
               ],
             ),
             const SizedBox(
-              height: 60,
+              height: 50,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +87,7 @@ class _RoverControllerPageState extends State<RoverControllerPage> {
               ],
             ),
             const SizedBox(
-              height: 40,
+              height: 20,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

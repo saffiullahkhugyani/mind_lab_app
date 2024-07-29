@@ -31,9 +31,14 @@ class _ProjectListPageState extends State<ProjectListPage> {
       body: BlocConsumer<ProjectListBloc, ProjectListState>(
         listener: (context, state) {
           if (state is ProjectListFailure) {
-            showSnackBar(context, 'No internet connection');
+            showFlushBar(
+                context, 'No internet connection', FlushBarAction.error);
           } else if (state is ProjectSubscriptionSuccess) {
-            showSnackBar(context, 'Request for project Subscription sended.');
+            showFlushBar(
+              context,
+              'Request for project Subscription sended.',
+              FlushBarAction.success,
+            );
             setState(() {
               context
                   .read<ProjectListBloc>()

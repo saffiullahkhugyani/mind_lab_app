@@ -82,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthFailure) {
-                  showSnackBar(context, state.message);
+                  showFlushBar(context, state.message, FlushBarAction.error);
                 } else if (state is AuthSuccess) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
@@ -341,7 +341,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   ),
                                 );
                           } else {
-                            showSnackBar(context, "Please fill all the fields");
+                            showFlushBar(context, "Please fill all the fields",
+                                FlushBarAction.error);
                           }
                         },
                       ),
