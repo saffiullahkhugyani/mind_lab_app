@@ -101,22 +101,22 @@ class _UserDetailPageState extends State<UserDetailPage> {
       body: BlocConsumer<UserDetailBloc, UserDetailState>(
           listener: (context, state) {
         if (state is UserDetailFailure) {
-          showFlushBar(
+          showFlashBar(
             context,
             state.error,
-            FlushBarAction.error,
+            FlashBarAction.error,
           );
         }
 
         if (state is UserDeleteAccountFailure) {
-          showFlushBar(context, state.errorMessage, FlushBarAction.error);
+          showFlashBar(context, state.errorMessage, FlashBarAction.error);
         }
 
         if (state is UserDeleteAccountSuccess) {
-          showFlushBar(
+          showFlashBar(
             context,
             state.successMessage,
-            FlushBarAction.success,
+            FlashBarAction.success,
           );
           Navigator.of(context)
               .pushAndRemoveUntil(LoginPage.route(), (route) => false);

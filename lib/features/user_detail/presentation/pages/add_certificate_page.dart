@@ -47,8 +47,11 @@ class _AddCertificateState extends State<AddCertificate> {
             ),
           );
     } else {
-      showFlushBar(
-          context, "Please select all the fields", FlushBarAction.warning);
+      showFlashBar(
+        context,
+        "Please select all the fields",
+        FlashBarAction.warning,
+      );
     }
   }
 
@@ -68,18 +71,19 @@ class _AddCertificateState extends State<AddCertificate> {
         listener: (context, state) {
           if (state is SkillDataFailure) {
             if (state.error == "Duplicate") {
-              showFlushBar(
+              showFlashBar(
                 context,
                 "Certificate already exists",
-                FlushBarAction.error,
+                FlashBarAction.error,
               );
             }
             Navigator.of(context).pop();
           } else if (state is UploadCertificateSuccess) {
-            showFlushBar(
-                context,
-                "Certificate of ${selectedSkillEntity!.name} uploaded successfully",
-                FlushBarAction.success);
+            showFlashBar(
+              context,
+              "Certificate of ${selectedSkillEntity!.name} uploaded successfully",
+              FlashBarAction.success,
+            );
             Navigator.of(context).pop();
           }
         },

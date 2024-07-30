@@ -1,51 +1,90 @@
-import 'package:another_flushbar/flushbar.dart';
+import 'package:flash/flash.dart';
+import 'package:flash/flash_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:mind_lab_app/core/theme/app_pallete.dart';
 
-enum FlushBarAction { error, success, info, warning }
+enum FlashBarAction { error, success, info, warning }
 
-void showFlushBar(BuildContext context, String content, FlushBarAction action) {
-  if (action == FlushBarAction.info) {
-    Flushbar(
-      title: "Information",
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      icon: Icon(Icons.info_outline, size: 28, color: Colors.blue[300]),
-      leftBarIndicatorColor: Colors.blue,
-      message: content,
+void showFlashBar(BuildContext context, String content, FlashBarAction action) {
+  if (action == FlashBarAction.info) {
+    context.showFlash(
+      barrierColor: Colors.black54,
+      reverseTransitionDuration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
+      builder: (context, controller) => FlashBar(
+        title: const Text('Information'),
+        content: Text(content),
+        icon: const Icon(
+          Icons.info_outline,
+          color: AppPallete.infoColor,
+          size: 28,
+        ),
+        controller: controller,
+        clipBehavior: Clip.hardEdge,
+        indicatorColor: AppPallete.infoColor,
+        behavior: FlashBehavior.floating,
+        margin: const EdgeInsets.all(8),
+      ),
+    );
+  } else if (action == FlashBarAction.success) {
+    context.showFlash(
+      barrierColor: Colors.black54,
+      reverseTransitionDuration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
+      builder: (context, controller) => FlashBar(
+        title: const Text('Success'),
+        content: Text(content),
+        controller: controller,
+        clipBehavior: Clip.hardEdge,
+        indicatorColor: AppPallete.successColor,
+        behavior: FlashBehavior.floating,
+        icon: const Icon(
+          Icons.check,
+          color: AppPallete.successColor,
+          size: 28,
+        ),
+        margin: const EdgeInsets.all(8),
+      ),
+    );
+  } else if (action == FlashBarAction.error) {
+    context.showFlash(
+      barrierColor: Colors.black54,
+      reverseTransitionDuration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
+      builder: (context, controller) => FlashBar(
+        title: const Text('Error'),
+        content: Text(content),
+        controller: controller,
+        clipBehavior: Clip.hardEdge,
+        indicatorColor: AppPallete.errorColor,
+        behavior: FlashBehavior.floating,
+        icon: const Icon(
+          Icons.error,
+          color: AppPallete.errorColor,
+          size: 28,
+        ),
+        margin: const EdgeInsets.all(8),
+      ),
+    );
+  } else if (action == FlashBarAction.warning) {
+    context.showFlash(
+      barrierColor: Colors.black54,
+      reverseTransitionDuration: const Duration(seconds: 1),
       duration: const Duration(seconds: 5),
-    ).show(context);
-  } else if (action == FlushBarAction.success) {
-    Flushbar(
-      title: "Success",
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      icon: const Icon(Icons.info_outline,
-          size: 28, color: AppPallete.successColor),
-      leftBarIndicatorColor: AppPallete.successColor,
-      message: content,
-      duration: const Duration(seconds: 5),
-    ).show(context);
-  } else if (action == FlushBarAction.error) {
-    Flushbar(
-      title: "Error",
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      icon: const Icon(Icons.info_outline,
-          size: 28, color: AppPallete.errorColor),
-      leftBarIndicatorColor: AppPallete.errorColor,
-      message: content,
-      duration: const Duration(seconds: 5),
-    ).show(context);
-  } else {
-    Flushbar(
-      title: "Warning",
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      icon: const Icon(Icons.warning, size: 28, color: AppPallete.warning),
-      leftBarIndicatorColor: AppPallete.warning,
-      message: content,
-      duration: const Duration(seconds: 5),
-    ).show(context);
+      builder: (context, controller) => FlashBar(
+        title: const Text('Warning'),
+        content: Text(content),
+        controller: controller,
+        clipBehavior: Clip.hardEdge,
+        indicatorColor: AppPallete.warning,
+        behavior: FlashBehavior.floating,
+        icon: const Icon(
+          Icons.warning,
+          color: AppPallete.warning,
+          size: 28,
+        ),
+        margin: const EdgeInsets.all(8),
+      ),
+    );
   }
 }

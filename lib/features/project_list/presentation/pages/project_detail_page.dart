@@ -64,7 +64,11 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
       body: BlocConsumer<ProjectListBloc, ProjectListState>(
         listener: (context, state) {
           if (state is ProjectListFailure) {
-            showFlushBar(context, state.error, FlushBarAction.error);
+            showFlashBar(
+              context,
+              state.error,
+              FlashBarAction.error,
+            );
           } else {
             Navigator.of(context).pop();
           }

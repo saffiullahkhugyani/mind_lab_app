@@ -31,13 +31,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
       body: BlocConsumer<ProjectListBloc, ProjectListState>(
         listener: (context, state) {
           if (state is ProjectListFailure) {
-            showFlushBar(
-                context, 'No internet connection', FlushBarAction.error);
+            showFlashBar(
+              context,
+              'No internet connection',
+              FlashBarAction.error,
+            );
           } else if (state is ProjectSubscriptionSuccess) {
-            showFlushBar(
+            showFlashBar(
               context,
               'Request for project Subscription sended.',
-              FlushBarAction.success,
+              FlashBarAction.success,
             );
             setState(() {
               context

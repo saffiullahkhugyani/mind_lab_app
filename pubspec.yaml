@@ -62,7 +62,8 @@ dependencies:
   intl: ^0.19.0
   intl_phone_field: ^3.2.0
   upgrader: ^10.3.0
-  another_flushbar: ^1.12.30
+  google_sign_in: ^6.2.1
+  flash: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,7 @@ flutter:
   assets:
     - lib/assets/images/
     - lib/assets/icons/
+    - lib/assets/social_logos/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
@@ -272,6 +273,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   Future<void> signOut() async {
     try {
       await supabaseClient.auth.signOut();
+      await GoogleSignIn().signOut();
       log("data source: try");
     } on AuthException catch (e) {
       log("data source: AuthException  ${e.message}");

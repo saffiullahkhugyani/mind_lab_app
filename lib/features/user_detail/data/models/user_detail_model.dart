@@ -21,11 +21,11 @@ class UserDetailModel extends UserDetailEntity {
 
   factory UserDetailModel.fromJson(Map<String, dynamic> json) {
     return UserDetailModel(
-      id: json['id'],
-      name: json['name'],
-      age: json['age'],
-      mobile: json['mobile'],
-      imageUrl: json['profile_image_url'],
+      id: json['id'] ?? '-',
+      name: json['name'] ?? '-',
+      age: json['age'] ?? '-',
+      mobile: json['mobile'] ?? '-',
+      imageUrl: json['profile_image_url'] ?? '-',
     );
   }
 }

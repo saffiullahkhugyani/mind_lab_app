@@ -90,6 +90,23 @@ class AuthRepositoryImpl implements AuthRepository {
     });
   }
 
+  @override
+  Future<Either<ServerFailure, User>> signInWithGoogle() async {
+    try {
+      return _getUser(
+        () async => await remoteDataSource.loginWithGoogle(),
+      );
+    } on sb.AuthException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    } on ServerException catch (e) {
+      return left(
+        ServerFailure(
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
   Future<Either<ServerFailure, User>> _getUser(
     Future<User> Function() fn,
   ) async {

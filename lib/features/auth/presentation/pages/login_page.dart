@@ -8,6 +8,7 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
+import 'package:mind_lab_app/features/auth/presentation/widgets/social_login_button.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:provider/provider.dart';
 
@@ -69,20 +70,31 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(15.0),
             child: BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthFailure) {
-                  showFlushBar(context, state.message, FlushBarAction.error);
+                  showFlashBar(
+                    context,
+                    state.message,
+                    FlashBarAction.error,
+                  );
                 } else if (state is AuthUserNotLoggedIn) {
-                  showFlushBar(context, state.message, FlushBarAction.info);
+                  showFlashBar(
+                    context,
+                    state.message,
+                    FlashBarAction.info,
+                  );
                 } else if (state is AuthSuccess) {
-                  showFlushBar(context, "Welcome ${state.user.name}",
-                      FlushBarAction.success);
+                  showFlashBar(
+                    context,
+                    "Welcome ${state.user.name}",
+                    FlashBarAction.success,
+                  );
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => const ProjectPage()),
@@ -91,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
               },
               builder: (context, state) {
                 if (state is AuthLoading) {
-                  return const Loader();
+                  return const Center(child: Loader());
                 }
                 return Form(
                   key: formKey,
@@ -198,7 +210,68 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                         ),
-                      )
+                      ),
+
+                      const SizedBox(
+                        height: 50,
+                      ),
+
+                      // or continue with
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Or continue with',
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 0.5,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SocialLoginButton(
+                              onTap: () {
+                                context
+                                    .read<AuthBloc>()
+                                    .add(AuthLoginWithGoogle());
+                              },
+                              imagePath: 'lib/assets/social_logos/google.png'),
+                          const SizedBox(
+                            width: 25,
+                          ),
+                          SocialLoginButton(
+                              onTap: () {
+                                showFlashBar(
+                                  context,
+                                  "Feature Coming Soon",
+                                  FlashBarAction.info,
+                                );
+                              },
+                              imagePath: 'lib/assets/social_logos/apple.png'),
+                        ],
+                      ),
                     ],
                   ),
                 );

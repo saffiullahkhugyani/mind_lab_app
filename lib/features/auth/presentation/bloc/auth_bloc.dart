@@ -6,6 +6,7 @@ import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_google.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 
 import '../../../../core/common/entities/user.dart';
@@ -19,22 +20,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserLogin _userLoginUsecase;
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
+  final UserLoginWithGoogle _loginWithGoogle;
 
   // Constructor
-  AuthBloc(
-      {required UserSignUp userSignUp,
-      required UserLogin userLogin,
-      required CurrentUser currentUser,
-      required AppUserCubit appUserCubit})
-      : _userSignUpUsecase = userSignUp,
+  AuthBloc({
+    required UserSignUp userSignUp,
+    required UserLogin userLogin,
+    required CurrentUser currentUser,
+    required AppUserCubit appUserCubit,
+    required UserLoginWithGoogle loginWithGoogle,
+  })  : _userSignUpUsecase = userSignUp,
         _userLoginUsecase = userLogin,
         _currentUser = currentUser,
         _appUserCubit = appUserCubit,
+        _loginWithGoogle = loginWithGoogle,
         super(AuthInitial()) {
     on<AuthEvent>((_, emit) => emit(AuthLoading()));
     on<AuthSignUp>(_onAuthSignUp);
     on<AuthLogin>(_onAuthLogin);
     on<AuthIsUserLoggedIn>(_isUserLoggedIn);
+    on<AuthLoginWithGoogle>(_onAuthLoginWithGoogle);
   }
 
   void _isUserLoggedIn(
@@ -50,6 +55,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (user) => _emitAuthSuccess(user, emit),
     );
+  }
+
+  void _onAuthLoginWithGoogle(
+      AuthLoginWithGoogle event, Emitter<AuthState> emit) async {
+    final response = await _loginWithGoogle(NoParams());
+    response.fold((failure) => emit(AuthFailure(failure.errorMessage)),
+        (user) => _emitAuthSuccess(user, emit));
   }
 
   void _onAuthLogin(

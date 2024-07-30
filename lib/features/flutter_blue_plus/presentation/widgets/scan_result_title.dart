@@ -82,11 +82,17 @@ class _ScanResultTileState extends State<ScanResultTile> {
                         await bluetoothManager
                             .onConnectPressed(widget.result.device);
                         Navigator.pop(context);
-                        showFlushBar(context, 'Connected to ${deviceName}',
-                            FlushBarAction.success);
+                        showFlashBar(
+                          context,
+                          'Connected to ${deviceName}',
+                          FlashBarAction.success,
+                        );
                       } else {
-                        showFlushBar(context, '$deviceName is Disconnected',
-                            FlushBarAction.warning);
+                        showFlashBar(
+                          context,
+                          '$deviceName is Disconnected',
+                          FlashBarAction.warning,
+                        );
                         bluetoothManager
                             .onDisconnectPressed(widget.result.device);
                       }

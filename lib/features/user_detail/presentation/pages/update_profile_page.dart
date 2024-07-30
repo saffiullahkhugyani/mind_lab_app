@@ -63,8 +63,11 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
           dateOfBirth: dobUpdateController.text.trim(),
           imageFile: image));
     } else {
-      showFlushBar(
-          context, "Please provide a valid update", FlushBarAction.error);
+      showFlashBar(
+        context,
+        "Please provide a valid update",
+        FlashBarAction.error,
+      );
     }
 
     // if (formKey.currentState!.validate() && image != null) {
@@ -96,13 +99,17 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
       body: BlocConsumer<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
           if (state is UpdateProfileFailure) {
-            showFlushBar(context, state.error, FlushBarAction.error);
+            showFlashBar(
+              context,
+              state.error,
+              FlashBarAction.error,
+            );
           }
           if (state is UpdateProfileSuccess) {
-            showFlushBar(
+            showFlashBar(
               context,
               "Profile updated Successfully",
-              FlushBarAction.success,
+              FlashBarAction.success,
             );
             Navigator.pop(context);
           }

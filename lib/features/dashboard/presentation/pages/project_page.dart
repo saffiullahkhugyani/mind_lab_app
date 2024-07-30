@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -13,6 +14,8 @@ import 'package:mind_lab_app/features/dashboard/presentation/widgets/card_item.d
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_list_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/user_detail_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/widgets/show_dialog.dart';
 
 final listProjectImages = [
   {"id": 1, "image_asset": 'lib/assets/images/rashid_rover.png'},
@@ -41,24 +44,53 @@ class ProjectPage extends StatefulWidget {
 
 class _ProjectPageState extends State<ProjectPage> {
   final _upgrader = AppUpgrader(
-      debugLogging: true, durationUntilAlertAgain: const Duration(hours: 3));
-  Future<void> _signOut() async {
-    try {
-      final supabase = Supabase.instance.client;
-      await supabase.auth.signOut();
-    } on AuthException catch (error) {
-      SnackBar(
-        content: Text(error.message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      );
-    } catch (error) {
-      SnackBar(
-        content: const Text('Unexpected error occurred'),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      );
-    } finally {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(loginRoute);
+    debugLogging: true,
+    durationUntilAlertAgain: const Duration(
+      hours: 3,
+    ),
+  );
+
+  Future<void> _siOutDialog(BuildContext context) async {
+    final action = await Dialogs.yesAbortDialog(
+      context,
+      "Sign out",
+      "Are you sure you want to Sign out you account?",
+      abortBtnText: "Cancel",
+      yesButtonText: "Sign out",
+      icon: Icons.logout,
+    );
+    if (context.mounted) {
+      _signOut(action);
+    }
+  }
+
+  Future<void> _signOut(DialogAction dialogAction) async {
+    if (dialogAction == DialogAction.yes) {
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase.auth.signOut();
+        await GoogleSignIn().signOut();
+        showFlashBar(
+          context,
+          "Logged out",
+          FlashBarAction.info,
+        );
+      } on AuthException catch (error) {
+        showFlashBar(
+          context,
+          error.message,
+          FlashBarAction.error,
+        );
+      } catch (error) {
+        showFlashBar(
+          context,
+          error.toString(),
+          FlashBarAction.error,
+        );
+      } finally {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(loginRoute);
+        }
       }
     }
   }
@@ -88,7 +120,9 @@ class _ProjectPageState extends State<ProjectPage> {
             ),
           ),
           IconButton(
-            onPressed: _signOut,
+            onPressed: () {
+              _siOutDialog(context);
+            },
             icon: const Icon(
               Icons.logout,
             ),
@@ -101,10 +135,10 @@ class _ProjectPageState extends State<ProjectPage> {
           listener: (context, state) {
             if (state is ProjectFailure) {
               log(state.error);
-              showFlushBar(
+              showFlashBar(
                 context,
                 'Error while loading subscribed projects!',
-                FlushBarAction.error,
+                FlashBarAction.error,
               );
             }
           },
@@ -147,8 +181,10 @@ class _ProjectPageState extends State<ProjectPage> {
                               break;
                           }
                         } else {
-                          showFlushBar(context, 'Feature Coming soon',
-                              FlushBarAction.info);
+                          // showFlushBar(context, 'Feature Coming soon',
+                          //     FlushBarAction.info);
+                          showFlashBar(context, "Feature Coming soon",
+                              FlashBarAction.info);
                         }
                       });
                 },

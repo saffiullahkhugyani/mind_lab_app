@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -27,6 +29,8 @@ abstract interface class AuthRemoteDataSource {
   });
 
   Future<UserModel?> getCurrentUserData();
+
+  Future<UserModel> loginWithGoogle();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -49,8 +53,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw const ServerException('User is null');
       }
+      log(response.user.toString());
       return UserModel.fromJson(
-        response.user!.toJson(),
+        response.user!.userMetadata!,
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -130,6 +135,46 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       return null;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> loginWithGoogle() async {
+    try {
+      const webClientId =
+          "719773290057-4frsk845o9irfsq228kjtrni8f26att6.apps.googleusercontent.com";
+      const iosClientId =
+          "719773290057-hnjtcffh05fqfuu9p9ipe86prosruck2.apps.googleusercontent.com";
+
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        clientId: iosClientId,
+        serverClientId: webClientId,
+      );
+
+      final googleUser = await googleSignIn.signIn();
+      final googleAuth = await googleUser!.authentication;
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
+
+      if (accessToken == null) {
+        throw const ServerException("No Access Token found");
+      }
+
+      if (idToken == null) {
+        throw const ServerException("No ID Token found");
+      }
+
+      final response = await supabaseClient.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      return UserModel.fromJson(response.user!.userMetadata!);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
