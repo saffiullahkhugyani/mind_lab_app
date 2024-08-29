@@ -10,6 +10,7 @@ import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/show_dialog.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/widgets/pie_chart.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
 
 class UserDetailPage extends StatefulWidget {
@@ -129,6 +130,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         if (state is UserDetailDisplaySuccess) {
           final userInfo = state.userDetail.userDetails.first;
           final userCertificates = state.userDetail.certificates;
+          final certificateMaster = state.userDetail.certificateMasterList;
           return ListView(
             children: [
               //profile picture
@@ -190,31 +192,60 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     fontSize: 18),
                 userInfo.name,
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 30),
               Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25.0),
-                      child: Text(
-                        'My Details',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.2), // Shadow color with opacity
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 6, // Blur radius
+                      offset: Offset(0, 3), // Offset in the X and Y direction
                     ),
-                    MyTextbox(text: userInfo.id, sectionName: 'User ID'),
-                    MyTextbox(
-                      text: userEmail,
-                      sectionName: 'User Email',
-                    ),
-                    MyTextbox(text: userInfo.age, sectionName: 'Age Group'),
-                    MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
                   ],
                 ),
+                padding: const EdgeInsets.only(bottom: 10, left: 15, top: 10),
+                margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      "Asserted Certificates",
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Piechart(certificateMaster: certificateMaster),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 25.0),
+                    child: Text(
+                      'My Details',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  MyTextbox(text: userInfo.id, sectionName: 'User ID'),
+                  MyTextbox(
+                    text: userEmail,
+                    sectionName: 'User Email',
+                  ),
+                  MyTextbox(text: userInfo.age, sectionName: 'Age Group'),
+                  MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
+                ],
               ),
               const SizedBox(height: 30),
               Container(

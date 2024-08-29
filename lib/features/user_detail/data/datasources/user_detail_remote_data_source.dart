@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_hashtag_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_model.dart';
@@ -32,6 +33,7 @@ abstract interface class UserDetailRemoteDataSource {
   });
   Future<String> deleteAccount();
   Future<void> signOut();
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -280,6 +282,28 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       throw ServerException(e.message);
     } catch (e) {
       log("data source: catch  $e");
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData() async {
+    try {
+      // getting user UID
+      final userUid = supabaseClient.auth.currentUser!.id;
+
+      // fetching user certificates
+      final certificateMaster = await supabaseClient
+          .from('certificate_v1_v2_mapping')
+          .select('id, user_id, v1_certificate_id, certificate_master(*)')
+          .match({'user_id': userUid});
+
+      return certificateMaster
+          .map((json) => CertificateV1V2MappingModel.fromJson(json))
+          .toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
       throw ServerException(e.toString());
     }
   }

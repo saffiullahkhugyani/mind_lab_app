@@ -7,6 +7,7 @@ import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_r
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/upload_certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
@@ -33,9 +34,16 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       final userDetail = await userDetailRemoteDataSource.getUserDetails();
       final userCertificate =
           await userDetailRemoteDataSource.getCertificates();
+      final certificateMaster =
+          await userDetailRemoteDataSource.getCertificateMasterData();
+
+      print(certificateMaster);
 
       return right(UserDetailResult(
-          userDetails: userDetail, certificates: userCertificate));
+        userDetails: userDetail,
+        certificates: userCertificate,
+        certificateMasterList: certificateMaster,
+      ));
     } on ServerException catch (e) {
       log((e.message));
       return left(ServerFailure(errorMessage: e.message));
@@ -156,5 +164,13 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.toString()));
     }
+  }
+
+// logic to be added
+  @override
+  Future<Either<ServerFailure, CertificateV1V2MappingEntity>>
+      getCertificateMasterData() {
+    // TODO: implement getCertificateMasterData
+    throw UnimplementedError();
   }
 }

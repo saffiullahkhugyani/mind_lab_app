@@ -13,4 +13,10 @@ class AppPallete {
   static const Color infoColor = Colors.blue;
   static const Color warning = Colors.amber;
   static const Color transparentColor = Colors.transparent;
+
+  static const Color contentColorGreen = Colors.green;
+  static const Color contentColorYellow = Colors.yellow;
+  static const Color contentColorRed = Colors.red;
+  static const Color contentColorBlue = Colors.blue;
+  static const Color contentColorPurple = Colors.purple;
 }

@@ -64,6 +64,7 @@ dependencies:
   upgrader: ^10.3.0
   google_sign_in: ^6.2.1
   flash: ^3.1.1
+  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
