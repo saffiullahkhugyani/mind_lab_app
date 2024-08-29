@@ -258,18 +258,18 @@ class _LoginPageState extends State<LoginPage> {
                                     .add(AuthLoginWithGoogle());
                               },
                               imagePath: 'lib/assets/social_logos/google.png'),
-                          const SizedBox(
-                            width: 25,
-                          ),
-                          SocialLoginButton(
-                              onTap: () {
-                                showFlashBar(
-                                  context,
-                                  "Feature Coming Soon",
-                                  FlashBarAction.info,
-                                );
-                              },
-                              imagePath: 'lib/assets/social_logos/apple.png'),
+                          // const SizedBox(
+                          //   width: 25,
+                          // ),
+                          // SocialLoginButton(
+                          //     onTap: () {
+                          //       showFlashBar(
+                          //         context,
+                          //         "Feature Coming Soon",
+                          //         FlashBarAction.info,
+                          //       );
+                          //     },
+                          //     imagePath: 'lib/assets/social_logos/apple.png'),
                         ],
                       ),
                     ],
