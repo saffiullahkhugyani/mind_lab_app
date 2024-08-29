@@ -14,8 +14,8 @@ class MyTextbox extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-      padding: EdgeInsets.only(bottom: 10, left: 15, top: 10),
-      margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+      padding: const EdgeInsets.only(bottom: 10, left: 15, top: 10),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
