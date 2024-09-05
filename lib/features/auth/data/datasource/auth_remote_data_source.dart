@@ -53,9 +53,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw const ServerException('User is null');
       }
+
+      // Extracting the id from the response and merging it with userMetadata
+      final userMetadata = response.user!.userMetadata!;
+      userMetadata['id'] = response.user!.id;
+
       log(response.user.toString());
       return UserModel.fromJson(
-        response.user!.userMetadata!,
+        userMetadata,
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
