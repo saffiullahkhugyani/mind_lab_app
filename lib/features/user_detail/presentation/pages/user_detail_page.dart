@@ -192,38 +192,47 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     fontSize: 18),
                 userInfo.name,
               ),
-              const SizedBox(height: 30),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.2), // Shadow color with opacity
-                      spreadRadius: 2, // Spread radius
-                      blurRadius: 6, // Blur radius
-                      offset: Offset(0, 3), // Offset in the X and Y direction
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.only(bottom: 10, left: 15, top: 10),
-                margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      "Asserted Certificates",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Piechart(certificateMaster: certificateMaster),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 50),
+              certificateMaster.isNotEmpty
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 30),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(
+                                    0.2), // Shadow color with opacity
+                                spreadRadius: 2, // Spread radius
+                                blurRadius: 6, // Blur radius
+                                offset: const Offset(
+                                    0, 3), // Offset in the X and Y direction
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.only(
+                              bottom: 10, left: 15, top: 10),
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, top: 20),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Asserted Certificates",
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Piechart(certificateMaster: certificateMaster),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                      ],
+                    )
+                  : const SizedBox(height: 50),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -238,7 +247,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       ),
                     ),
                   ),
-                  MyTextbox(text: userInfo.id, sectionName: 'User ID'),
+                  // MyTextbox(text: userInfo.id, sectionName: 'User ID'),
                   MyTextbox(
                     text: userEmail,
                     sectionName: 'User Email',

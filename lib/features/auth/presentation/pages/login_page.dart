@@ -8,7 +8,7 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
-import 'package:mind_lab_app/features/auth/presentation/widgets/social_login_button.dart';
+// import 'package:mind_lab_app/features/auth/presentation/widgets/social_login_button.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:provider/provider.dart';
 
