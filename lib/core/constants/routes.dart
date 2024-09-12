@@ -13,3 +13,4 @@ const flutterBluePlusRoute = '/bluetooth-plus-page/';
 const stepDurationRoute = '/step-duration-page/';
 const addCertificateRoute = '/add-certificate-page/';
 const updateProfileRoute = '/update-profile-page/';
+const arcadeOneRoute = '/arcade-one-page/';

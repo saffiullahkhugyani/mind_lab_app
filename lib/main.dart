@@ -11,6 +11,7 @@ import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_
 import 'package:mind_lab_app/core/providers/rashid_rover/command_list_provier.dart';
 import 'package:mind_lab_app/core/theme/theme.dart';
 import 'package:mind_lab_app/core/widgets/app_upgrader_dialog.dart';
+import 'package:mind_lab_app/features/arcade_one/presentation/pages/arcade_one_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
@@ -107,6 +108,7 @@ class _MyAppState extends State<MyApp> {
           stepDurationRoute: (context) => const StepDurationPage(),
           addCertificateRoute: (context) => const AddCertificate(),
           updateProfileRoute: (context) => const UpdataProfilePage(),
+          arcadeOneRoute: (context) => const ArcadeOnePage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,
