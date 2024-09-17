@@ -11,7 +11,7 @@ import 'package:mind_lab_app/features/user_detail/data/models/skill_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/user_detail_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:path/path.dart';
 import '../models/upload_certificate_model.dart';
 
 abstract interface class UserDetailRemoteDataSource {
@@ -144,7 +144,9 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     required certificateModel,
   }) async {
     try {
-      final path = '${certificateModel.userId}/${certificateModel.skillId}';
+      final String fileName = basename(imageFile.path);
+      final path =
+          '${certificateModel.userId}/${certificateModel.skillId}/$fileName';
       await supabaseClient.storage
           .from('certificate_images')
           .upload(path, imageFile);
