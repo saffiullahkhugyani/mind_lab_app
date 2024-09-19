@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:crypto/crypto.dart';
 
 abstract interface class AuthRemoteDataSource {
   Session? get currentUserSession;
@@ -31,6 +34,8 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUserData();
 
   Future<UserModel> loginWithGoogle();
+
+  Future<UserModel> loginWithApple();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -178,6 +183,39 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       return UserModel.fromJson(response.user!.userMetadata!);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> loginWithApple() async {
+    try {
+      final rawNonce = supabaseClient.auth.generateRawNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName
+        ],
+        nonce: hashedNonce,
+      );
+
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        throw const ServerException("No Id token found.");
+      }
+
+      final response = await supabaseClient.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+
+      return UserModel.fromJson(response.user!.appMetadata);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {

@@ -6,6 +6,7 @@ import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_apple.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_google.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 
@@ -21,6 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
   final UserLoginWithGoogle _loginWithGoogle;
+  final UserLoginWithApple _loginWithApple;
 
   // Constructor
   AuthBloc({
@@ -29,17 +31,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required CurrentUser currentUser,
     required AppUserCubit appUserCubit,
     required UserLoginWithGoogle loginWithGoogle,
+    required UserLoginWithApple loginWithApple,
   })  : _userSignUpUsecase = userSignUp,
         _userLoginUsecase = userLogin,
         _currentUser = currentUser,
         _appUserCubit = appUserCubit,
         _loginWithGoogle = loginWithGoogle,
+        _loginWithApple = loginWithApple,
         super(AuthInitial()) {
     on<AuthEvent>((_, emit) => emit(AuthLoading()));
     on<AuthSignUp>(_onAuthSignUp);
     on<AuthLogin>(_onAuthLogin);
     on<AuthIsUserLoggedIn>(_isUserLoggedIn);
     on<AuthLoginWithGoogle>(_onAuthLoginWithGoogle);
+    on<AuthLoginWithApple>(_onAuthLoginWithApple);
   }
 
   void _isUserLoggedIn(
@@ -57,9 +62,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
+  // login with google
   void _onAuthLoginWithGoogle(
       AuthLoginWithGoogle event, Emitter<AuthState> emit) async {
     final response = await _loginWithGoogle(NoParams());
+    response.fold((failure) => emit(AuthFailure(failure.errorMessage)),
+        (user) => _emitAuthSuccess(user, emit));
+  }
+
+  // logim with apple
+  void _onAuthLoginWithApple(
+      AuthLoginWithApple event, Emitter<AuthState> emit) async {
+    final response = await _loginWithApple(NoParams());
     response.fold((failure) => emit(AuthFailure(failure.errorMessage)),
         (user) => _emitAuthSuccess(user, emit));
   }

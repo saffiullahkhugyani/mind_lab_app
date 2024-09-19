@@ -8,6 +8,7 @@ import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_sour
 import 'package:mind_lab_app/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_apple.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_google.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -116,6 +117,12 @@ void _initAuth() {
     ),
   );
 
+  serviceLocator.registerFactory(
+    () => UserLoginWithApple(
+      serviceLocator(),
+    ),
+  );
+
   // registering auth bloc
   serviceLocator.registerLazySingleton(
     () => AuthBloc(
@@ -124,6 +131,7 @@ void _initAuth() {
       currentUser: serviceLocator(),
       appUserCubit: serviceLocator(),
       loginWithGoogle: serviceLocator(),
+      loginWithApple: serviceLocator(),
     ),
   );
 
