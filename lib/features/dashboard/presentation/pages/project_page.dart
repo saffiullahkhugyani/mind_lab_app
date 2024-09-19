@@ -24,6 +24,7 @@ final listProjectImages = [
   {"id": 4, "image_asset": 'lib/assets/images/battle_bot.png'},
   {"id": 5, "image_asset": 'lib/assets/images/airplane.png'},
   {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
+  {"id": 7, "image_asset": 'lib/assets/icons/car.png'},
 ];
 
 final listProjectIcons = [
@@ -178,6 +179,9 @@ class _ProjectPageState extends State<ProjectPage> {
                           switch (project.id) {
                             case 1:
                               Navigator.pushNamed(context, roverMainPageRoute);
+                              break;
+                            case 7:
+                              Navigator.pushNamed(context, arcadeGameOneRoute);
                               break;
                           }
                         } else {
