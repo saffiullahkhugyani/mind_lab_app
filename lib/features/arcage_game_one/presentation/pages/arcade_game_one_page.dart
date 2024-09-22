@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -16,7 +17,42 @@ class ArcadeGameOnePage extends StatefulWidget {
 }
 
 class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
+  // Timer? _timer;
+  // int _elapsedMillis = 0;
   double _currentSliderValue = 0;
+  var sendingCommand = 's';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> sendBluetoothCommand(FlutterBluetoothPlus bluetoothManager,
+      Map<String, String> command) async {
+    // const interval = Duration(milliseconds: 50);
+    // _elapsedMillis = 0;
+    bluetoothManager.sendCommand(command.toString());
+    log(command.toString());
+
+    // await Future.doWhile(() async {
+    //   await Future.delayed(interval, () {
+    //     bluetoothManager.sendCommand(command);
+    //     setState(() {
+    //       sendingCommand = command;
+    //     });
+    //   });
+
+    //   log(_elapsedMillis.toString());
+    //   _elapsedMillis += interval.inMilliseconds;
+    //   return _elapsedMillis < duration;
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +85,8 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                         ArrowButton(
                           arrowIcon: Icons.arrow_upward,
                           onTap: () {
-                            log("arrow pressed up left");
+                            sendBluetoothCommand(
+                                bluetoothManager, {"up-left": "1"});
                           },
                         ),
                         const SizedBox(
@@ -58,7 +95,8 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                         ArrowButton(
                           arrowIcon: Icons.arrow_downward,
                           onTap: () {
-                            log("arrow pressed up right");
+                            sendBluetoothCommand(
+                                bluetoothManager, {"down-left": "2"});
                           },
                         ),
                       ],
@@ -72,7 +110,8 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                         ArrowButton(
                           arrowIcon: Icons.arrow_upward,
                           onTap: () {
-                            log("arrow pressed down left");
+                            sendBluetoothCommand(
+                                bluetoothManager, {"up-right": "1"});
                           },
                         ),
                         const SizedBox(
@@ -81,7 +120,8 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                         ArrowButton(
                           arrowIcon: Icons.arrow_downward,
                           onTap: () {
-                            log("arrow pressed down right");
+                            sendBluetoothCommand(
+                                bluetoothManager, {"down-right": "2"});
                           },
                         ),
                       ],
@@ -100,7 +140,9 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                       onChanged: (double value) {
                         setState(() {
                           _currentSliderValue = value;
-                          log(_currentSliderValue.toString());
+
+                          sendBluetoothCommand(bluetoothManager,
+                              {"speed": _currentSliderValue.toString()});
                         });
                       }),
                 )

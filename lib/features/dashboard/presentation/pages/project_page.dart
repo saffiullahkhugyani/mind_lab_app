@@ -207,6 +207,16 @@ class _ProjectPageState extends State<ProjectPage> {
         children: [
           FloatingActionButton.extended(
               icon: const Icon(CupertinoIcons.add),
+              heroTag: 'herotag3',
+              onPressed: () {
+                Navigator.pushNamed(context, arcadeGameOneRoute);
+              },
+              label: const Text('new feature')),
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton.extended(
+              icon: const Icon(CupertinoIcons.add),
               heroTag: 'herotag1',
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
