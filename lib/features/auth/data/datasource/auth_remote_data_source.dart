@@ -215,6 +215,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         nonce: rawNonce,
       );
 
+      // workaround to add user fullname to database table "Profile"
+      await supabaseClient.from('profiles').upsert({
+        "id": response.user?.id,
+        "name": "${credential.givenName}  ${credential.familyName}",
+        "email": "${credential.email}"
+      }).eq("id", (response.user?.id).toString());
+
       return UserModel.fromJson(response.user!.appMetadata);
     } on AuthException catch (e) {
       throw ServerException(e.message);
