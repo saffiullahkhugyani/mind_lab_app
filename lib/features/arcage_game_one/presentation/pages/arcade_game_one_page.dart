@@ -134,15 +134,16 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                   left: 10,
                   child: Slider(
                       value: _currentSliderValue,
-                      max: 255,
-                      divisions: 20,
+                      max: 250,
+                      divisions: 10,
                       label: _currentSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
                           _currentSliderValue = value;
 
-                          sendBluetoothCommand(bluetoothManager,
-                              {"speed": _currentSliderValue.toString()});
+                          sendBluetoothCommand(bluetoothManager, {
+                            "speed": _currentSliderValue.round().toString()
+                          });
                         });
                       }),
                 )
