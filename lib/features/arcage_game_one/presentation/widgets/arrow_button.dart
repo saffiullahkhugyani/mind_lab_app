@@ -23,11 +23,16 @@ class ArrowButton extends StatelessWidget {
           },
           child: Container(
             padding: const EdgeInsets.all(20),
+            width: 120,
+            height: 120,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.white),
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.grey.withOpacity(0.2)),
-            child: Icon(arrowIcon),
+            child: Icon(
+              arrowIcon,
+              size: 50,
+            ),
           ),
         ),
       ),

@@ -25,8 +25,8 @@ class BluetoothConnectionButton extends StatelessWidget {
           },
           child: Container(
             padding: const EdgeInsets.all(8),
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -49,7 +49,7 @@ class BluetoothConnectionButton extends StatelessWidget {
                     child: Center(
                         child: Icon(
                   Icons.bluetooth,
-                  size: 40,
+                  size: 25,
                   color: Colors.blue,
                 )))
               ],

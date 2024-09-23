@@ -68,7 +68,7 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
               children: [
                 Positioned(
                   top: 30,
-                  left: MediaQuery.of(context).size.width / 2 - 50,
+                  left: MediaQuery.of(context).size.width / 2 - 40,
                   child: BluetoothConnectionButton(
                     connectionStatusColor:
                         isConnected ? Colors.green : Colors.red,
@@ -132,20 +132,52 @@ class _ArcadeGameOnePageState extends State<ArcadeGameOnePage> {
                   bottom: 20,
                   right: 10,
                   left: 10,
-                  child: Slider(
-                      value: _currentSliderValue,
-                      max: 250,
-                      divisions: 10,
-                      label: _currentSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _currentSliderValue = value;
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Speed",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                      Slider(
+                        value: _currentSliderValue,
+                        max: 250,
+                        divisions: 10,
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _currentSliderValue = value;
 
-                          sendBluetoothCommand(bluetoothManager, {
-                            "speed": _currentSliderValue.round().toString()
+                            sendBluetoothCommand(bluetoothManager, {
+                              "speed": _currentSliderValue.round().toString()
+                            });
                           });
-                        });
-                      }),
+                        },
+                      ),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Low',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            "High",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 )
               ],
             );
