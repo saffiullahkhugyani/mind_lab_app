@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -15,81 +17,160 @@ class Piechart extends StatefulWidget {
 }
 
 class _PiechartState extends State<Piechart> {
-  int touchedIndex = -1;
+  int touchedIndexSkillLevel = -1;
+  int touchedIndexSkillType = -1;
+
   @override
   Widget build(BuildContext context) {
     final skillLevelCounts = groupBySkillLevel(widget.certificateMaster);
     final skillLevels = skillLevelCounts.keys.toList();
-    final pieChartSections =
-        generatePieChartSections(skillLevelCounts, skillLevels);
+    final skillLevelChartSections =
+        generatePieChartSections(skillLevelCounts, skillLevels, true);
 
-    return AspectRatio(
-      aspectRatio: 1.3,
+    final skillTypeCounts = groupBySkillType(widget.certificateMaster);
+    final skillTypes = skillTypeCounts.keys.toList();
+    final skillTypeChartSections =
+        generatePieChartSections(skillTypeCounts, skillTypes, false);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal, // Make charts scrollable horizontally
       child: Row(
         children: [
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  sectionsSpace: 5,
-                  centerSpaceRadius: 30,
-                  sections: pieChartSections,
+          SizedBox(
+            width: 250, // Adjust the width as per your requirement
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
+                const Text(
+                  "Skill Level",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                AspectRatio(
+                  aspectRatio: 1.3,
+                  child: PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                            if (!event.isInterestedForInteractions ||
+                                pieTouchResponse == null ||
+                                pieTouchResponse.touchedSection == null) {
+                              touchedIndexSkillLevel = -1;
+                              return;
+                            }
+                            touchedIndexSkillLevel = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          });
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 5,
+                      centerSpaceRadius: 30,
+                      sections: skillLevelChartSections,
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Indicator(
+                        color: AppPallete.contentColorBlue,
+                        text: 'Basic',
+                        isSquare: true,
+                      ),
+                      SizedBox(height: 4),
+                      Indicator(
+                        color: AppPallete.contentColorYellow,
+                        text: 'Intermediate',
+                        isSquare: true,
+                      ),
+                      SizedBox(height: 4),
+                      Indicator(
+                        color: AppPallete.contentColorRed,
+                        text: 'Advanced',
+                        isSquare: true,
+                      ),
+                      SizedBox(height: 4),
+                      Indicator(
+                        color: AppPallete.contentColorGreen,
+                        text: 'Professional',
+                        isSquare: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 8.0),
+          SizedBox(
+            width: 250, // Adjust the width as per your requirement
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Indicator(
-                  color: AppPallete.contentColorBlue,
-                  text: 'Basic',
-                  isSquare: true,
+              children: [
+                const SizedBox(
+                  height: 10,
                 ),
-                SizedBox(
-                  height: 4,
+                const Text(
+                  "Skill Type",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Indicator(
-                  color: AppPallete.contentColorYellow,
-                  text: 'Intermediate',
-                  isSquare: true,
+                AspectRatio(
+                  aspectRatio: 1.3,
+                  child: PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                            if (!event.isInterestedForInteractions ||
+                                pieTouchResponse == null ||
+                                pieTouchResponse.touchedSection == null) {
+                              touchedIndexSkillType = -1;
+                              return;
+                            }
+                            touchedIndexSkillType = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          });
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 5,
+                      centerSpaceRadius: 30,
+                      sections: skillTypeChartSections, // Skill type data
+                    ),
+                  ),
                 ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: AppPallete.contentColorRed,
-                  text: 'Advanced',
-                  isSquare: true,
-                ),
-                SizedBox(
-                  height: 4,
-                ),
-                Indicator(
-                  color: AppPallete.contentColorGreen,
-                  text: 'Professional',
-                  isSquare: true,
+                const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Indicator(
+                        color: AppPallete.contentColorBlue,
+                        text: 'Soft Skill',
+                        isSquare: true,
+                      ),
+                      SizedBox(height: 4),
+                      Indicator(
+                        color: AppPallete.contentColorYellow,
+                        text: 'Hard Skill',
+                        isSquare: true,
+                      ),
+                      SizedBox(height: 4),
+                      Indicator(
+                        color: AppPallete.contentColorRed,
+                        text: 'Programming',
+                        isSquare: true,
+                      ),
+                      // Add other skill type indicators here
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -110,30 +191,51 @@ class _PiechartState extends State<Piechart> {
 
     for (var certificate in certificates) {
       String skillLevel = certificate.certificateMaster.skillLevel;
-
       if (skillLevelCounts.containsKey(skillLevel)) {
         skillLevelCounts[skillLevel] = skillLevelCounts[skillLevel]! + 1;
       }
     }
-    // Remove entries with zero count
     skillLevelCounts.removeWhere((key, value) => value == 0);
-
     return skillLevelCounts;
   }
 
+  Map<String, int> groupBySkillType(
+      List<CertificateV1V2MappingEntity> certificates) {
+    Map<String, int> skillTypeCounts = {
+      'Soft skill': 0,
+      'Hard skill': 0,
+      'Programming': 0
+    };
+
+    for (var certificate in certificates) {
+      log(certificates.length.toString());
+      log(certificate.certificateMaster.skillType);
+      String skillType = certificate.certificateMaster.skillType;
+      if (skillTypeCounts.containsKey(skillType)) {
+        skillTypeCounts[skillType] = skillTypeCounts[skillType]! + 1;
+      }
+    }
+    skillTypeCounts.removeWhere((key, value) => value == 0);
+    return skillTypeCounts;
+  }
+
   List<PieChartSectionData> generatePieChartSections(
-      Map<String, int> skillLevelCounts, List<String> skillLevels) {
-    return skillLevels.asMap().entries.map((entry) {
+      Map<String, int> counts, List<String> keys, bool isSkillLevel) {
+    return keys.asMap().entries.map((entry) {
       final index = entry.key;
-      final skillLevel = entry.value;
-      final isTouched = index == touchedIndex;
+      final key = entry.value;
+      final isTouched = isSkillLevel
+          ? index == touchedIndexSkillLevel
+          : index == touchedIndexSkillType;
       final fontSize = isTouched ? 25.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
-      final color = _getColorForSkillLevel(skillLevel);
+      final color = isSkillLevel
+          ? _getColorForSkillLevel(key)
+          : _getColorForSkillType(key);
 
       return PieChartSectionData(
-        value: skillLevelCounts[skillLevel]!.toDouble(),
-        title: '${skillLevelCounts[skillLevel]}',
+        value: counts[key]!.toDouble(),
+        title: '${counts[key]}',
         color: color,
         radius: radius,
         titleStyle: TextStyle(
@@ -143,15 +245,6 @@ class _PiechartState extends State<Piechart> {
         ),
       );
     }).toList();
-  }
-
-  String getTouchedSkillLevel() {
-    final skillLevels = ['Basic', 'Intermediate', 'Advanced', 'Professional'];
-    if (touchedIndex >= 0 && touchedIndex < skillLevels.length) {
-      print(touchedIndex);
-      return skillLevels[touchedIndex];
-    }
-    return '';
   }
 
   Color _getColorForSkillLevel(String skillLevel) {
@@ -164,6 +257,19 @@ class _PiechartState extends State<Piechart> {
         return AppPallete.contentColorRed;
       case 'Professional':
         return AppPallete.contentColorGreen;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getColorForSkillType(String skillType) {
+    switch (skillType) {
+      case 'Soft skill':
+        return AppPallete.contentColorBlue;
+      case 'Hard skill':
+        return AppPallete.contentColorYellow;
+      case 'Programming':
+        return AppPallete.contentColorRed;
       default:
         return Colors.grey;
     }
