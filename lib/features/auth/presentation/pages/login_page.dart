@@ -11,7 +11,7 @@ import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_bu
 // import 'package:mind_lab_app/features/auth/presentation/widgets/social_login_button.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:provider/provider.dart';
-
+import 'dart:io' show Platform;
 import '../widgets/social_login_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -219,61 +219,63 @@ class _LoginPageState extends State<LoginPage> {
                       ),
 
                       // or continue with
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                thickness: 0.5,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(
-                                'Or continue with',
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                thickness: 0.5,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      //   child: Row(
+                      //     children: [
+                      //       Expanded(
+                      //         child: Divider(
+                      //           thickness: 0.5,
+                      //           color: Colors.grey[400],
+                      //         ),
+                      //       ),
+                      //       Padding(
+                      //         padding:
+                      //             const EdgeInsets.symmetric(horizontal: 10.0),
+                      //         child: Text(
+                      //           'Or continue with',
+                      //           style: TextStyle(color: Colors.grey[700]),
+                      //         ),
+                      //       ),
+                      //       Expanded(
+                      //         child: Divider(
+                      //           thickness: 0.5,
+                      //           color: Colors.grey[400],
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
 
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SocialLoginButton(
-                              onTap: () {
-                                context
-                                    .read<AuthBloc>()
-                                    .add(AuthLoginWithGoogle());
-                              },
-                              imagePath: 'lib/assets/social_logos/google.png'),
-                          // const SizedBox(
-                          //   width: 25,
-                          // ),
-                          // SocialLoginButton(
-                          //     onTap: () {
-                          //       showFlashBar(
-                          //         context,
-                          //         "Feature Coming Soon",
-                          //         FlashBarAction.info,
-                          //       );
-                          //     },
-                          //     imagePath: 'lib/assets/social_logos/apple.png'),
-                        ],
-                      ),
+                      // const SizedBox(
+                      //   height: 25,
+                      // ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     SocialLoginButton(
+                      //         onTap: () {
+                      //           context
+                      //               .read<AuthBloc>()
+                      //               .add(AuthLoginWithGoogle());
+                      //         },
+                      //         imagePath: 'lib/assets/social_logos/google.png'),
+                      //     if (Platform.isIOS) ...[
+                      //       const SizedBox(
+                      //         width: 25,
+                      //       ),
+                      //       SocialLoginButton(
+                      //           onTap: () {
+                      //             showFlashBar(
+                      //               context,
+                      //               "Feature Coming Soon",
+                      //               FlashBarAction.info,
+                      //             );
+                      //           },
+                      //           imagePath: 'lib/assets/social_logos/apple.png'),
+                      //     ]
+                      //   ],
+                      // ),
                     ],
                   ),
                 );
