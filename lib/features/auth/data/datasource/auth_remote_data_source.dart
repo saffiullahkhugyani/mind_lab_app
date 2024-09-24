@@ -215,12 +215,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         nonce: rawNonce,
       );
 
-      // workaround to add user fullname to database table "Profile"
-      await supabaseClient.from('profiles').upsert({
-        "id": response.user?.id,
-        "name": "${credential.givenName}  ${credential.familyName}",
-        "email": "${credential.email}"
-      }).eq("id", (response.user?.id).toString());
+      // check if user data is available (only on first login)
+      final userId = response.user?.id;
+
+      // prepare user data for upsert
+      final userData = {
+        "id": userId,
+        "email": credential.email ?? response.user?.email,
+      };
+
+      // Only include the name if this is the first time Apple is providing it
+      if (credential.givenName != null && credential.familyName != null) {
+        userData["name"] = "${credential.givenName} ${credential.familyName}";
+      }
+
+      //upsert user data into the profiles table
+      await supabaseClient.from('profiles').upsert(userData).eq('id', userId!);
 
       return UserModel.fromJson(response.user!.appMetadata);
     } on AuthException catch (e) {
