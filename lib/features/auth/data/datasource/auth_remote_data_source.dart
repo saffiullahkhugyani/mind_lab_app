@@ -232,7 +232,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       //upsert user data into the profiles table
       await supabaseClient.from('profiles').upsert(userData).eq('id', userId!);
 
-      return UserModel.fromJson(response.user!.appMetadata);
+      // Get the user metadata from the response and modify the name
+      final userMetadata = response.user!.userMetadata!;
+
+      // Modify the name in the userMetadata (if needed)
+      if (credential.givenName != null && credential.familyName != null) {
+        userMetadata['name'] =
+            "${credential.givenName} ${credential.familyName}";
+      }
+
+      return UserModel.fromJson(userMetadata);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
