@@ -239,6 +239,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (credential.givenName != null && credential.familyName != null) {
         userMetadata['name'] =
             "${credential.givenName} ${credential.familyName}";
+      } else {
+        final userName = await supabaseClient
+            .from('profiles')
+            .select('name')
+            .eq('id', userId);
+        userMetadata['name'] = "${userName.first}";
       }
 
       return UserModel.fromJson(userMetadata);
