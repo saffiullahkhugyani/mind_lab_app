@@ -244,7 +244,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             .from('profiles')
             .select('name')
             .eq('id', userId);
-        userMetadata['name'] = "${userName.first}";
+        userMetadata['name'] = "${userName.first['name']}";
       }
 
       return UserModel.fromJson(userMetadata);
