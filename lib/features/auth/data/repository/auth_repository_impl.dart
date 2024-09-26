@@ -107,6 +107,19 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Either<ServerFailure, User>> signInWithApple() async {
+    try {
+      return _getUser(() async => remoteDataSource.loginWithApple());
+    } on sb.AuthException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
   Future<Either<ServerFailure, User>> _getUser(
     Future<User> Function() fn,
   ) async {

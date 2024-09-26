@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:crypto/crypto.dart';
 
 abstract interface class AuthRemoteDataSource {
   Session? get currentUserSession;
@@ -31,6 +34,8 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUserData();
 
   Future<UserModel> loginWithGoogle();
+
+  Future<UserModel> loginWithApple();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -178,6 +183,71 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       return UserModel.fromJson(response.user!.userMetadata!);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> loginWithApple() async {
+    try {
+      final rawNonce = supabaseClient.auth.generateRawNonce();
+      final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName
+        ],
+        nonce: hashedNonce,
+      );
+
+      final idToken = credential.identityToken;
+      if (idToken == null) {
+        throw const ServerException("No Id token found.");
+      }
+
+      final response = await supabaseClient.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+
+      // check if user data is available (only on first login)
+      final userId = response.user?.id;
+
+      // prepare user data for upsert
+      final userData = {
+        "id": userId,
+        "email": credential.email ?? response.user?.email,
+      };
+
+      // Only include the name if this is the first time Apple is providing it
+      if (credential.givenName != null && credential.familyName != null) {
+        userData["name"] = "${credential.givenName} ${credential.familyName}";
+      }
+
+      //upsert user data into the profiles table
+      await supabaseClient.from('profiles').upsert(userData).eq('id', userId!);
+
+      // Get the user metadata from the response and modify the name
+      final userMetadata = response.user!.userMetadata!;
+
+      // Modify the name in the userMetadata (if needed)
+      if (credential.givenName != null && credential.familyName != null) {
+        userMetadata['name'] =
+            "${credential.givenName} ${credential.familyName}";
+      } else {
+        final userName = await supabaseClient
+            .from('profiles')
+            .select('name')
+            .eq('id', userId);
+        userMetadata['name'] = "${userName.first['name']}";
+      }
+
+      return UserModel.fromJson(userMetadata);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {

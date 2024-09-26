@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../widgets/social_login_button.dart';
 
+import '../widgets/social_login_button.dart';
+
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(
         builder: (context) => const LoginPage(),
