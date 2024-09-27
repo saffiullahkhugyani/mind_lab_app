@@ -265,12 +265,10 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             SocialLoginButton(
                                 onTap: () {
-                                  showFlashBar(
-                                    context,
-                                    "Feature Coming Soon",
-                                    FlashBarAction.info,
-                                  );
-                                },
+                                context
+                                    .read<AuthBloc>()
+                                    .add(AuthLoginWithApple());
+                              },
                                 imagePath: 'lib/assets/social_logos/apple.png'),
                           ]
                         ],
