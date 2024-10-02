@@ -24,6 +24,7 @@ final listProjectImages = [
   {"id": 4, "image_asset": 'lib/assets/images/battle_bot.png'},
   {"id": 5, "image_asset": 'lib/assets/images/airplane.png'},
   {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
+  {"id": 7, "image_asset": 'lib/assets/icons/car.png'},
 ];
 
 final listProjectIcons = [
@@ -179,6 +180,9 @@ class _ProjectPageState extends State<ProjectPage> {
                             case 1:
                               Navigator.pushNamed(context, roverMainPageRoute);
                               break;
+                            case 7:
+                              Navigator.pushNamed(context, arcadeGameOneRoute);
+                              break;
                           }
                         } else {
                           // showFlushBar(context, 'Feature Coming soon',
@@ -201,6 +205,16 @@ class _ProjectPageState extends State<ProjectPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          // FloatingActionButton.extended(
+          //     icon: const Icon(CupertinoIcons.add),
+          //     heroTag: 'herotag3',
+          //     onPressed: () {
+          //       Navigator.pushNamed(context, arcadeGameOneRoute);
+          //     },
+          //     label: const Text('new feature')),
+          // const SizedBox(
+          //   height: 10,
+          // ),
           FloatingActionButton.extended(
               icon: const Icon(CupertinoIcons.add),
               heroTag: 'herotag1',

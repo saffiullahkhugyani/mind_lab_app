@@ -37,6 +37,9 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
         break;
       case 6:
         imageLink = 'lib/assets/images/rocket.png';
+        break;
+      case 7:
+        imageLink = 'lib/assets/icons/car.png';
     }
 
     return imageLink;
