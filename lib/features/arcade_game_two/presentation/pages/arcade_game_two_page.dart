@@ -77,48 +77,104 @@ class _ArcadeGameTwoPageState extends State<ArcadeGameTwoPage> {
                         {Navigator.pushNamed(context, flutterBluePlusRoute)},
                   ),
                 ),
-                Column(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ArrowButton(
-                      arrowIcon: Icons.arrow_upward,
-                      onTap: () {
-                        sendBluetoothCommand(bluetoothManager, {"up": "1"});
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const Text(
+                          'UP',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         ArrowButton(
-                          arrowIcon: Icons.arrow_back,
+                          arrowIcon: Icons.arrow_upward,
                           onTap: () {
-                            sendBluetoothCommand(
-                                bluetoothManager, {"left": "3"});
+                            sendBluetoothCommand(bluetoothManager, {"up": "1"});
                           },
                         ),
                         const SizedBox(
-                          width: 100,
+                          height: 50,
                         ),
                         ArrowButton(
-                          arrowIcon: Icons.arrow_forward,
+                          arrowIcon: Icons.arrow_downward,
                           onTap: () {
                             sendBluetoothCommand(
-                                bluetoothManager, {"right": "4"});
+                                bluetoothManager, {"down": "2"});
                           },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          'Down',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      width: 20,
                     ),
-                    ArrowButton(
-                      arrowIcon: Icons.arrow_downward,
-                      onTap: () {
-                        sendBluetoothCommand(bluetoothManager, {"down": "2"});
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ArrowButton(
+                              arrowIcon: Icons.arrow_back,
+                              onTap: () {
+                                sendBluetoothCommand(
+                                    bluetoothManager, {"left": "3"});
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text(
+                              'RIGHT',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ArrowButton(
+                              arrowIcon: Icons.arrow_forward,
+                              onTap: () {
+                                sendBluetoothCommand(
+                                    bluetoothManager, {"right": "4"});
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text(
+                              'LEFT',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
