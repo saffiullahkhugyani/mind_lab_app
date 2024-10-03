@@ -141,7 +141,7 @@ class _ArcadeGameTwoPageState extends State<ArcadeGameTwoPage> {
                               height: 10,
                             ),
                             const Text(
-                              'RIGHT',
+                              'LEFT',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -166,7 +166,7 @@ class _ArcadeGameTwoPageState extends State<ArcadeGameTwoPage> {
                               height: 10,
                             ),
                             const Text(
-                              'LEFT',
+                              'RIGHT',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
