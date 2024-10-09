@@ -34,148 +34,195 @@ class _PiechartState extends State<Piechart> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal, // Make charts scrollable horizontally
-      child: Row(
-        children: [
-          SizedBox(
-            width: 250, // Adjust the width as per your requirement
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "Skill Level",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AspectRatio(
-                  aspectRatio: 1.3,
-                  child: PieChart(
-                    PieChartData(
-                      pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                          setState(() {
-                            if (!event.isInterestedForInteractions ||
-                                pieTouchResponse == null ||
-                                pieTouchResponse.touchedSection == null) {
-                              touchedIndexSkillLevel = -1;
-                              return;
-                            }
-                            touchedIndexSkillLevel = pieTouchResponse
-                                .touchedSection!.touchedSectionIndex;
-                          });
-                        },
-                      ),
-                      borderData: FlBorderData(show: false),
-                      sectionsSpace: 5,
-                      centerSpaceRadius: 30,
-                      sections: skillLevelChartSections,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: 250, // Adjust the width as per your requirement
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.2), // Shadow color with opacity
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 6, // Blur radius
+                      offset:
+                          const Offset(0, 3), // Offset in the X and Y direction
                     ),
-                  ),
+                  ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Indicator(
-                        color: AppPallete.contentColorBlue,
-                        text: 'Basic',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 4),
-                      Indicator(
-                        color: AppPallete.contentColorYellow,
-                        text: 'Intermediate',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 4),
-                      Indicator(
-                        color: AppPallete.contentColorRed,
-                        text: 'Advanced',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 4),
-                      Indicator(
-                        color: AppPallete.contentColorGreen,
-                        text: 'Professional',
-                        isSquare: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 250, // Adjust the width as per your requirement
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "Skill Type",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                AspectRatio(
-                  aspectRatio: 1.3,
-                  child: PieChart(
-                    PieChartData(
-                      pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                          setState(() {
-                            if (!event.isInterestedForInteractions ||
-                                pieTouchResponse == null ||
-                                pieTouchResponse.touchedSection == null) {
-                              touchedIndexSkillType = -1;
-                              return;
-                            }
-                            touchedIndexSkillType = pieTouchResponse
-                                .touchedSection!.touchedSectionIndex;
-                          });
-                        },
-                      ),
-                      borderData: FlBorderData(show: false),
-                      sectionsSpace: 5,
-                      centerSpaceRadius: 30,
-                      sections: skillTypeChartSections, // Skill type data
+                padding: const EdgeInsets.all(4),
+                margin: const EdgeInsets.only(bottom: 20, left: 10, top: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
+                    const Text(
+                      "Skill Level",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    AspectRatio(
+                      aspectRatio: 1.3,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback:
+                                (FlTouchEvent event, pieTouchResponse) {
+                              setState(() {
+                                if (!event.isInterestedForInteractions ||
+                                    pieTouchResponse == null ||
+                                    pieTouchResponse.touchedSection == null) {
+                                  touchedIndexSkillLevel = -1;
+                                  return;
+                                }
+                                touchedIndexSkillLevel = pieTouchResponse
+                                    .touchedSection!.touchedSectionIndex;
+                              });
+                            },
+                          ),
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 5,
+                          centerSpaceRadius: 30,
+                          sections: skillLevelChartSections,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Indicator(
+                            color: AppPallete.contentColorBlue,
+                            text: 'Basic',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorYellow,
+                            text: 'Intermediate',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorRed,
+                            text: 'Advanced',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorGreen,
+                            text: 'Professional',
+                            isSquare: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Indicator(
-                        color: AppPallete.contentColorBlue,
-                        text: 'Soft Skill',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 4),
-                      Indicator(
-                        color: AppPallete.contentColorYellow,
-                        text: 'Hard Skill',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 4),
-                      Indicator(
-                        color: AppPallete.contentColorRed,
-                        text: 'Programming',
-                        isSquare: true,
-                      ),
-                      // Add other skill type indicators here
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            SizedBox(
+              width: 20,
+            ),
+            SizedBox(
+              width: 250, // Adjust the width as per your requirement
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.2), // Shadow color with opacity
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 6, // Blur radius
+                      offset:
+                          const Offset(0, 3), // Offset in the X and Y direction
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(4),
+                margin: const EdgeInsets.only(
+                    bottom: 20, left: 10, right: 10, top: 10),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      "Skill Type",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    AspectRatio(
+                      aspectRatio: 1.3,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback:
+                                (FlTouchEvent event, pieTouchResponse) {
+                              setState(() {
+                                if (!event.isInterestedForInteractions ||
+                                    pieTouchResponse == null ||
+                                    pieTouchResponse.touchedSection == null) {
+                                  touchedIndexSkillType = -1;
+                                  return;
+                                }
+                                touchedIndexSkillType = pieTouchResponse
+                                    .touchedSection!.touchedSectionIndex;
+                              });
+                            },
+                          ),
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 5,
+                          centerSpaceRadius: 30,
+                          sections: skillTypeChartSections, // Skill type data
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Indicator(
+                            color: AppPallete.contentColorBlue,
+                            text: 'Soft Skill',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorYellow,
+                            text: 'Hard Skill',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorRed,
+                            text: 'Programming',
+                            isSquare: true,
+                          ),
+                          // Add other skill type indicators here
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

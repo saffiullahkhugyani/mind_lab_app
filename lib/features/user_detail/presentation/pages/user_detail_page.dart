@@ -197,33 +197,34 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       children: [
                         const SizedBox(height: 30),
                         Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(
-                                    0.2), // Shadow color with opacity
-                                spreadRadius: 2, // Spread radius
-                                blurRadius: 6, // Blur radius
-                                offset: const Offset(
-                                    0, 3), // Offset in the X and Y direction
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.only(
-                              bottom: 10, left: 15, top: 10),
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 20),
+                          // decoration: BoxDecoration(
+                          //   color: Colors.grey[400],
+                          //   borderRadius: BorderRadius.circular(8),
+                          //   boxShadow: [
+                          //     BoxShadow(
+                          //       color: Colors.black.withOpacity(
+                          //           0.2), // Shadow color with opacity
+                          //       spreadRadius: 2, // Spread radius
+                          //       blurRadius: 6, // Blur radius
+                          //       offset: const Offset(
+                          //           0, 3), // Offset in the X and Y direction
+                          //     ),
+                          //   ],
+                          // ),
+                          // padding: const EdgeInsets.all(15),
+                          // margin: const EdgeInsets.only(
+                          //     left: 20, right: 20, top: 20),
                           child: Column(
                             children: [
                               Text(
                                 "Asserted Certificates",
                                 style: TextStyle(
-                                  color: Colors.grey[600],
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
+                              ),
+                              const SizedBox(
+                                height: 10,
                               ),
                               Piechart(certificateMaster: certificateMaster),
                             ],
