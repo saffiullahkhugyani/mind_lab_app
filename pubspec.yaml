@@ -66,6 +66,7 @@ dependencies:
   flash: ^3.1.1
   fl_chart: ^0.69.0
   sign_in_with_apple: ^6.1.2
+  flutter_joystick: ^0.2.1
 
 dev_dependencies:
   flutter_test:
