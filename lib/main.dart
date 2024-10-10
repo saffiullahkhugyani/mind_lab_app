@@ -19,6 +19,7 @@ import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.d
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
+import 'package:mind_lab_app/features/modhish/presentation/pages/modhish_page.dart';
 import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
@@ -109,6 +110,7 @@ class _MyAppState extends State<MyApp> {
           addCertificateRoute: (context) => const AddCertificate(),
           updateProfileRoute: (context) => const UpdataProfilePage(),
           arcadeGameOneRoute: (context) => const ArcadeGameOnePage(),
+          modhishRoute: (context) => const ModhishPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,
