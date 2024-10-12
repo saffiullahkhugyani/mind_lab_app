@@ -15,6 +15,7 @@ import 'package:mind_lab_app/features/arcage_game_one/presentation/pages/arcade_
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
+import 'package:mind_lab_app/features/battle_bot/presentation/pages/battle_bot_page.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
@@ -109,6 +110,7 @@ class _MyAppState extends State<MyApp> {
           addCertificateRoute: (context) => const AddCertificate(),
           updateProfileRoute: (context) => const UpdataProfilePage(),
           arcadeGameOneRoute: (context) => const ArcadeGameOnePage(),
+          battleBotRoute: (context) => const BattleBotPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,
