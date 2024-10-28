@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
 import 'package:mind_lab_app/features/arcage_game_one/presentation/widgets/bt_connection_button.dart';
@@ -20,16 +21,33 @@ class ArcadeGameTwoPage extends StatefulWidget {
 class _ArcadeGameTwoPageState extends State<ArcadeGameTwoPage> {
   // Timer? _timer;
   // int _elapsedMillis = 0;
-  double _currentSliderValue = 0;
+  double _speedSliderValue = 0;
+  double _servoOneSliderValue = 0;
+  double _servoTwoSliderValue = 0;
+  bool motorSwitch = false;
+  bool servoSwitch = false;
   var sendingCommand = 's';
 
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 
   @override
-  void dispose() {
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values); // to re-show bars
     super.dispose();
   }
 
@@ -56,182 +74,249 @@ class _ArcadeGameTwoPageState extends State<ArcadeGameTwoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Arcade game Two"),
-        ),
-        body: Consumer<FlutterBluetoothPlus>(
-          builder: (context, bluetoothManager, child) {
-            bool isConnected =
-                bluetoothManager.connectedDevice?.isConnected ?? false;
+    return Scaffold(body: Consumer<FlutterBluetoothPlus>(
+      builder: (context, bluetoothManager, child) {
+        bool isConnected =
+            bluetoothManager.connectedDevice?.isConnected ?? false;
 
-            return Stack(
-              children: [
-                Positioned(
-                  top: 30,
-                  left: MediaQuery.of(context).size.width / 2 - 40,
-                  child: BluetoothConnectionButton(
-                    connectionStatusColor:
-                        isConnected ? Colors.green : Colors.red,
-                    onTap: () =>
-                        {Navigator.pushNamed(context, flutterBluePlusRoute)},
+        return Stack(
+          children: [
+            Positioned(
+              top: 30,
+              left: MediaQuery.of(context).size.width / 2 - 40,
+              child: BluetoothConnectionButton(
+                connectionStatusColor: isConnected ? Colors.green : Colors.red,
+                onTap: () =>
+                    {Navigator.pushNamed(context, flutterBluePlusRoute)},
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              left: 20,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ArrowButton(
+                            arrowIcon: Icons.arrow_upward,
+                            arrow: "Up",
+                            onTapDown: () {
+                              sendBluetoothCommand(
+                                  bluetoothManager, {"up": "1"});
+                            },
+                            onTapUp: () {
+                              sendBluetoothCommand(
+                                  bluetoothManager, {"up": "0"});
+                            },
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ArrowButton(
+                                arrowIcon: Icons.arrow_back,
+                                arrow: "Left",
+                                onTapDown: () {
+                                  sendBluetoothCommand(
+                                      bluetoothManager, {"left": "3"});
+                                },
+                                onTapUp: () {
+                                  sendBluetoothCommand(
+                                      bluetoothManager, {"left": "0"});
+                                },
+                              ),
+                              const SizedBox(
+                                width: 80,
+                              ),
+                              ArrowButton(
+                                arrowIcon: Icons.arrow_forward,
+                                arrow: "Right",
+                                onTapDown: () {
+                                  sendBluetoothCommand(
+                                      bluetoothManager, {"right": "4"});
+                                },
+                                onTapUp: () {
+                                  sendBluetoothCommand(
+                                      bluetoothManager, {"right": "0"});
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          ArrowButton(
+                            arrowIcon: Icons.arrow_downward,
+                            arrow: "Down",
+                            onTapDown: () {
+                              sendBluetoothCommand(
+                                  bluetoothManager, {"down": "2"});
+                            },
+                            onTapUp: () {
+                              sendBluetoothCommand(
+                                  bluetoothManager, {"down": "0"});
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                    ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'UP',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        ArrowButton(
-                          arrowIcon: Icons.arrow_upward,
-                          onTap: () {
-                            sendBluetoothCommand(bluetoothManager, {"up": "1"});
-                          },
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        ArrowButton(
-                          arrowIcon: Icons.arrow_downward,
-                          onTap: () {
-                            sendBluetoothCommand(
-                                bluetoothManager, {"down": "2"});
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text(
-                          'Down',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ArrowButton(
-                              arrowIcon: Icons.arrow_back,
-                              onTap: () {
-                                sendBluetoothCommand(
-                                    bluetoothManager, {"left": "3"});
-                              },
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              'LEFT',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ArrowButton(
-                              arrowIcon: Icons.arrow_forward,
-                              onTap: () {
-                                sendBluetoothCommand(
-                                    bluetoothManager, {"right": "4"});
-                              },
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              'RIGHT',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Positioned(
-                  bottom: 20,
-                  right: 10,
-                  left: 10,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
-                        "Speed",
+                        "Speed Bar",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 20,
                         ),
                       ),
                       Slider(
-                        value: _currentSliderValue,
-                        max: 250,
+                        value: _speedSliderValue,
+                        max: 100,
                         divisions: 10,
-                        label: _currentSliderValue.round().toString(),
+                        label: _speedSliderValue.round().toString(),
                         onChanged: (double value) {
                           setState(() {
-                            _currentSliderValue = value;
+                            _speedSliderValue = value;
 
                             sendBluetoothCommand(bluetoothManager, {
-                              "speed": _currentSliderValue.round().toString()
+                              "speed": _speedSliderValue.round().toString()
                             });
                           });
                         },
                       ),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Low',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            "High",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          )
-                        ],
-                      )
                     ],
                   ),
-                )
-              ],
-            );
-          },
-        ));
+                ],
+              ),
+            ),
+            Positioned(
+              top: 10,
+              bottom: 10,
+              right: 20,
+              left: MediaQuery.of(context).size.width / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Motor Switch"),
+                      Switch(
+                          value: motorSwitch,
+                          onChanged: (value) {
+                            if (value) {
+                              sendBluetoothCommand(
+                                bluetoothManager,
+                                {
+                                  "motor-switch": "1",
+                                },
+                              );
+                            } else {
+                              sendBluetoothCommand(
+                                bluetoothManager,
+                                {
+                                  "motor-switch": "0",
+                                },
+                              );
+                            }
+                            setState(() {
+                              motorSwitch = value;
+                            });
+                          }),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Servo switch"),
+                      Switch(
+                          value: servoSwitch,
+                          onChanged: (value) {
+                            if (value) {
+                              sendBluetoothCommand(
+                                bluetoothManager,
+                                {
+                                  "servo-switch": "1",
+                                },
+                              );
+                            } else {
+                              sendBluetoothCommand(
+                                bluetoothManager,
+                                {
+                                  "servo-switch": "0",
+                                },
+                              );
+                            }
+                            setState(() {
+                              servoSwitch = value;
+                            });
+                          }),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Servo 1 "),
+                      Slider(
+                        value: _servoTwoSliderValue,
+                        max: 360,
+                        divisions: 16,
+                        label: _servoTwoSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _servoTwoSliderValue = value;
+
+                            sendBluetoothCommand(bluetoothManager, {
+                              "servo-1": _servoTwoSliderValue.round().toString()
+                            });
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Servo 2"),
+                      Slider(
+                        value: _servoOneSliderValue,
+                        max: 360,
+                        divisions: 16,
+                        label: _servoOneSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _servoOneSliderValue = value;
+
+                            sendBluetoothCommand(bluetoothManager, {
+                              "servo-2": _servoOneSliderValue.round().toString()
+                            });
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    ));
   }
 }

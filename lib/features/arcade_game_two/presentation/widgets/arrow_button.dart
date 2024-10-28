@@ -1,14 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class ArrowButton extends StatefulWidget {
   final IconData arrowIcon;
-  final Function() onTap;
+  final Function() onTapDown;
+  final Function() onTapUp;
+  final String arrow;
   const ArrowButton({
     super.key,
     required this.arrowIcon,
-    required this.onTap,
+    required this.arrow,
+    required this.onTapDown,
+    required this.onTapUp,
   });
 
   @override
@@ -16,29 +18,12 @@ class ArrowButton extends StatefulWidget {
 }
 
 class _ArrowButtonState extends State<ArrowButton> {
-  //how often method will be called
-  Duration delay = const Duration(milliseconds: 10);
-
-  // decalring timer
-  Timer? timer;
-
-  void continuousWork() {
-    debugPrint("I am working c ${timer!.tick}");
-  }
-
   void onPressEnd() {
-    debugPrint("Job END");
-    timer?.cancel();
-    timer = null;
+    widget.onTapUp();
   }
 
   void onPressStart() {
-    if (timer != null) return;
-    debugPrint("Job started");
-    timer = Timer.periodic(delay, (timer) {
-      // continuousWork();
-      widget.onTap();
-    });
+    widget.onTapDown();
   }
 
   @override
@@ -62,16 +47,21 @@ class _ArrowButtonState extends State<ArrowButton> {
               // onTap();
             },
             child: Container(
-              padding: const EdgeInsets.all(20),
-              width: 100,
-              height: 100,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.grey.withOpacity(0.2)),
-              child: Icon(
-                widget.arrowIcon,
-                size: 50,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    widget.arrowIcon,
+                    size: 40,
+                  ),
+                  Text(style: const TextStyle(fontSize: 20), widget.arrow),
+                ],
               ),
             ),
           ),
