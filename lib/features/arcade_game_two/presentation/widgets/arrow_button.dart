@@ -28,45 +28,41 @@ class _ArrowButtonState extends State<ArrowButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-      child: Material(
-        elevation: 2,
-        borderRadius: BorderRadius.circular(8),
-        child: InkWell(
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        width: constraints.maxWidth,
+        height: constraints.maxHeight,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+        child: Material(
+          elevation: 2,
           borderRadius: BorderRadius.circular(8),
-          onTap: () {},
-          child: GestureDetector(
-            onTapDown: (v) {
-              onPressStart();
-            },
-            onTapUp: (v) {
-              onPressEnd();
-            },
-            onTap: () {
-              // onTap();
-            },
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.withOpacity(0.2)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    widget.arrowIcon,
-                    size: 40,
-                  ),
-                  Text(style: const TextStyle(fontSize: 20), widget.arrow),
-                ],
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTapUp: (_) => onPressEnd(),
+            onTapDown: (_) => onPressStart(),
+            child: GestureDetector(
+              child: Container(
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey.withOpacity(0.2)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(widget.arrowIcon, size: 100), // Adjust icon size
+                    Text(
+                      widget.arrow,
+                      style: TextStyle(fontSize: 40),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
