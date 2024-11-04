@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/register_player_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
@@ -47,4 +48,12 @@ abstract interface class UserDetailRepository {
   // fetching data of certificate vertion 2
   Future<Either<ServerFailure, CertificateV1V2MappingEntity>>
       getCertificateMasterData();
+
+  // registering player for up comming race
+  Future<Either<ServerFailure, RegisterPlayerEntity>> registerPlayer({
+    required String playerId,
+    required String userId,
+    required String city,
+    required String country,
+  });
 }

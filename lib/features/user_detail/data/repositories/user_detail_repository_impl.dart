@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/upload_certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
@@ -172,5 +173,29 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       getCertificateMasterData() {
     // TODO: implement getCertificateMasterData
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<ServerFailure, RegisterPlayerModel>> registerPlayer({
+    required String playerId,
+    required String userId,
+    required String city,
+    required String country,
+  }) async {
+    try {
+      RegisterPlayerModel playerModel = RegisterPlayerModel(
+        userId: userId,
+        playerId: playerId,
+        city: city,
+        country: country,
+      );
+
+      final registeredPlayer =
+          await userDetailRemoteDataSource.registerPlayer(playerModel);
+
+      return right(registeredPlayer);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
   }
 }

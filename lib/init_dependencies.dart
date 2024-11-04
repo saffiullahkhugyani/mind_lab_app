@@ -34,9 +34,11 @@ import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_cate
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/register_player_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/update_profile.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -304,6 +306,19 @@ void _initAuth() {
   serviceLocator.registerLazySingleton(
     () => UpdateProfileBloc(
       updateProfile: serviceLocator(),
+    ),
+  );
+
+  // dependencies for register player
+  // register player use case
+  serviceLocator.registerFactory(() => RegisterPlayerUsecase(
+        serviceLocator(),
+      ));
+
+  // register player bloc
+  serviceLocator.registerLazySingleton(
+    () => RegisterPlayerBloc(
+      registerPlayer: serviceLocator(),
     ),
   );
 }

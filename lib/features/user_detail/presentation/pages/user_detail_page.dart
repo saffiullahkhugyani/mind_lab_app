@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
@@ -191,6 +190,33 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
                 userInfo.name,
+              ),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(playerRegistrationRoute,
+                        arguments: userInfo);
+                  },
+                  child: const Text("Player registration"),
+                ),
+              ),
+              Card(
+                color: Colors.grey.withOpacity(0.1),
+                child: ListTile(
+                  leading: CircleAvatar(child: Icon(Icons.menu)),
+                  trailing: Icon(Icons.navigate_next),
+                  title: const Text("My Rank"),
+                  horizontalTitleGap: 100,
+                  dense: false,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(userRankRoute,
+                        arguments: userInfo.imageUrl.isNotEmpty
+                            ? userInfo.imageUrl
+                            : "No Image");
+                  },
+                ),
               ),
               certificateMaster.isNotEmpty
                   ? Column(

@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_hashtag_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_model.dart';
@@ -34,6 +35,7 @@ abstract interface class UserDetailRemoteDataSource {
   Future<String> deleteAccount();
   Future<void> signOut();
   Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
+  Future<RegisterPlayerModel> registerPlayer(RegisterPlayerModel playerModel);
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -307,6 +309,40 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<RegisterPlayerModel> registerPlayer(
+    RegisterPlayerModel playerModel,
+  ) async {
+    try {
+      // checking if user has already registered
+      final registeredPlayer = await supabaseClient
+          .from('register_player')
+          .select('*')
+          .match({'player_id': playerModel.playerId});
+
+      if (registeredPlayer.isNotEmpty) {
+        throw ServerException(
+            "Player already exsits with id: ${RegisterPlayerModel.fromJson(registeredPlayer.first).playerId}");
+      }
+
+      final reg = await supabaseClient
+          .from("register_player")
+          .insert(
+            playerModel.toJson(),
+          )
+          .select();
+
+      return RegisterPlayerModel.fromJson(reg.first);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on ServerException catch (e) {
+      print(e.message);
+      throw ServerException(
+        e.message,
+      );
     }
   }
 }
