@@ -1,9 +1,9 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/upload_certificate_model.dart';
@@ -38,15 +38,12 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       final certificateMaster =
           await userDetailRemoteDataSource.getCertificateMasterData();
 
-      print(certificateMaster);
-
       return right(UserDetailResult(
         userDetails: userDetail,
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
       ));
     } on ServerException catch (e) {
-      log((e.message));
       return left(ServerFailure(errorMessage: e.message));
     }
   }
@@ -194,6 +191,24 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
           await userDetailRemoteDataSource.registerPlayer(playerModel);
 
       return right(registeredPlayer);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, List<PlayerRankModel>>>
+      getPlayerRankDetails() async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
+
+      final playerRankDetails =
+          await userDetailRemoteDataSource.getPlayerRankDetails();
+
+      return right(playerRankDetails);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }

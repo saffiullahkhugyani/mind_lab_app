@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/player_rank_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/register_player_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
@@ -56,4 +57,7 @@ abstract interface class UserDetailRepository {
     required String city,
     required String country,
   });
+
+  // fething player rank details
+  Future<Either<ServerFailure, List<PlayerRankEntity>>> getPlayerRankDetails();
 }

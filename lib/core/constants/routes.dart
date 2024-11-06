@@ -14,5 +14,5 @@ const stepDurationRoute = '/step-duration-page/';
 const addCertificateRoute = '/add-certificate-page/';
 const updateProfileRoute = '/update-profile-page/';
 const arcadeGameOneRoute = '/arcade-game-one-page';
-const userRankRoute = '/user-rank-page/';
+const playerRankRoute = '/user-rank-page/';
 const playerRegistrationRoute = '/player-registration-page';

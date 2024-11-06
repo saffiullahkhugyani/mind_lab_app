@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -255,8 +253,6 @@ class _PiechartState extends State<Piechart> {
     };
 
     for (var certificate in certificates) {
-      log(certificates.length.toString());
-      log(certificate.certificateMaster.skillType);
       String skillType = certificate.certificateMaster.skillType;
       if (skillTypeCounts.containsKey(skillType)) {
         skillTypeCounts[skillType] = skillTypeCounts[skillType]! + 1;

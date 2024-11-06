@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_hashtag_model.dart';
@@ -36,6 +37,8 @@ abstract interface class UserDetailRemoteDataSource {
   Future<void> signOut();
   Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
   Future<RegisterPlayerModel> registerPlayer(RegisterPlayerModel playerModel);
+  Future<List<PlayerRankModel>> getPlayerRankDetails();
+  Future<List<RegisterPlayerModel>> getRegisterPlayers();
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -343,6 +346,88 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       throw ServerException(
         e.message,
       );
+    }
+  }
+
+  @override
+  Future<List<PlayerRankModel>> getPlayerRankDetails() async {
+    try {
+      // // getting current user Uid
+      // final playerId = "7ca7414b";
+
+      // fetching user details
+      final response = await supabaseClient.from('register_player').select('''
+      player_id,
+      city,
+      country,
+      player_data_testing (race_type, race_time, reaction_time, lap_time)
+    ''');
+
+      // List<PlayerRankModel> playerRankModelList = response.map((json) {
+      //   return PlayerRankModel(
+      //     playerId: json['player_id'] as String,
+      //     country: json['country'] as String,
+      //     city: json['city'] as String,
+      //     typeOfRace: json['player_data_testing']['race_type'] as String,
+      //     raceTime: json['player_data_testing']['race_time'] as String,
+      //     reactionTime: json['player_data_testing']['reaction_time'] as String,
+      //     lapTime: json['player_data_testing']['lap_time'] as String,
+      //   );
+      // }).toList();
+
+      // Cast response as a list of maps
+      List<PlayerRankModel> playerRankModelList = [];
+
+      for (var player in response as List<dynamic>) {
+        final playerId = player['player_id'] as String;
+        final city = player['city'] as String;
+        final country = player['country'] as String;
+        final playerDataList = player['player_data_testing'] as List<dynamic>;
+
+        // Map each race record to a PlayerRankModel
+        for (var raceData in playerDataList) {
+          playerRankModelList.add(
+            PlayerRankModel(
+              playerId: playerId,
+              city: city,
+              country: country,
+              typeOfRace: raceData['race_type'] as String,
+              raceTime: (raceData['race_time'] as num)
+                  .toDouble(), // Ensure this is a double
+              reactionTime: (raceData['reaction_time'] as num)
+                  .toDouble(), // Ensure this is a double
+              lapTime: (raceData['lap_time'] as num)
+                  .toDouble(), // Ensure this is a double
+            ),
+          );
+        }
+      }
+
+      return playerRankModelList;
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<RegisterPlayerModel>> getRegisterPlayers() async {
+    try {
+      // fetchingall registered players
+      final response = await supabaseClient.from('register_player').select("*");
+
+      return response
+          .map((json) => RegisterPlayerModel.fromJson(json))
+          .toList();
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
     }
   }
 }

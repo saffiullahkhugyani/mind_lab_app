@@ -211,10 +211,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5)),
                   onTap: () {
-                    Navigator.of(context).pushNamed(userRankRoute,
-                        arguments: userInfo.imageUrl.isNotEmpty
-                            ? userInfo.imageUrl
-                            : "No Image");
+                    Navigator.of(context)
+                        .pushNamed(playerRankRoute, arguments: userInfo);
                   },
                 ),
               ),

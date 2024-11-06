@@ -30,6 +30,7 @@ import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_r
 import 'package:mind_lab_app/features/user_detail/data/repositories/user_detail_repository_impl.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/delete_account.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_player_rank_detail_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
@@ -38,6 +39,7 @@ import 'package:mind_lab_app/features/user_detail/domain/usecases/register_playe
 import 'package:mind_lab_app/features/user_detail/domain/usecases/update_profile.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
@@ -311,14 +313,31 @@ void _initAuth() {
 
   // dependencies for register player
   // register player use case
-  serviceLocator.registerFactory(() => RegisterPlayerUsecase(
-        serviceLocator(),
-      ));
+  serviceLocator.registerFactory(
+    () => RegisterPlayerUsecase(
+      serviceLocator(),
+    ),
+  );
 
   // register player bloc
   serviceLocator.registerLazySingleton(
     () => RegisterPlayerBloc(
       registerPlayer: serviceLocator(),
+    ),
+  );
+
+  // dependencies for player rank details
+  //  player rank use case
+  serviceLocator.registerFactory(
+    () => GetPlayerRankDetailUsecase(
+      serviceLocator(),
+    ),
+  );
+
+  // player rank bloc
+  serviceLocator.registerLazySingleton(
+    () => PlayerRankBloc(
+      playerRankDetails: serviceLocator(),
     ),
   );
 }

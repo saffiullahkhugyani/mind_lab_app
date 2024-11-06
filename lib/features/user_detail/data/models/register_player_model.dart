@@ -16,7 +16,7 @@ class RegisterPlayerModel extends RegisterPlayerEntity {
   }) {
     return RegisterPlayerModel(
       userId: userId ?? this.userId,
-      playerId: playerId ?? this.userId,
+      playerId: playerId ?? this.playerId,
       city: city ?? this.city,
       country: country ?? this.country,
     );

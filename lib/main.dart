@@ -25,12 +25,13 @@ import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_cont
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/step_duration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/add_certificate_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/player_registration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/update_profile_page.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/pages/user_rank_page.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/pages/player_rank_page.dart';
 import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
@@ -66,6 +67,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<RegisterPlayerBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<PlayerRankBloc>(),
         )
       ],
       child: const MyApp(),
@@ -115,7 +119,7 @@ class _MyAppState extends State<MyApp> {
           addCertificateRoute: (context) => const AddCertificate(),
           updateProfileRoute: (context) => const UpdataProfilePage(),
           arcadeGameOneRoute: (context) => const ArcadeGameOnePage(),
-          userRankRoute: (context) => const UserRankPage(),
+          playerRankRoute: (context) => const PlayerRankPage(),
           playerRegistrationRoute: (context) => const PlayerRegistrationPage(),
         },
         home: AppUpgraderDialog(
