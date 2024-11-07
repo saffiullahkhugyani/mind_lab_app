@@ -37,11 +37,14 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
           await userDetailRemoteDataSource.getCertificates();
       final certificateMaster =
           await userDetailRemoteDataSource.getCertificateMasterData();
+      final playerRegistration =
+          await userDetailRemoteDataSource.getPlayerRegistration();
 
       return right(UserDetailResult(
         userDetails: userDetail,
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
+        playerRegistration: playerRegistration,
       ));
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));

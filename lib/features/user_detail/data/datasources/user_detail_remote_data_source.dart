@@ -38,7 +38,7 @@ abstract interface class UserDetailRemoteDataSource {
   Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
   Future<RegisterPlayerModel> registerPlayer(RegisterPlayerModel playerModel);
   Future<List<PlayerRankModel>> getPlayerRankDetails();
-  Future<List<RegisterPlayerModel>> getRegisterPlayers();
+  Future<List<RegisterPlayerModel>> getPlayerRegistration();
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -414,10 +414,15 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<RegisterPlayerModel>> getRegisterPlayers() async {
+  Future<List<RegisterPlayerModel>> getPlayerRegistration() async {
     try {
+      // getting current user Uid
+      final userUid = "024f6f7a-df5b-49dc-8890-c76f7f794645";
       // fetchingall registered players
-      final response = await supabaseClient.from('register_player').select("*");
+      final response = await supabaseClient
+          .from('register_player')
+          .select("*")
+          .eq("user_id", userUid);
 
       return response
           .map((json) => RegisterPlayerModel.fromJson(json))

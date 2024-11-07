@@ -130,6 +130,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
           final userInfo = state.userDetail.userDetails.first;
           final userCertificates = state.userDetail.certificates;
           final certificateMaster = state.userDetail.certificateMasterList;
+          final playerRegistration = state.userDetail.playerRegistration;
+
+          // log(playerRegistration.toString());
           return ListView(
             children: [
               //profile picture
@@ -191,35 +194,49 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     fontSize: 18),
                 userInfo.name,
               ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(playerRegistrationRoute,
-                        arguments: userInfo);
-                  },
-                  child: const Text("Player registration"),
-                ),
+              const SizedBox(
+                height: 10,
               ),
-              Card(
-                color: Colors.grey.withOpacity(0.1),
-                child: ListTile(
-                  leading: CircleAvatar(child: Icon(Icons.menu)),
-                  trailing: Icon(Icons.navigate_next),
-                  title: const Text("My Rank"),
-                  horizontalTitleGap: 100,
-                  dense: false,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)),
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushNamed(playerRankRoute, arguments: userInfo);
-                  },
-                ),
-              ),
+              playerRegistration.isEmpty
+                  ? Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(playerRegistrationRoute,
+                                  arguments: userInfo)
+                              .then(
+                                (_) => setState(
+                                  () {
+                                    context
+                                        .read<UserDetailBloc>()
+                                        .add(UserDetailFetchUserDetail());
+                                  },
+                                ),
+                              );
+                        },
+                        child: const Text("Player registration"),
+                      ),
+                    )
+                  : Card(
+                      color: Colors.grey.withOpacity(0.1),
+                      child: ListTile(
+                        leading: CircleAvatar(child: Icon(Icons.menu)),
+                        trailing: Icon(Icons.navigate_next),
+                        title: const Text("My Rank"),
+                        horizontalTitleGap: 100,
+                        dense: false,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(playerRankRoute, arguments: userInfo);
+                        },
+                      ),
+                    ),
               certificateMaster.isNotEmpty
                   ? Column(
                       children: [
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 20),
                         Container(
                           // decoration: BoxDecoration(
                           //   color: Colors.grey[400],
