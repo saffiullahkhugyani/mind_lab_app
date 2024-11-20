@@ -16,3 +16,4 @@ const updateProfileRoute = '/update-profile-page/';
 const arcadeGameOneRoute = '/arcade-game-one-page';
 const playerRankRoute = '/user-rank-page/';
 const playerRegistrationRoute = '/player-registration-page';
+const myIdRoute = '/my-id-page/';

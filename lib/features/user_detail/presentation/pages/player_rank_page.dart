@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/project_list/presentation/widgets/text_box.dart';
@@ -21,16 +21,21 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
   String? selectedRaceType; // Variable to hold the selected race type
   List<String> raceTypes = []; // List to hold race types
   List<PlayerRankEntity> listOfRaceData = []; // to hold in coming data
-
-  double bestRaceTime = 0.0;
-  int countryRank = 0;
-  int cityRank = 0;
-  int totalRaceCount = 0;
+  List<PlayerRankEntity> filteredRaceData = []; // Filtered list to display
 
   @override
   void initState() {
     super.initState();
     context.read<PlayerRankBloc>().add(FetchPlayarRankDetails());
+  }
+
+  // Function to filter the race data based on selected race type
+  void filterRaceData() {
+    setState(() {
+      filteredRaceData = listOfRaceData
+          .where((player) => player.typeOfRace == selectedRaceType)
+          .toList();
+    });
   }
 
   @override
@@ -39,95 +44,22 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
     super.dispose();
   }
 
-  void getPlayerRanking(List<PlayerRankEntity> playerRankModelList,
-      String currentPlayerId, String raceType) {
-    // Step 1: Filter the data to get the specific player
-    List<PlayerRankEntity> playerDataForCurrentPlayer = playerRankModelList
-        .where((player) => player.playerId.trim() == currentPlayerId.trim())
-        .toList();
+  String formatTimestamp(String timestamp) {
+    // Parse the timestamp string to a DateTime object
+    DateTime dateTime = DateTime.parse(timestamp);
 
-    // Step 2: Filter the data by selected race type (e.g., "Plane")
-    List<PlayerRankEntity> filteredPlayerData = playerDataForCurrentPlayer
-        .where((player) => player.typeOfRace == selectedRaceType)
-        .toList();
+    // Define the output format
+    DateFormat outputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
-    // Step 3: Find the best (lowest) race time for the selected race type
-    bestRaceTime = 0.0;
+    // Return the formatted date and time as a string
+    return outputFormat.format(dateTime);
+  }
 
-    for (var race in filteredPlayerData) {
-      if (bestRaceTime == 0 || race.raceTime < bestRaceTime) {
-        bestRaceTime = race.raceTime;
-      }
-    }
-
-    // Output the best race time for the current player in the selected race type
-    log("Best race time for player $currentPlayerId in $selectedRaceType: $bestRaceTime");
-
-    // step 3-2 calclate the total num of races for the selected race type for the player
-    totalRaceCount = filteredPlayerData.length;
-
-    // Step 4: Filter all players by the selected race type and their country
-    List<PlayerRankEntity> filteredByCountryAndRace = playerRankModelList
-        .where((player) => player.typeOfRace == selectedRaceType)
-        .toList();
-
-    // Step 5: Create a map to store the best race times for each player in the same country and race type
-    Map<String, double> bestRaceTimesForCountry = {};
-
-    for (var player in filteredByCountryAndRace) {
-      if (!bestRaceTimesForCountry.containsKey(player.playerId) ||
-          player.raceTime < bestRaceTimesForCountry[player.playerId]!) {
-        bestRaceTimesForCountry[player.playerId] = player.raceTime;
-      }
-    }
-
-    // Step 6: Sort players by their best race time (ascending)
-    var sortedByBestTime = bestRaceTimesForCountry.entries.toList()
-      ..sort((a, b) => a.value
-          .compareTo(b.value)); // Sorting by race time in ascending order
-
-    // Step 7: Find the rank of the current player in their country (ranked by race time)
-    countryRank = 0;
-    for (int i = 0; i < sortedByBestTime.length; i++) {
-      if (sortedByBestTime[i].key.trim() == currentPlayerId.trim()) {
-        countryRank = i + 1; // 1-based ranking
-        break;
-      }
-    }
-    log("Country rank for player $currentPlayerId: $countryRank");
-
-    // Step 8: Filter players by city and race type
-    List<PlayerRankEntity> filteredByCityAndRace = playerRankModelList
-        .where((player) =>
-            player.typeOfRace == selectedRaceType &&
-            player.city == playerDataForCurrentPlayer.first.city)
-        .toList();
-
-    // Step 9: Create a map to store the best race times for each player in the same city and race type
-    Map<String, double> bestRaceTimesForCity = {};
-
-    for (var player in filteredByCityAndRace) {
-      if (!bestRaceTimesForCity.containsKey(player.playerId) ||
-          player.raceTime < bestRaceTimesForCity[player.playerId]!) {
-        bestRaceTimesForCity[player.playerId] = player.raceTime;
-      }
-    }
-
-    // Step 10: Sort players by their best race time (ascending)
-    var sortedByBestTimeCity = bestRaceTimesForCity.entries.toList()
-      ..sort((a, b) => a.value
-          .compareTo(b.value)); // Sorting by race time in ascending order
-
-    // Step 11: Find the rank of the current player in their city (ranked by race time)
-    cityRank = 0;
-    for (int i = 0; i < sortedByBestTimeCity.length; i++) {
-      if (sortedByBestTimeCity[i].key.trim() == currentPlayerId.trim()) {
-        cityRank = i + 1; // 1-based ranking
-        break;
-      }
-    }
-
-    log("City rank for player $currentPlayerId: $cityRank");
+  // converting m/s to km/h
+  double convertMetersPerSecondToKilometersPerHour(
+      double speedInMetersPerSecond) {
+    double speedInKilometersPerHour = speedInMetersPerSecond * 3.6;
+    return double.parse(speedInKilometersPerHour.toStringAsFixed(2));
   }
 
   // to get the player Id
@@ -157,7 +89,8 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
               listOfRaceData = state.playerRankDetialList;
             }
             showFlashBar(context, "Details fetched", FlashBarAction.success);
-            // Populate the race types from the fetched data
+
+            // Populate the race types
             setState(() {
               raceTypes = state.playerRankDetialList
                   .map((player) => player.typeOfRace)
@@ -166,12 +99,7 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
 
               // Optionally set the initial selected race type
               selectedRaceType = raceTypes.isNotEmpty ? raceTypes[0] : null;
-
-              // Automatically call the ranking function with the first race type
-              if (selectedRaceType != null) {
-                getPlayerRanking(listOfRaceData,
-                    generateShortUUID(argsUserDetails.id), selectedRaceType!);
-              }
+              filterRaceData();
             });
           }
         }, builder: (context, state) {
@@ -271,13 +199,14 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedRaceType = newValue;
+                          filterRaceData(); // filter out the race data
                         });
 
                         // calling function to rank the races
-                        getPlayerRanking(
-                            listOfRaceData,
-                            generateShortUUID(argsUserDetails.id),
-                            selectedRaceType!);
+                        // getPlayerRanking(
+                        //     listOfRaceData,
+                        //     generateShortUUID(argsUserDetails.id),
+                        //     selectedRaceType!);
                       },
                       items: raceTypes
                           .map<DropdownMenuItem<String>>((String value) {
@@ -288,23 +217,43 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
                       }).toList(),
                     ),
                   ),
-                  MyTextbox(
-                      text: generateShortUUID(argsUserDetails.id),
-                      sectionName: 'Player Id:'),
-                  MyTextbox(
-                      text: argsUserDetails.age, sectionName: 'Age Group:'),
-                  MyTextbox(
-                      text: countryRank.toString(),
-                      sectionName: 'Country Rank:'),
-                  MyTextbox(
-                      text: cityRank.toString(), sectionName: 'City Rank:'),
-                  MyTextbox(
-                      text: bestRaceTime.toString(), sectionName: 'Best Time:'),
-                  MyTextbox(
-                      text: "To be finalized", sectionName: 'Top Speed :'),
-                  MyTextbox(
-                      text: totalRaceCount.toString(),
-                      sectionName: 'Number of Races:'),
+                  filteredRaceData.isNotEmpty
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            MyTextbox(
+                                text: filteredRaceData.first.countryRank
+                                    .toString(),
+                                sectionName: 'Country Rank:'),
+                            MyTextbox(
+                                text:
+                                    filteredRaceData.first.cityRank.toString(),
+                                sectionName: 'City Rank:'),
+                            MyTextbox(
+                                text:
+                                    filteredRaceData.first.worldRank.toString(),
+                                sectionName: 'World Rank:'),
+                            MyTextbox(
+                                text:
+                                    "${filteredRaceData.first.bestReactionTime} Sec",
+                                sectionName: 'Best Response Time:'),
+                            MyTextbox(
+                                text:
+                                    "${convertMetersPerSecondToKilometersPerHour(filteredRaceData.first.topSpeed)} Km/h",
+                                sectionName: 'Top Speed:'),
+                            MyTextbox(
+                                text: filteredRaceData.first.numOfRaces
+                                    .toString(),
+                                sectionName: 'Number of Races :'),
+                            MyTextbox(
+                                text: formatTimestamp(
+                                        filteredRaceData.first.lastUpdated)
+                                    .toString(),
+                                sectionName: 'Last Updated:'),
+                          ],
+                        )
+                      : Text("No data available for the selected race type",
+                          style: TextStyle(color: Colors.red)),
                 ],
               ),
             ],

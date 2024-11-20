@@ -205,16 +205,16 @@ class _ProjectPageState extends State<ProjectPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // FloatingActionButton.extended(
-          //     icon: const Icon(CupertinoIcons.add),
-          //     heroTag: 'herotag3',
-          //     onPressed: () {
-          //       Navigator.pushNamed(context, arcadeGameOneRoute);
-          //     },
-          //     label: const Text('new feature')),
-          // const SizedBox(
-          //   height: 10,
-          // ),
+          FloatingActionButton.extended(
+              icon: const Icon(CupertinoIcons.line_horizontal_3),
+              heroTag: 'herotag3',
+              onPressed: () {
+                Navigator.pushNamed(context, myIdRoute);
+              },
+              label: const Text('My Id')),
+          const SizedBox(
+            height: 10,
+          ),
           FloatingActionButton.extended(
               icon: const Icon(CupertinoIcons.add),
               heroTag: 'herotag1',

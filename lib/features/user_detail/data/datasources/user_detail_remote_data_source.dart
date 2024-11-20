@@ -356,54 +356,14 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       // final playerId = "7ca7414b";
 
       // fetching user details
-      final response = await supabaseClient.from('register_player').select('''
-      player_id,
-      city,
-      country,
-      player_data_testing (race_type, race_time, reaction_time, lap_time)
-    ''');
+      final response = await supabaseClient
+          .from('player_race_stats')
+          .select('*')
+          .eq("player_id", "7ca74");
 
-      // List<PlayerRankModel> playerRankModelList = response.map((json) {
-      //   return PlayerRankModel(
-      //     playerId: json['player_id'] as String,
-      //     country: json['country'] as String,
-      //     city: json['city'] as String,
-      //     typeOfRace: json['player_data_testing']['race_type'] as String,
-      //     raceTime: json['player_data_testing']['race_time'] as String,
-      //     reactionTime: json['player_data_testing']['reaction_time'] as String,
-      //     lapTime: json['player_data_testing']['lap_time'] as String,
-      //   );
-      // }).toList();
+      log(response.toString());
 
-      // Cast response as a list of maps
-      List<PlayerRankModel> playerRankModelList = [];
-
-      for (var player in response as List<dynamic>) {
-        final playerId = player['player_id'] as String;
-        final city = player['city'] as String;
-        final country = player['country'] as String;
-        final playerDataList = player['player_data_testing'] as List<dynamic>;
-
-        // Map each race record to a PlayerRankModel
-        for (var raceData in playerDataList) {
-          playerRankModelList.add(
-            PlayerRankModel(
-              playerId: playerId,
-              city: city,
-              country: country,
-              typeOfRace: raceData['race_type'] as String,
-              raceTime: (raceData['race_time'] as num)
-                  .toDouble(), // Ensure this is a double
-              reactionTime: (raceData['reaction_time'] as num)
-                  .toDouble(), // Ensure this is a double
-              lapTime: (raceData['lap_time'] as num)
-                  .toDouble(), // Ensure this is a double
-            ),
-          );
-        }
-      }
-
-      return playerRankModelList;
+      return response.map((json) => PlayerRankModel.fromJson(json)).toList();
     } on PostgrestException catch (e) {
       log(e.message);
       throw ServerException(e.message);
@@ -417,7 +377,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   Future<List<RegisterPlayerModel>> getPlayerRegistration() async {
     try {
       // getting current user Uid
-      final userUid = "024f6f7a-df5b-49dc-8890-c76f7f794645";
+      final userUid = supabaseClient.auth.currentUser!.id;
       // fetchingall registered players
       final response = await supabaseClient
           .from('register_player')

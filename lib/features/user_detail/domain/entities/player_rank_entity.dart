@@ -1,19 +1,23 @@
 class PlayerRankEntity {
   final String playerId;
   final String typeOfRace;
-  final String country;
-  final String city;
-  final double raceTime;
-  final double reactionTime;
-  final double lapTime;
+  final int countryRank;
+  final int cityRank;
+  final int worldRank;
+  final double topSpeed;
+  final String lastUpdated;
+  final int numOfRaces;
+  final double bestReactionTime;
 
   PlayerRankEntity({
     required this.playerId,
     required this.typeOfRace,
-    required this.country,
-    required this.city,
-    required this.raceTime,
-    required this.reactionTime,
-    required this.lapTime,
+    required this.countryRank,
+    required this.cityRank,
+    required this.worldRank,
+    required this.topSpeed,
+    required this.lastUpdated,
+    required this.numOfRaces,
+    required this.bestReactionTime,
   });
 }

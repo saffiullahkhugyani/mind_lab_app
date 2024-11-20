@@ -16,6 +16,7 @@ import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/pages/MyIdpage.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
@@ -121,6 +122,7 @@ class _MyAppState extends State<MyApp> {
           arcadeGameOneRoute: (context) => const ArcadeGameOnePage(),
           playerRankRoute: (context) => const PlayerRankPage(),
           playerRegistrationRoute: (context) => const PlayerRegistrationPage(),
+          myIdRoute: (context) => const Myidpage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,

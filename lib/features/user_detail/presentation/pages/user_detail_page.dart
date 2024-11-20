@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/pie_chart.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
+import 'package:crypto/crypto.dart';
 
 class UserDetailPage extends StatefulWidget {
   const UserDetailPage({super.key});
@@ -75,6 +77,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
     if (action == DialogAction.yes) {
       context.read<UserDetailBloc>().add(UserDeleteAccount());
     }
+  }
+
+  // to get the player Id
+  String generateShortUUID(String id) {
+    var uuid = id; // Generate a standard UUID
+    var bytes = utf8.encode(uuid); // Convert it to bytes
+    var hash = sha256.convert(bytes); // Create a SHA-256 hash
+    return hash.toString().substring(0, 5); // Return the first 8 characters
   }
 
   @override
@@ -289,7 +299,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       ),
                     ),
                   ),
-                  // MyTextbox(text: userInfo.id, sectionName: 'User ID'),
+                  MyTextbox(
+                      text: generateShortUUID(userInfo.id),
+                      sectionName: 'Player ID'),
                   MyTextbox(
                     text: userEmail,
                     sectionName: 'User Email',
