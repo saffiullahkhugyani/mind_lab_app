@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -15,6 +16,7 @@ import 'package:mind_lab_app/features/user_detail/data/models/user_detail_model.
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart';
 import '../models/upload_certificate_model.dart';
+import 'package:crypto/crypto.dart';
 
 abstract interface class UserDetailRemoteDataSource {
   Future<List<UserDetailModel>> getUserDetails();
@@ -349,17 +351,27 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     }
   }
 
+  // to get the player Id
+  String generateShortUUID(String id) {
+    var uuid = id; // Generate a standard UUID
+    var bytes = utf8.encode(uuid); // Convert it to bytes
+    var hash = sha256.convert(bytes); // Create a SHA-256 hash
+    return hash.toString().substring(0, 5); // Return the first 8 characters
+  }
+
   @override
   Future<List<PlayerRankModel>> getPlayerRankDetails() async {
     try {
-      // // getting current user Uid
-      // final playerId = "7ca7414b";
+      // getting current user Uid
+      // getting current user Uid
+      final userUid = supabaseClient.auth.currentUser!.id;
+      final playerId = generateShortUUID(userUid);
 
       // fetching user details
       final response = await supabaseClient
           .from('player_race_stats')
           .select('*')
-          .eq("player_id", "7ca74");
+          .eq("player_id", playerId);
 
       log(response.toString());
 
