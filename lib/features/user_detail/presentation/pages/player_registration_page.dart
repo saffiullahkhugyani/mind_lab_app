@@ -1,4 +1,4 @@
-import 'package:csc_picker/csc_picker.dart';
+import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -23,7 +23,6 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   final formKey = GlobalKey<FormState>();
 
   String? selectedCountry;
-  String? selectedState;
   String? selectedCity;
 
   String generateShortUUID(String id) {
@@ -34,9 +33,7 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   }
 
   void registerUser(String userId, String playerId) {
-    if (selectedCountry != null &&
-        selectedState != null &&
-        selectedCity != null) {
+    if (selectedCountry != null && selectedCity != null) {
       context.read<RegisterPlayerBloc>().add(RegisterPlayer(
             userId: userId,
             playerId: playerId,
@@ -46,7 +43,6 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
     } else {
       String errorMessage = "Please select";
       if (selectedCountry == null) errorMessage += " a country";
-      if (selectedState == null) errorMessage += " a state";
       if (selectedCity == null) errorMessage += " a city";
       showFlashBar(context, errorMessage.trim(), FlashBarAction.error);
     }
@@ -90,9 +86,12 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  CSCPicker(
+                  CSCPickerPlus(
                     layout: Layout.vertical,
                     flagState: CountryFlag.SHOW_IN_DROP_DOWN_ONLY,
+                    showCities: false,
+                    stateSearchPlaceholder: "City",
+                    stateDropdownLabel: "City",
                     onCountryChanged: (country) {
                       setState(() {
                         selectedCountry = country;
@@ -100,12 +99,7 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
                     },
                     onStateChanged: (state) {
                       setState(() {
-                        selectedState = state;
-                      });
-                    },
-                    onCityChanged: (city) {
-                      setState(() {
-                        selectedCity = city;
+                        selectedCity = state;
                       });
                     },
                   ),
