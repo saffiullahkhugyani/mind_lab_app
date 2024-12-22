@@ -1,9 +1,9 @@
+import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/project_list/presentation/widgets/text_box.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/widgets/update_text_field.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -22,6 +22,10 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   final playerCountry = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
+  String? selectedCountry;
+  String? selectedState;
+  String? selectedCity;
+
   String generateShortUUID(String id) {
     var uuid = id; // Generate a standard UUID
     var bytes = utf8.encode(uuid); // Convert it to bytes
@@ -29,17 +33,22 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
     return hash.toString().substring(0, 5); // Return the first 8 characters
   }
 
-  void registerUser(
-      String userId, String playerId, String city, String country) {
-    if (formKey.currentState!.validate()) {
+  void registerUser(String userId, String playerId) {
+    if (selectedCountry != null &&
+        selectedState != null &&
+        selectedCity != null) {
       context.read<RegisterPlayerBloc>().add(RegisterPlayer(
             userId: userId,
             playerId: playerId,
-            city: city,
-            country: country,
+            city: selectedCity!,
+            country: selectedCountry!,
           ));
     } else {
-      showFlashBar(context, "Please select all fields", FlashBarAction.error);
+      String errorMessage = "Please select";
+      if (selectedCountry == null) errorMessage += " a country";
+      if (selectedState == null) errorMessage += " a state";
+      if (selectedCity == null) errorMessage += " a city";
+      showFlashBar(context, errorMessage.trim(), FlashBarAction.error);
     }
   }
 
@@ -71,10 +80,9 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
             return const Loader();
           }
 
-          return Container(
-            padding: EdgeInsets.all(10),
-            child: Form(
-              key: formKey,
+          return SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -82,29 +90,30 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  UpdateTextField(
-                    hintText: "Player City",
-                    controller: playerCity,
-                    iconData: Icons.location_city,
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  UpdateTextField(
-                    hintText: "Player Country",
-                    controller: playerCountry,
-                    iconData: Icons.flag,
-                  ),
-                  const SizedBox(
-                    height: 30,
+                  CSCPicker(
+                    layout: Layout.vertical,
+                    flagState: CountryFlag.SHOW_IN_DROP_DOWN_ONLY,
+                    onCountryChanged: (country) {
+                      setState(() {
+                        selectedCountry = country;
+                      });
+                    },
+                    onStateChanged: (state) {
+                      setState(() {
+                        selectedState = state;
+                      });
+                    },
+                    onCityChanged: (city) {
+                      setState(() {
+                        selectedCity = city;
+                      });
+                    },
                   ),
                   ElevatedButton(
                       onPressed: () {
                         registerUser(
                           userDetailEntity.id,
                           playerId,
-                          playerCity.text,
-                          playerCountry.text,
                         );
                       },
                       child: const Text("Register"))

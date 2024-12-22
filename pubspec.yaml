@@ -67,6 +67,7 @@ dependencies:
   fl_chart: ^0.69.0
   sign_in_with_apple: ^6.1.2
   barcode_widget: ^2.0.4
+  csc_picker: ^0.2.7
 
 dev_dependencies:
   flutter_test:
