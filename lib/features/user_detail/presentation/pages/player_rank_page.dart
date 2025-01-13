@@ -252,8 +252,11 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
                                 sectionName: 'Last Updated:'),
                           ],
                         )
-                      : Text("No data available for the selected race type",
-                          style: TextStyle(color: Colors.red)),
+                      : Center(
+                          child: Text(
+                              "No data available for the selected race type",
+                              style: TextStyle(color: Colors.red)),
+                        ),
                 ],
               ),
             ],

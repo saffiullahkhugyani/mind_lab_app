@@ -1,3 +1,4 @@
+import 'package:mind_lab_app/features/user_detail/data/models/tag_model.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
 
 class CertificateV1V2MappingModel extends CertificateV1V2MappingEntity {
@@ -41,19 +42,35 @@ class CertificateMasterFetch extends CertificateMaster {
     required super.tags,
     required super.insertedAt,
   });
+  factory CertificateMasterFetch.fromJson(Map<String, dynamic> json) {
+    print('Raw JSON for CertificateMasterFetch: $json'); // Debug print
 
-  factory CertificateMasterFetch.fromJson(Map<String, dynamic> json) =>
-      CertificateMasterFetch(
-        id: json["id"].toString(),
-        issueAuthority: json["issue_authority"],
-        issueYear: json["issue_year"],
-        numberOfHours: json["number_of_hours"],
-        certificateNameArabic: json["certificate_name_arabic"],
-        certificateNameEnglish: json["certificate_name_english"],
-        certificateCountry: json["certificate_country"],
-        skillLevel: json["skill_level"],
-        skillType: json["skill_type"],
-        tags: List<String>.from(json["tags"]),
-        insertedAt: json["inserted_at"],
+    try {
+      print('Parsing tags: ${json["tags"]}'); // Debug print
+
+      return CertificateMasterFetch(
+        id: json["id"]?.toString() ?? '',
+        issueAuthority: json["issue_authority"]?.toString() ?? '',
+        issueYear: json["issue_year"]?.toString() ?? '',
+        numberOfHours: json["number_of_hours"] ?? 0,
+        certificateNameArabic:
+            json["certificate_name_arabic"]?.toString() ?? '',
+        certificateNameEnglish:
+            json["certificate_name_english"]?.toString() ?? '',
+        certificateCountry: json["certificate_country"]?.toString() ?? '',
+        skillLevel: json["skill_level"]?.toString() ?? '',
+        skillType: json["skill_type"]?.toString() ?? '',
+        tags: (json["tags"] as List<dynamic>?)?.map((x) {
+              print('Processing tag: $x'); // Debug print
+              return TagModel.fromJson(x as Map<String, dynamic>);
+            }).toList() ??
+            [],
+        insertedAt: json["inserted_at"]?.toString() ?? '',
       );
+    } catch (e, stackTrace) {
+      print('Error in CertificateMasterFetch.fromJson: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
 }

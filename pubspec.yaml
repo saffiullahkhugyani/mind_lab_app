@@ -30,7 +30,8 @@ environment:
 dependencies:
   barcode_widget: ^2.0.4
   bloc: ^8.1.4
-  csc_picker_plus: 0.0.2
+  csc_picker: ^0.2.7
+  csc_picker_plus: ^0.0.3
   cupertino_icons: ^1.0.6
   dartz: ^0.10.1
   data_connection_checker_tv: ^0.3.5-nullsafety

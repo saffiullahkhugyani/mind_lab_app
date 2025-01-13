@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,7 @@ class Piechart extends StatefulWidget {
 class _PiechartState extends State<Piechart> {
   int touchedIndexSkillLevel = -1;
   int touchedIndexSkillType = -1;
+  int touchedIndexNumOfHours = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,21 @@ class _PiechartState extends State<Piechart> {
     final skillTypes = skillTypeCounts.keys.toList();
     final skillTypeChartSections =
         generatePieChartSections(skillTypeCounts, skillTypes, false);
+
+    // Create a flattened list of all tags from all certificates
+    final allTags = <String, int>{}; // A map to store tagName and total hours
+    for (var certificate in widget.certificateMaster) {
+      for (var tag in certificate.certificateMaster.tags) {
+        allTags[tag.tagName] = (allTags[tag.tagName] ?? 0) + tag.hours;
+      }
+    }
+
+    // Convert the map into a list of entries and sort by hours in descending order
+    final sortedTags = allTags.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Take the top 3 tags
+    final limitedTop3 = sortedTags.take(3).toList();
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal, // Make charts scrollable horizontally
@@ -54,7 +72,8 @@ class _PiechartState extends State<Piechart> {
                   ],
                 ),
                 padding: const EdgeInsets.all(4),
-                margin: const EdgeInsets.only(bottom: 20, left: 10, top: 10),
+                margin: const EdgeInsets.only(
+                    bottom: 20, left: 10, right: 10, top: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -128,9 +147,6 @@ class _PiechartState extends State<Piechart> {
                   ],
                 ),
               ),
-            ),
-            SizedBox(
-              width: 20,
             ),
             SizedBox(
               width: 250, // Adjust the width as per your requirement
@@ -211,6 +227,12 @@ class _PiechartState extends State<Piechart> {
                             text: 'Programming',
                             isSquare: true,
                           ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorGreen,
+                            text: 'Life skill',
+                            isSquare: true,
+                          ),
                           // Add other skill type indicators here
                         ],
                       ),
@@ -219,6 +241,162 @@ class _PiechartState extends State<Piechart> {
                 ),
               ),
             ),
+            SizedBox(
+              width: 250, // Adjust the width as per your requirement
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.2), // Shadow color with opacity
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 6, // Blur radius
+                      offset:
+                          const Offset(0, 3), // Offset in the X and Y direction
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(4),
+                margin: const EdgeInsets.only(
+                    bottom: 20, left: 10, right: 10, top: 10),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      "Accumulated skills by type",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    AspectRatio(
+                      aspectRatio: 1.3,
+                      child: PieChart(
+                        PieChartData(
+                          pieTouchData: PieTouchData(
+                            touchCallback:
+                                (FlTouchEvent event, pieTouchResponse) {
+                              setState(() {
+                                if (!event.isInterestedForInteractions ||
+                                    pieTouchResponse == null ||
+                                    pieTouchResponse.touchedSection == null) {
+                                  touchedIndexNumOfHours = -1;
+                                  return;
+                                }
+                                touchedIndexNumOfHours = pieTouchResponse
+                                    .touchedSection!.touchedSectionIndex;
+                              });
+                            },
+                          ),
+                          borderData: FlBorderData(show: false),
+                          sectionsSpace: 5,
+                          centerSpaceRadius: 30,
+                          sections: generatePieChartSectionsForSkillTypeHours(
+                              widget.certificateMaster), // Skill type data
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Indicator(
+                            color: AppPallete.contentColorBlue,
+                            text: 'Soft Skill',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorYellow,
+                            text: 'Hard Skill',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorRed,
+                            text: 'Programming',
+                            isSquare: true,
+                          ),
+                          SizedBox(height: 4),
+                          Indicator(
+                            color: AppPallete.contentColorGreen,
+                            text: 'Life skill',
+                            isSquare: true,
+                          ),
+                          // Add other skill type indicators here
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // SizedBox(
+            //   width: 250, // Adjust the width as per your requirement
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey[200],
+            //       borderRadius: BorderRadius.circular(8),
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: Colors.black
+            //               .withOpacity(0.2), // Shadow color with opacity
+            //           spreadRadius: 2, // Spread radius
+            //           blurRadius: 6, // Blur radius
+            //           offset:
+            //               const Offset(0, 3), // Offset in the X and Y direction
+            //         ),
+            //       ],
+            //     ),
+            //     padding: const EdgeInsets.all(4),
+            //     margin: const EdgeInsets.only(
+            //         bottom: 20, left: 10, right: 10, top: 10),
+            //     child: Column(
+            //       children: [
+            //         const SizedBox(
+            //           height: 10,
+            //         ),
+            //         const Text(
+            //           "Number of hours",
+            //           style:
+            //               TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            //         ),
+            //         AspectRatio(
+            //           aspectRatio: 1.3,
+            //           child: PieChart(
+            //             PieChartData(
+            //               pieTouchData: PieTouchData(
+            //                 touchCallback:
+            //                     (FlTouchEvent event, pieTouchResponse) {
+            //                   setState(() {
+            //                     if (!event.isInterestedForInteractions ||
+            //                         pieTouchResponse == null ||
+            //                         pieTouchResponse.touchedSection == null) {
+            //                       touchedIndexNumOfHours = -1;
+            //                       return;
+            //                     }
+            //                     touchedIndexNumOfHours = pieTouchResponse
+            //                         .touchedSection!.touchedSectionIndex;
+            //                   });
+            //                 },
+            //               ),
+            //               borderData: FlBorderData(show: false),
+            //               sectionsSpace: 5,
+            //               centerSpaceRadius: 30,
+            //               sections: generatePieChartSectionsForNumberOfHours(
+            //                   widget.certificateMaster), // Skill type data
+            //             ),
+            //           ),
+            //         ),
+            //         buildHoursIndicators(limitedTop3)
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -249,7 +427,8 @@ class _PiechartState extends State<Piechart> {
     Map<String, int> skillTypeCounts = {
       'Soft skill': 0,
       'Hard skill': 0,
-      'Programming': 0
+      'Programming': 0,
+      'Life skill': 0,
     };
 
     for (var certificate in certificates) {
@@ -290,6 +469,123 @@ class _PiechartState extends State<Piechart> {
     }).toList();
   }
 
+  List<PieChartSectionData> generatePieChartSectionsForNumberOfHours(
+      List<CertificateV1V2MappingEntity> certificates) {
+    // Create a flattened list of all tags from all certificates
+    final allTags = <String, int>{}; // A map to store tagName and total hours
+    for (var certificate in certificates) {
+      for (var tag in certificate.certificateMaster.tags) {
+        allTags[tag.tagName] = (allTags[tag.tagName] ?? 0) + tag.hours;
+      }
+    }
+
+    // Convert the map into a list of entries and sort by hours in descending order
+    final sortedTags = allTags.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Take the top 3 tags
+    final limitedTop3 = sortedTags.take(3).toList();
+
+    return limitedTop3.asMap().entries.map((entry) {
+      final index = entry.key;
+      final hourEntry = entry.value;
+      final isTouched = index == touchedIndexNumOfHours;
+      final fontSize = isTouched ? 20.0 : 16.0;
+      final radius = isTouched ? 60.0 : 50.0;
+
+      return PieChartSectionData(
+        value: hourEntry.value.toDouble(),
+        title: '${hourEntry.value} (h)',
+        color: _generateColor(index + 1),
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
+  }
+
+  List<PieChartSectionData> generatePieChartSectionsForTotalNumberOfHours(
+      List<CertificateV1V2MappingEntity> certificates) {
+    // Create a flattened list of all tags from all certificates
+    final allTags = <String, int>{}; // A map to store tagName and total hours
+    for (var certificate in certificates) {
+      for (var tag in certificate.certificateMaster.tags) {
+        allTags[tag.tagName] = (allTags[tag.tagName] ?? 0) + tag.hours;
+      }
+    }
+
+    // Convert the map into a list of entries and sort by hours in descending order
+    final sortedTags = allTags.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Take the top 3 tags
+    final limitedTop3 = sortedTags.take(3).toList();
+
+    return limitedTop3.asMap().entries.map((entry) {
+      final index = entry.key;
+      final hourEntry = entry.value;
+      final isTouched = index == touchedIndexNumOfHours;
+      final fontSize = isTouched ? 20.0 : 16.0;
+      final radius = isTouched ? 60.0 : 50.0;
+
+      return PieChartSectionData(
+        value: hourEntry.value.toDouble(),
+        title: '${hourEntry.value} (h)',
+        color: _generateColor(index + 1),
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
+  }
+
+  List<PieChartSectionData> generatePieChartSectionsForSkillTypeHours(
+      List<CertificateV1V2MappingEntity> certificates) {
+    // Create a map to store skillType and total hours
+    final skillTypeHours = <String, int>{};
+
+    for (var certificate in certificates) {
+      final skillType = certificate.certificateMaster.skillType;
+      final hours =
+          int.tryParse(certificate.certificateMaster.numberOfHours) ?? 0;
+
+      // Sum the total hours for each skill type
+      skillTypeHours[skillType] = (skillTypeHours[skillType] ?? 0) + hours;
+    }
+
+    // Convert the map into a list of entries and sort by total hours in descending order
+    final sortedSkillTypes = skillTypeHours.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Generate PieChartSectionData for the top 3 skill types
+    return sortedSkillTypes.asMap().entries.map((entry) {
+      final index = entry.key;
+      final skillTypeEntry = entry.value;
+      final isTouched = index == touchedIndexNumOfHours; // Highlight logic
+      final fontSize = isTouched ? 20.0 : 16.0;
+      final radius = isTouched ? 60.0 : 50.0;
+
+      return PieChartSectionData(
+        value: skillTypeEntry.value.toDouble(),
+        title: '${skillTypeEntry.value} h', // Skill type and total hours
+        color: _getColorForSkillType(
+            skillTypeEntry.key), // Pass index for color logic
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
+  }
+
   Color _getColorForSkillLevel(String skillLevel) {
     switch (skillLevel) {
       case 'Basic':
@@ -306,6 +602,7 @@ class _PiechartState extends State<Piechart> {
   }
 
   Color _getColorForSkillType(String skillType) {
+    log(skillType);
     switch (skillType) {
       case 'Soft skill':
         return AppPallete.contentColorBlue;
@@ -313,8 +610,48 @@ class _PiechartState extends State<Piechart> {
         return AppPallete.contentColorYellow;
       case 'Programming':
         return AppPallete.contentColorRed;
+      case 'Life skill':
+        return AppPallete.contentColorGreen;
       default:
         return Colors.grey;
     }
+  }
+
+  Color _generateColor(int seed) {
+    switch (seed) {
+      case 1:
+        return AppPallete.contentColorBlue;
+      case 2:
+        return AppPallete.contentColorYellow;
+      case 3:
+        return AppPallete.contentColorRed;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Add this method to generate dynamic indicators for hours
+  Widget buildHoursIndicators(List<MapEntry<String, int>> top3Hours) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: top3Hours.asMap().entries.map((entry) {
+          final index = entry.key; // Get the index
+          final tag = entry.value.key; // Get the actual MapEntry
+          return Column(
+            children: [
+              Indicator(
+                color: _generateColor(index + 1),
+                text: '${tag}',
+                isSquare: true,
+              ),
+              const SizedBox(height: 4),
+            ],
+          );
+        }).toList(),
+      ),
+    );
   }
 }

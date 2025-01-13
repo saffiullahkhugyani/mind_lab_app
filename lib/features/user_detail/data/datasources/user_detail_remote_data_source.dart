@@ -305,7 +305,9 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       final certificateMaster = await supabaseClient
           .from('certificate_v1_v2_mapping')
           .select('id, user_id, v1_certificate_id, certificate_master(*)')
-          .match({'user_id': userUid});
+          .match({'user_id': userUid})
+          .not("certificate_master", "is", null)
+          .eq("certificate_master.certificate_status", true);
 
       return certificateMaster
           .map((json) => CertificateV1V2MappingModel.fromJson(json))
