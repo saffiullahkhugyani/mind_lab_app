@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
-import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_tags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_event.dart';
@@ -9,18 +9,18 @@ import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certific
 
 class AddCertificateBloc
     extends Bloc<AddCertificateEvent, AddCertificateState> {
-  final GetSkills _getSkills;
-  final GetSkillHashtags _getSkillHashtags;
+  final GetSkills _getSkillTypes;
+  final GetSkillHashtags _getSkillTags;
   final GetSkillCategories _getSkillCategories;
   final UploadCertificate _uploadCertificate;
 
   AddCertificateBloc({
-    required GetSkills getSKills,
-    required GetSkillHashtags getSkillHashtags,
+    required GetSkills getSKillTypes,
+    required GetSkillHashtags getSkillTags,
     required GetSkillCategories getSkillCategories,
     required UploadCertificate uploadCertificate,
-  })  : _getSkills = getSKills,
-        _getSkillHashtags = getSkillHashtags,
+  })  : _getSkillTypes = getSKillTypes,
+        _getSkillTags = getSkillTags,
         _getSkillCategories = getSkillCategories,
         _uploadCertificate = uploadCertificate,
         super(InitialState()) {
@@ -37,21 +37,21 @@ class AddCertificateBloc
     FetchSkillData event,
     Emitter<AddCertificateState> emit,
   ) async {
-    final skills = await _getSkills(NoParams());
-    final skillHashtags = await _getSkillHashtags(NoParams());
+    final skillTypes = await _getSkillTypes(NoParams());
     final skillCategories = await _getSkillCategories(NoParams());
+    final skillTags = await _getSkillTags(NoParams());
 
-    skills.fold(
+    skillTypes.fold(
       (failure) => emit(SkillDataFailure(failure.errorMessage)),
-      (skills) => skillHashtags.fold(
+      (skillTypes) => skillCategories.fold(
         (failure) => emit(SkillDataFailure(failure.errorMessage)),
-        (skillHashtags) => skillCategories.fold(
+        (skillCategories) => skillTags.fold(
           (failure) => emit(SkillDataFailure(failure.errorMessage)),
-          (categories) => emit(
+          (skillTags) => emit(
             SkillDataSuccess(
-              skills: skills,
-              skillHashtags: skillHashtags,
-              skillCategories: categories,
+              skillTypes: skillTypes,
+              skillCategories: skillCategories,
+              skillTags: skillTags,
             ),
           ),
         ),

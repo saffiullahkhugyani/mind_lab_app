@@ -6,8 +6,8 @@ import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skill_tag_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_entity.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_event.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_state.dart';
@@ -20,8 +20,8 @@ class AddCertificate extends StatefulWidget {
 }
 
 class _AddCertificateState extends State<AddCertificate> {
-  SkillEntity? selectedSkillEntity;
-  SkillHashTagEntity? selectedHashtagEntity;
+  SkillTypeEntity? selectedSkillTypeEntity;
+  SkillTagEntity? selectedSkillTagEntity;
   SkillCategoryEntity? selectedCategoryEntity;
   File? image;
   final formKey = GlobalKey<FormState>();
@@ -42,7 +42,7 @@ class _AddCertificateState extends State<AddCertificate> {
       context.read<AddCertificateBloc>().add(
             UploadCertificateEvent(
               userId: userId,
-              skillId: selectedSkillEntity!.id.toString(),
+              skillId: selectedSkillTagEntity!.id.toString(),
               image: image!,
             ),
           );
@@ -65,7 +65,7 @@ class _AddCertificateState extends State<AddCertificate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Certificate"),
+        title: const Text("Upload Certificate"),
       ),
       body: BlocConsumer<AddCertificateBloc, AddCertificateState>(
         listener: (context, state) {
@@ -81,7 +81,7 @@ class _AddCertificateState extends State<AddCertificate> {
           } else if (state is UploadCertificateSuccess) {
             showFlashBar(
               context,
-              "Certificate of ${selectedSkillEntity!.name} uploaded successfully",
+              "Certificate of ${selectedSkillTagEntity!.name} uploaded successfully",
               FlashBarAction.success,
             );
             Navigator.of(context).pop();
@@ -171,30 +171,30 @@ class _AddCertificateState extends State<AddCertificate> {
                     const SizedBox(
                       height: 20,
                     ),
-                    DropdownButtonFormField<SkillCategoryEntity>(
+                    DropdownButtonFormField<SkillTypeEntity>(
                       decoration: const InputDecoration(
                         label: Text("Select a skill type"),
                       ),
-                      value: selectedCategoryEntity,
+                      value: selectedSkillTypeEntity,
                       validator: (value) {
                         if (value == null) {
-                          return "Please select a category";
+                          return "Please select a skill type";
                         }
 
                         return null;
                       },
                       onChanged: (value) {
                         setState(() {
-                          selectedCategoryEntity = value;
-                          selectedHashtagEntity = null;
-                          selectedSkillEntity = null;
+                          selectedSkillTypeEntity = value;
+                          selectedCategoryEntity = null;
+                          selectedSkillTagEntity = null;
                         });
                       },
-                      items: state.skillCategories
-                          .map<DropdownMenuItem<SkillCategoryEntity>>(
-                            (categoryEntity) => DropdownMenuItem(
-                              value: categoryEntity,
-                              child: Text(categoryEntity.categoryName!),
+                      items: state.skillTypes
+                          .map<DropdownMenuItem<SkillTypeEntity>>(
+                            (skillType) => DropdownMenuItem(
+                              value: skillType,
+                              child: Text(skillType.name!),
                             ),
                           )
                           .toList(),
@@ -202,20 +202,20 @@ class _AddCertificateState extends State<AddCertificate> {
                     const SizedBox(
                       height: 20,
                     ),
-                    DropdownButtonFormField<SkillHashTagEntity>(
+                    DropdownButtonFormField<SkillCategoryEntity>(
                       decoration: const InputDecoration(
-                        label: Text("Select a skill"),
+                        label: Text("Select a category"),
                       ),
                       onChanged: (value) {
                         setState(() {
-                          selectedHashtagEntity = value;
-                          selectedSkillEntity = null;
+                          selectedCategoryEntity = value;
+                          selectedSkillTagEntity = null;
                         });
                       },
-                      value: selectedHashtagEntity,
+                      value: selectedCategoryEntity,
                       validator: (value) {
                         if (value == null) {
-                          return "Please select a Hashtag";
+                          return "Please select a category";
                         }
 
                         return null;
@@ -225,18 +225,18 @@ class _AddCertificateState extends State<AddCertificate> {
                     const SizedBox(
                       height: 20,
                     ),
-                    DropdownButtonFormField<SkillEntity>(
+                    DropdownButtonFormField<SkillTagEntity>(
                       decoration:
                           const InputDecoration(label: Text("Select a tag")),
                       onChanged: (value) {
                         setState(() {
-                          selectedSkillEntity = value;
+                          selectedSkillTagEntity = value;
                         });
                       },
-                      value: selectedSkillEntity,
+                      value: selectedSkillTagEntity,
                       validator: (value) {
                         if (value == null) {
-                          return "Please select a skill";
+                          return "Please select a tag";
                         }
 
                         return null;
@@ -250,7 +250,7 @@ class _AddCertificateState extends State<AddCertificate> {
                       onPressed: () {
                         uploadCertificate();
                       },
-                      child: const Text("Add Certificate"),
+                      child: const Text("Upload Certificate"),
                     ),
                   ],
                 ),
@@ -266,26 +266,25 @@ class _AddCertificateState extends State<AddCertificate> {
     );
   }
 
-  List<DropdownMenuItem<SkillHashTagEntity>> _buildHashTagDropdownEntries(
+  List<DropdownMenuItem<SkillCategoryEntity>> _buildHashTagDropdownEntries(
       SkillDataSuccess state) {
-    return state.skillHashtags
-        .where((hashtagEntity) =>
-            hashtagEntity.categoryId == selectedCategoryEntity?.id)
+    return state.skillCategories
+        .where(
+            (category) => category.skillTypeId == selectedSkillTypeEntity?.id)
         .map(
-          (skillHashtagEntity) => DropdownMenuItem<SkillHashTagEntity>(
-            value: skillHashtagEntity,
-            child: Text(skillHashtagEntity.hashtagName!),
+          (skillCategory) => DropdownMenuItem<SkillCategoryEntity>(
+            value: skillCategory,
+            child: Text(skillCategory.categoryName!),
           ),
         )
         .toList();
   }
 
-  List<DropdownMenuItem<SkillEntity>> _buildSkillDropdownEntries(
+  List<DropdownMenuItem<SkillTagEntity>> _buildSkillDropdownEntries(
       SkillDataSuccess state) {
-    return state.skills
-        .where(
-            (skillEntity) => skillEntity.hashtagId == selectedHashtagEntity?.id)
-        .map<DropdownMenuItem<SkillEntity>>(
+    return state.skillTags
+        .where((tags) => tags.skillCategoryId == selectedCategoryEntity?.id)
+        .map<DropdownMenuItem<SkillTagEntity>>(
           (skillEntity) => DropdownMenuItem(
             value: skillEntity,
             child: Text(skillEntity.name!),

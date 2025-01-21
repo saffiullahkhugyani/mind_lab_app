@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skill_tag_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_entity.dart';
 
 abstract class AddCertificateState extends Equatable {
   const AddCertificateState();
@@ -15,20 +15,20 @@ class InitialState extends AddCertificateState {}
 class SkillDataLoading extends AddCertificateState {}
 
 class SkillDataSuccess extends AddCertificateState {
-  final List<SkillEntity> skills;
-  final List<SkillHashTagEntity> skillHashtags;
+  final List<SkillTypeEntity> skillTypes;
   final List<SkillCategoryEntity> skillCategories;
+  final List<SkillTagEntity> skillTags;
 
   const SkillDataSuccess({
-    required this.skills,
-    required this.skillHashtags,
+    required this.skillTypes,
+    required this.skillTags,
     required this.skillCategories,
   });
 
   @override
   List<Object> get props => [
-        skills,
-        skillHashtags,
+        skillTypes,
+        skillTags,
         skillCategories,
       ];
 }

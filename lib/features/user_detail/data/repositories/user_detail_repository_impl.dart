@@ -10,8 +10,8 @@ import 'package:mind_lab_app/features/user_detail/data/models/upload_certificate
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skill_tag_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
@@ -52,9 +52,9 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   }
 
   @override
-  Future<Either<ServerFailure, List<SkillEntity>>> getSkills() async {
+  Future<Either<ServerFailure, List<SkillTypeEntity>>> getSkillTypes() async {
     try {
-      final skillList = await userDetailRemoteDataSource.getSkills();
+      final skillList = await userDetailRemoteDataSource.getSkillTypes();
       return right(skillList);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
@@ -74,11 +74,9 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   }
 
   @override
-  Future<Either<ServerFailure, List<SkillHashTagEntity>>>
-      getSkillHashtags() async {
+  Future<Either<ServerFailure, List<SkillTagEntity>>> getSkillTags() async {
     try {
-      final skillHashtagList =
-          await userDetailRemoteDataSource.getSkillsHashtag();
+      final skillHashtagList = await userDetailRemoteDataSource.getSkillTags();
       return right(skillHashtagList);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));

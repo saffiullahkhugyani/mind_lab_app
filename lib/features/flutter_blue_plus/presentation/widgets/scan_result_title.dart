@@ -45,6 +45,7 @@ class _ScanResultTileState extends State<ScanResultTile> {
     return _connectionState == BluetoothConnectionState.connected;
   }
 
+  // ignore: unused_element
   Widget _buildConnectButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {},

@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 
 @immutable
 // ignore: must_be_immutable
-class SkillHashTagEntity extends Equatable {
-  SkillHashTagEntity({
+class SkillTagEntity extends Equatable {
+  SkillTagEntity({
     this.id,
-    this.categoryId,
-    this.hashtagName,
+    this.skillCategoryId,
+    this.name,
   });
 
   int? id;
-  int? categoryId;
-  String? hashtagName;
+  int? skillCategoryId;
+  String? name;
 
   @override
   // TODO: implement props
   List<Object?> get props => [
         id,
-        categoryId,
-        hashtagName,
+        skillCategoryId,
+        name,
       ];
 }

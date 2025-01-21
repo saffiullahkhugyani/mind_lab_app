@@ -9,8 +9,8 @@ import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_mod
 import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
-import 'package:mind_lab_app/features/user_detail/data/models/skill_hashtag_model.dart';
-import 'package:mind_lab_app/features/user_detail/data/models/skill_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/skill_tag_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/skill_type_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/user_detail_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,8 +20,8 @@ import 'package:crypto/crypto.dart';
 
 abstract interface class UserDetailRemoteDataSource {
   Future<List<UserDetailModel>> getUserDetails();
-  Future<List<SkillModel>> getSkills();
-  Future<List<SkillHashtagModel>> getSkillsHashtag();
+  Future<List<SkillTypeModel>> getSkillTypes();
+  Future<List<SkillTagModel>> getSkillTags();
   Future<List<SkillCategoryModel>> getSkillCategories();
   Future<List<CertificateModel>> getCertificates();
   Future<UploadCertificateModel> uploadCertificate(
@@ -89,10 +89,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<SkillModel>> getSkills() async {
+  Future<List<SkillTypeModel>> getSkillTypes() async {
     try {
-      final skillList = await supabaseClient.from('skills').select();
-      return skillList.map((json) => SkillModel.fromJson(json)).toList();
+      final skillList = await supabaseClient.from('skill_types').select();
+      return skillList.map((json) => SkillTypeModel.fromJson(json)).toList();
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
@@ -105,6 +105,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     try {
       final skillCategoryList =
           await supabaseClient.from('skill_category').select();
+
       return skillCategoryList
           .map((json) => SkillCategoryModel.fromJson(json))
           .toList();
@@ -116,13 +117,11 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<SkillHashtagModel>> getSkillsHashtag() async {
+  Future<List<SkillTagModel>> getSkillTags() async {
     try {
-      final skillHashtagList =
-          await supabaseClient.from('skill_hashtags').select();
-      return skillHashtagList
-          .map((json) => SkillHashtagModel.fromJson(json))
-          .toList();
+      final skillTags = await supabaseClient.from('skill_tags').select();
+
+      return skillTags.map((json) => SkillTagModel.fromJson(json)).toList();
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } catch (e) {

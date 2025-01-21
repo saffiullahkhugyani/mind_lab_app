@@ -32,7 +32,7 @@ import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detai
 import 'package:mind_lab_app/features/user_detail/domain/usecases/delete_account.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_player_rank_detail_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
-import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_hashtags.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_tags.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skills.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/register_player_usecase.dart';
@@ -289,8 +289,8 @@ void _initAuth() {
   //  add certificate bloc
   serviceLocator.registerLazySingleton(
     () => AddCertificateBloc(
-      getSKills: serviceLocator(),
-      getSkillHashtags: serviceLocator(),
+      getSKillTypes: serviceLocator(),
+      getSkillTags: serviceLocator(),
       getSkillCategories: serviceLocator(),
       uploadCertificate: serviceLocator(),
     ),

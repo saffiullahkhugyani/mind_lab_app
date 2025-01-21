@@ -7,8 +7,8 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2
 import 'package:mind_lab_app/features/user_detail/domain/entities/player_rank_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/register_player_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skill_hashtag_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/skills_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skill_tag_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_entity.dart';
 // import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 
@@ -19,10 +19,10 @@ abstract interface class UserDetailRepository {
   Future<Either<ServerFailure, UserDetailResult>> getUserDetails();
 
   // fetching skill data
-  Future<Either<ServerFailure, List<SkillEntity>>> getSkills();
+  Future<Either<ServerFailure, List<SkillTypeEntity>>> getSkillTypes();
 
   // fetching skill hashtags
-  Future<Either<ServerFailure, List<SkillHashTagEntity>>> getSkillHashtags();
+  Future<Either<ServerFailure, List<SkillTagEntity>>> getSkillTags();
 
   // fetching skill categories
   Future<Either<ServerFailure, List<SkillCategoryEntity>>> getSkillCategories();

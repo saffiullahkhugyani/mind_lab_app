@@ -42,11 +42,11 @@ class _PiechartState extends State<Piechart> {
     }
 
     // Convert the map into a list of entries and sort by hours in descending order
-    final sortedTags = allTags.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    // final sortedTags = allTags.entries.toList()
+    //   ..sort((a, b) => b.value.compareTo(a.value));
 
-    // Take the top 3 tags
-    final limitedTop3 = sortedTags.take(3).toList();
+    // // Take the top 3 tags
+    // final limitedTop3 = sortedTags.take(3).toList();
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal, // Make charts scrollable horizontally

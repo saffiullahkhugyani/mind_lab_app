@@ -7,15 +7,18 @@ class SkillCategoryEntity extends Equatable {
   SkillCategoryEntity({
     this.id,
     this.categoryName,
+    this.skillTypeId,
   });
 
   int? id;
   String? categoryName;
+  int? skillTypeId;
 
   @override
   // TODO: implement props
   List<Object?> get props => [
         id,
         categoryName,
+        skillTypeId,
       ];
 }
