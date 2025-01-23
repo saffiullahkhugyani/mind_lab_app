@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
-import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
+// import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
@@ -14,7 +14,7 @@ import 'package:mind_lab_app/features/user_detail/data/models/skill_type_model.d
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/user_detail_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart';
+// import 'package:path/path.dart';
 import '../models/upload_certificate_model.dart';
 import 'package:crypto/crypto.dart';
 
