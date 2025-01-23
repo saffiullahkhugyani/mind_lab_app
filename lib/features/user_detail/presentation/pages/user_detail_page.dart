@@ -10,6 +10,7 @@ import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/show_dialog.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/widgets/image_builder_widget.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/pie_chart.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/text_box.dart';
 import 'package:crypto/crypto.dart';
@@ -227,20 +228,27 @@ class _UserDetailPageState extends State<UserDetailPage> {
                         child: const Text("Player registration"),
                       ),
                     )
-                  : Card(
-                      color: Colors.grey.withOpacity(0.1),
-                      child: ListTile(
-                        leading: CircleAvatar(child: Icon(Icons.menu)),
-                        trailing: Icon(Icons.navigate_next),
-                        title: const Text("My Rank"),
-                        horizontalTitleGap: 100,
-                        dense: false,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(playerRankRoute, arguments: userInfo);
-                        },
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(8),
+                          elevation: 3,
+                          child: ListTile(
+                            dense: true,
+                            tileColor: Colors.grey.shade200,
+                            leading: CircleAvatar(child: Icon(Icons.menu)),
+                            trailing: Icon(Icons.navigate_next),
+                            title: const Text("My Rank"),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(playerRankRoute,
+                                  arguments: userInfo);
+                            },
+                          ),
+                        ),
                       ),
                     ),
               certificateMaster.isNotEmpty
@@ -336,7 +344,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                             itemBuilder: (context, index) {
                               final certificate = userCertificates[index];
                               return Card(
-                                child: ListTile(
+                                child: ExpansionTile(
                                   title: Text(certificate.skill.name),
                                   leading: CircleAvatar(
                                     child: Text(
@@ -347,6 +355,13 @@ class _UserDetailPageState extends State<UserDetailPage> {
                                     ),
                                   ),
                                   trailing: const Icon(Icons.description),
+                                  children: [
+                                    ClipRRect(
+                                      child: ImageBuilderWidget(
+                                          imageUrl:
+                                              certificate.certificateImageUrl),
+                                    )
+                                  ],
                                 ),
                               );
                             },

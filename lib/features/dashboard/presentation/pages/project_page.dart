@@ -71,11 +71,11 @@ class _ProjectPageState extends State<ProjectPage> {
         final supabase = Supabase.instance.client;
         await supabase.auth.signOut();
         await GoogleSignIn().signOut();
-        showFlashBar(
-          context,
-          "Logged out",
-          FlashBarAction.info,
-        );
+        // showFlashBar(
+        //   context,
+        //   "Logged out",
+        //   FlashBarAction.info,
+        // );
       } on AuthException catch (error) {
         showFlashBar(
           context,
@@ -163,9 +163,13 @@ class _ProjectPageState extends State<ProjectPage> {
                   final imageAsset = listProjectImages
                       .firstWhere((element) => element['id'] == project.id);
 
-                  final isSubscribed = subscribedProjects.any(
+                  bool isSubscribed = subscribedProjects.any(
                       (subscribedProject) =>
                           subscribedProject.project.id == project.id);
+
+                  if (project.id == 1) {
+                    isSubscribed = true;
+                  }
 
                   return CardItem(
                       color: isSubscribed

@@ -9,7 +9,6 @@ void showFlashBar(BuildContext context, String content, FlashBarAction action) {
   if (action == FlashBarAction.info) {
     context.showFlash(
       barrierColor: Colors.black54,
-      reverseTransitionDuration: const Duration(seconds: 1),
       duration: const Duration(seconds: 3),
       builder: (context, controller) => FlashBar(
         title: const Text('Information'),
@@ -29,7 +28,6 @@ void showFlashBar(BuildContext context, String content, FlashBarAction action) {
   } else if (action == FlashBarAction.success) {
     context.showFlash(
       barrierColor: Colors.black54,
-      reverseTransitionDuration: const Duration(seconds: 1),
       duration: const Duration(seconds: 3),
       builder: (context, controller) => FlashBar(
         title: const Text('Success'),
@@ -49,7 +47,6 @@ void showFlashBar(BuildContext context, String content, FlashBarAction action) {
   } else if (action == FlashBarAction.error) {
     context.showFlash(
       barrierColor: Colors.black54,
-      reverseTransitionDuration: const Duration(seconds: 1),
       duration: const Duration(seconds: 3),
       builder: (context, controller) => FlashBar(
         title: const Text('Error'),

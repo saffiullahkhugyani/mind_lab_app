@@ -85,17 +85,12 @@ class _LoginPageState extends State<LoginPage> {
                     FlashBarAction.error,
                   );
                 } else if (state is AuthUserNotLoggedIn) {
-                  showFlashBar(
-                    context,
-                    state.message,
-                    FlashBarAction.info,
-                  );
+                  // showFlashBar(
+                  //   context,
+                  //   state.message,
+                  //   FlashBarAction.info,
+                  // );
                 } else if (state is AuthSuccess) {
-                  showFlashBar(
-                    context,
-                    "Welcome ${state.user.name}",
-                    FlashBarAction.success,
-                  );
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => const ProjectPage()),
@@ -265,10 +260,10 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             SocialLoginButton(
                                 onTap: () {
-                                context
-                                    .read<AuthBloc>()
-                                    .add(AuthLoginWithApple());
-                              },
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(AuthLoginWithApple());
+                                },
                                 imagePath: 'lib/assets/social_logos/apple.png'),
                           ]
                         ],

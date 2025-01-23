@@ -88,7 +88,7 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
             if (state.playerRankDetialList.isNotEmpty) {
               listOfRaceData = state.playerRankDetialList;
             }
-            showFlashBar(context, "Details fetched", FlashBarAction.success);
+            // showFlashBar(context, "Details fetched", FlashBarAction.success);
 
             // Populate the race types
             setState(() {
