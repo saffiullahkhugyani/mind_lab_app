@@ -64,8 +64,11 @@ class AddCertificateBloc
     final res = await _uploadCertificate(
       UploadCertificateParms(
         userId: event.userId,
-        skillId: event.skillId,
         image: event.image,
+        certificateName: event.certificateName,
+        skillType: event.skillType,
+        skillCategory: event.skillCategory,
+        skillTag: event.skillTag,
       ),
     );
 

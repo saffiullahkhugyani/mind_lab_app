@@ -30,8 +30,11 @@ abstract interface class UserDetailRepository {
   // uploading certificate
   Future<Either<ServerFailure, UploadCertificateEntity>> uploadCertificate({
     required String userId,
-    required String skillId,
+    required String certificateName,
     required File certificateImage,
+    String? skillType,
+    String? skillCategory,
+    String? skillTag,
   });
 
   // updating user profile

@@ -345,7 +345,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               final certificate = userCertificates[index];
                               return Card(
                                 child: ExpansionTile(
-                                  title: Text(certificate.skill.name),
+                                  title: Text(certificate.certificateName),
                                   leading: CircleAvatar(
                                     child: Text(
                                       (index + 1).toString(),

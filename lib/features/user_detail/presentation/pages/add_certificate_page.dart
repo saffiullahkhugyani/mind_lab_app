@@ -24,7 +24,10 @@ class _AddCertificateState extends State<AddCertificate> {
   SkillTagEntity? selectedSkillTagEntity;
   SkillCategoryEntity? selectedCategoryEntity;
   File? image;
+  String? certificateName;
   final formKey = GlobalKey<FormState>();
+
+  final certificateNameController = TextEditingController();
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -42,8 +45,11 @@ class _AddCertificateState extends State<AddCertificate> {
       context.read<AddCertificateBloc>().add(
             UploadCertificateEvent(
               userId: userId,
-              skillId: selectedSkillTagEntity!.id.toString(),
+              certificateName: certificateNameController.text.trim(),
               image: image!,
+              skillType: selectedSkillTypeEntity?.name,
+              skillCategory: selectedCategoryEntity?.categoryName,
+              skillTag: selectedSkillTagEntity?.name,
             ),
           );
     } else {
@@ -81,7 +87,7 @@ class _AddCertificateState extends State<AddCertificate> {
           } else if (state is UploadCertificateSuccess) {
             showFlashBar(
               context,
-              "Certificate of ${selectedSkillTagEntity!.name} uploaded successfully",
+              "Certificate of ${certificateNameController.text.trim()} uploaded successfully",
               FlashBarAction.success,
             );
             Navigator.of(context).pop();
@@ -171,18 +177,26 @@ class _AddCertificateState extends State<AddCertificate> {
                     const SizedBox(
                       height: 20,
                     ),
+                    TextFormField(
+                      controller: certificateNameController,
+                      decoration: InputDecoration(
+                        hintText: "Certificate name",
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Enter Certificate name";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     DropdownButtonFormField<SkillTypeEntity>(
                       decoration: const InputDecoration(
                         label: Text("Select a skill type"),
                       ),
                       value: selectedSkillTypeEntity,
-                      validator: (value) {
-                        if (value == null) {
-                          return "Please select a skill type";
-                        }
-
-                        return null;
-                      },
                       onChanged: (value) {
                         setState(() {
                           selectedSkillTypeEntity = value;
@@ -213,13 +227,6 @@ class _AddCertificateState extends State<AddCertificate> {
                         });
                       },
                       value: selectedCategoryEntity,
-                      validator: (value) {
-                        if (value == null) {
-                          return "Please select a category";
-                        }
-
-                        return null;
-                      },
                       items: _buildHashTagDropdownEntries(state),
                     ),
                     const SizedBox(
@@ -234,13 +241,6 @@ class _AddCertificateState extends State<AddCertificate> {
                         });
                       },
                       value: selectedSkillTagEntity,
-                      validator: (value) {
-                        if (value == null) {
-                          return "Please select a tag";
-                        }
-
-                        return null;
-                      },
                       items: _buildSkillDropdownEntries(state),
                     ),
                     const SizedBox(

@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
+import 'package:mind_lab_app/core/constants/country_list.dart';
 import 'package:mind_lab_app/core/theme/theme_data.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -52,8 +52,8 @@ class _SignUpPageState extends State<SignUpPage> {
   String? phoneNumber;
   String? gender;
   String? ageGroup;
+  String? nationality;
   File? avatarImage;
-  String? selectedCountry;
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -265,6 +265,31 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(
                       height: 15,
                     ),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.flag),
+                          label: Text("Select nationality")),
+                      items: countryList
+                          .map<DropdownMenuItem<String>>(
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e),
+                            ),
+                          )
+                          .toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return "Please select your nationality";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        nationality = value;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     IntlPhoneField(
                       initialCountryCode: 'AE',
                       controller: mobileController,
@@ -277,24 +302,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       onChanged: (value) {
                         phoneNumber = value.completeNumber;
                       },
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    CSCPickerPlus(
-                      layout: Layout.vertical,
-                      flagState: CountryFlag.SHOW_IN_DROP_DOWN_ONLY,
-                      showCities: false,
-                      showStates: false,
-                      defaultCountry: CscCountry.United_Arab_Emirates,
-                      onCountryChanged: (country) {
-                        setState(() {
-                          selectedCountry = country;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 15,
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -354,15 +361,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             avatarImage != null) {
                           context.read<AuthBloc>().add(
                                 AuthSignUp(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                  name: nameController.text.trim(),
-                                  ageGroup: ageGroup!,
-                                  mobile: phoneNumber!,
-                                  nationality: selectedCountry!,
-                                  gender: gender!,
-                                  imageFile: avatarImage!,
-                                ),
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim(),
+                                    name: nameController.text.trim(),
+                                    ageGroup: ageGroup!,
+                                    mobile: phoneNumber!,
+                                    gender: gender!,
+                                    imageFile: avatarImage!,
+                                    nationality: nationality!),
                               );
                         } else {
                           showFlashBar(

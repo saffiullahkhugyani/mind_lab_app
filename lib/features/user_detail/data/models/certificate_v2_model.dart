@@ -43,10 +43,10 @@ class CertificateMasterFetch extends CertificateMaster {
     required super.insertedAt,
   });
   factory CertificateMasterFetch.fromJson(Map<String, dynamic> json) {
-    print('Raw JSON for CertificateMasterFetch: $json'); // Debug print
+    // print('Raw JSON for CertificateMasterFetch: $json'); // Debug print
 
     try {
-      print('Parsing tags: ${json["tags"]}'); // Debug print
+      // print('Parsing tags: ${json["tags"]}'); // Debug print
 
       return CertificateMasterFetch(
         id: json["id"]?.toString() ?? '',
@@ -61,7 +61,7 @@ class CertificateMasterFetch extends CertificateMaster {
         skillLevel: json["skill_level"]?.toString() ?? '',
         skillType: json["skill_type"]?.toString() ?? '',
         tags: (json["tags"] as List<dynamic>?)?.map((x) {
-              print('Processing tag: $x'); // Debug print
+              // print('Processing tag: $x'); // Debug print
               return TagModel.fromJson(x as Map<String, dynamic>);
             }).toList() ??
             [],

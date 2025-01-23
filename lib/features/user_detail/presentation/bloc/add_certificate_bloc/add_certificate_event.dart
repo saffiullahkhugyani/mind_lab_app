@@ -14,14 +14,21 @@ class FetchSkillData extends AddCertificateEvent {
   List<Object> get props => [];
 }
 
+// ignore: must_be_immutable
 final class UploadCertificateEvent extends AddCertificateEvent {
   final String userId;
-  final String skillId;
+  final String certificateName;
   final File image;
+  String? skillType;
+  String? skillCategory;
+  String? skillTag;
 
-  const UploadCertificateEvent({
+  UploadCertificateEvent({
     required this.userId,
-    required this.skillId,
+    required this.certificateName,
     required this.image,
+    this.skillType,
+    this.skillCategory,
+    this.skillTag,
   });
 }

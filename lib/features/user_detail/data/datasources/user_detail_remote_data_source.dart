@@ -23,7 +23,7 @@ abstract interface class UserDetailRemoteDataSource {
   Future<List<SkillTypeModel>> getSkillTypes();
   Future<List<SkillTagModel>> getSkillTags();
   Future<List<SkillCategoryModel>> getSkillCategories();
-  Future<List<CertificateModel>> getCertificates();
+  Future<List<UploadCertificateModel>> getCertificates();
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel);
   Future<String> uploadCertificateImage({
@@ -67,7 +67,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<CertificateModel>> getCertificates() async {
+  Future<List<UploadCertificateModel>> getCertificates() async {
     try {
       // getting user UID
       final userUid = supabaseClient.auth.currentUser!.id;
@@ -75,11 +75,11 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       // fetching user certificates
       final userCertificates = await supabaseClient
           .from('upload_certificate')
-          .select('id, user_id, skills(id,name), certificate_image_url')
+          .select('*')
           .match({'user_id': userUid});
 
       return userCertificates
-          .map((json) => CertificateModel.fromJson(json))
+          .map((json) => UploadCertificateModel.fromJson(json))
           .toList();
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
@@ -150,9 +150,9 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     required certificateModel,
   }) async {
     try {
-      final String fileName = basename(imageFile.path);
+      // final String fileName = basename(imageFile.path);
       final path =
-          '${certificateModel.userId}/${certificateModel.skillId}/$fileName';
+          '${certificateModel.userId}/${certificateModel.id}/${certificateModel.certificateName}';
       await supabaseClient.storage
           .from('certificate_images')
           .upload(path, imageFile);

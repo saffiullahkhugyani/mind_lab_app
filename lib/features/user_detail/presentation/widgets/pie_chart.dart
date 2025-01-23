@@ -602,7 +602,6 @@ class _PiechartState extends State<Piechart> {
   }
 
   Color _getColorForSkillType(String skillType) {
-    log(skillType);
     switch (skillType) {
       case 'Soft skill':
         return AppPallete.contentColorBlue;

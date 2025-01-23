@@ -86,15 +86,21 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   @override
   Future<Either<ServerFailure, UploadCertificateEntity>> uploadCertificate({
     required String userId,
-    required String skillId,
+    required String certificateName,
     required File certificateImage,
+    String? skillType,
+    String? skillCategory,
+    String? skillTag,
   }) async {
     try {
       UploadCertificateModel certificateModel = UploadCertificateModel(
         id: const Uuid().v1(),
         userId: userId,
-        skillId: skillId,
+        certificateName: certificateName,
         certificateImageUrl: "",
+        skillType: skillType,
+        skillCategory: skillCategory,
+        skillTag: skillCategory,
       );
 
       final url = await userDetailRemoteDataSource.uploadCertificateImage(

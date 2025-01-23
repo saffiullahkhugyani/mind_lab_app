@@ -15,20 +15,30 @@ class UploadCertificate
   Future<Either<ServerFailure, UploadCertificateEntity>> call(
       UploadCertificateParms params) async {
     return await repository.uploadCertificate(
-        userId: params.userId,
-        skillId: params.skillId,
-        certificateImage: params.image);
+      userId: params.userId,
+      certificateImage: params.image,
+      certificateName: params.certificateName,
+      skillType: params.skillType,
+      skillCategory: params.skillCategory,
+      skillTag: params.skillTag,
+    );
   }
 }
 
 class UploadCertificateParms {
   final String userId;
-  final String skillId;
+  final String certificateName;
   final File image;
+  String? skillType;
+  String? skillCategory;
+  String? skillTag;
 
   UploadCertificateParms({
     required this.userId,
-    required this.skillId,
+    required this.certificateName,
     required this.image,
+    this.skillType,
+    this.skillCategory,
+    this.skillTag,
   });
 }
