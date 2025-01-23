@@ -15,6 +15,7 @@ abstract interface class AuthRepository {
     required String mobile,
     required String gender,
     required File imageFile,
+    required String nationality,
   });
 
   Future<Either<ServerFailure, User>> signInWithEmailPassword({

@@ -6,7 +6,7 @@ import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_source.dart';
-import 'package:mind_lab_app/features/auth/data/models/suer_model.dart';
+import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -37,6 +37,7 @@ class AuthRepositoryImpl implements AuthRepository {
           ageGroup: '',
           mobile: '',
           gender: '',
+          nationality: '',
         ));
       }
       final user = await remoteDataSource.getCurrentUserData();
@@ -69,6 +70,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String mobile,
     required String gender,
     required File imageFile,
+    required String nationality,
   }) async {
     return _getUser(() async {
       final user = await remoteDataSource.signUpWithEmailPassword(
@@ -78,6 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
         ageGroup: ageGroup,
         mobile: mobile,
         gender: gender,
+        nationality: nationality,
       );
 
       // upload user profile picture

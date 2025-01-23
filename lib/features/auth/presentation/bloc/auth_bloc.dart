@@ -105,6 +105,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         mobile: event.mobile,
         gender: event.gender,
         imageFile: event.imageFile,
+        nationality: event.nationality,
       ),
     );
 

@@ -8,6 +8,7 @@ class UserModel extends User {
     required super.ageGroup,
     required super.mobile,
     required super.gender,
+    required super.nationality,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> map) {
@@ -18,6 +19,7 @@ class UserModel extends User {
       ageGroup: map['age'] ?? '-',
       mobile: map['mobile'] ?? '-',
       gender: map['gender'] ?? '-',
+      nationality: map['nationality'] ?? '-',
     );
   }
 
@@ -28,6 +30,7 @@ class UserModel extends User {
     String? ageGroup,
     String? mobile,
     String? gender,
+    String? nationality,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -36,6 +39,7 @@ class UserModel extends User {
       ageGroup: ageGroup ?? this.ageGroup,
       mobile: mobile ?? this.mobile,
       gender: gender ?? this.gender,
+      nationality: nationality ?? this.nationality,
     );
   }
 }

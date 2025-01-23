@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String? gender;
   String? ageGroup;
   File? avatarImage;
+  String? selectedCountry;
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -276,6 +278,24 @@ class _SignUpPageState extends State<SignUpPage> {
                         phoneNumber = value.completeNumber;
                       },
                     ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    CSCPickerPlus(
+                      layout: Layout.vertical,
+                      flagState: CountryFlag.SHOW_IN_DROP_DOWN_ONLY,
+                      showCities: false,
+                      showStates: false,
+                      defaultCountry: CscCountry.United_Arab_Emirates,
+                      onCountryChanged: (country) {
+                        setState(() {
+                          selectedCountry = country;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       child: RichText(
@@ -339,6 +359,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   name: nameController.text.trim(),
                                   ageGroup: ageGroup!,
                                   mobile: phoneNumber!,
+                                  nationality: selectedCountry!,
                                   gender: gender!,
                                   imageFile: avatarImage!,
                                 ),

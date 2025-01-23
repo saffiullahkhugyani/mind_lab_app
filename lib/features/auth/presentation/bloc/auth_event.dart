@@ -10,6 +10,7 @@ final class AuthSignUp extends AuthEvent {
   final String ageGroup;
   final String mobile;
   final String gender;
+  final String nationality;
   final File imageFile;
 
   AuthSignUp({
@@ -19,6 +20,7 @@ final class AuthSignUp extends AuthEvent {
     required this.ageGroup,
     required this.mobile,
     required this.gender,
+    required this.nationality,
     required this.imageFile,
   });
 }

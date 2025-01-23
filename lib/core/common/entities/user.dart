@@ -5,6 +5,7 @@ class User {
   final String ageGroup;
   final String mobile;
   final String gender;
+  final String nationality;
 
   User({
     required this.id,
@@ -13,5 +14,6 @@ class User {
     required this.ageGroup,
     required this.mobile,
     required this.gender,
+    required this.nationality,
   });
 }

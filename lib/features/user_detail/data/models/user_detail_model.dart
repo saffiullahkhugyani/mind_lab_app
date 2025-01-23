@@ -7,6 +7,7 @@ class UserDetailModel extends UserDetailEntity {
     required super.age,
     required super.mobile,
     required super.imageUrl,
+    required super.nationality,
   });
 
   Map<String, dynamic> toJson() {
@@ -16,6 +17,7 @@ class UserDetailModel extends UserDetailEntity {
       'age': age,
       'mobile': mobile,
       "profile_image_url": imageUrl,
+      "nationality": nationality,
     };
   }
 
@@ -26,6 +28,7 @@ class UserDetailModel extends UserDetailEntity {
       age: json['age'] ?? '-',
       mobile: json['mobile'] ?? '-',
       imageUrl: json['profile_image_url'] ?? '-',
+      nationality: json['nationality'] ?? '-',
     );
   }
 }

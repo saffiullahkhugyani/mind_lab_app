@@ -308,6 +308,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   ),
                   MyTextbox(text: userInfo.age, sectionName: 'Age Group'),
                   MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
+                  MyTextbox(
+                      text: userInfo.nationality, sectionName: 'Nationality'),
                 ],
               ),
               const SizedBox(height: 30),

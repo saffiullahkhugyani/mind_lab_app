@@ -3,6 +3,7 @@ class UserDetailEntity {
   final String name;
   final String age;
   final String mobile;
+  final String nationality;
   final String imageUrl;
 
   UserDetailEntity({
@@ -11,5 +12,6 @@ class UserDetailEntity {
     required this.age,
     required this.mobile,
     required this.imageUrl,
+    required this.nationality,
   });
 }

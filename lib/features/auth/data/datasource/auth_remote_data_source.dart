@@ -19,6 +19,7 @@ abstract interface class AuthRemoteDataSource {
     required String ageGroup,
     required String mobile,
     required String gender,
+    required String nationality,
   });
 
   Future<String> uploadUserImage({
@@ -82,6 +83,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String ageGroup,
     required String mobile,
     required String gender,
+    required String nationality,
   }) async {
     try {
       final response = await supabaseClient.auth.signUp(
@@ -90,8 +92,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {
           'name': name,
           'age': ageGroup,
+          'email': email,
           'mobile': mobile,
           'gender': gender,
+          'nationality': nationality
         },
       );
       if (response.user == null) {
