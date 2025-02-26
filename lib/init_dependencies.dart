@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/core/secrets/app_secrets.dart';
@@ -19,6 +20,13 @@ import 'package:mind_lab_app/features/dashboard/domain/repository/project_reposi
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_all_projects.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_subscribec_projects.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/data/datasources/local_data_source.dart';
+import 'package:mind_lab_app/features/parent_child/data/datasources/remote_data_source.dart';
+import 'package:mind_lab_app/features/parent_child/data/repositories/parent_child_repository_impl.dart';
+import 'package:mind_lab_app/features/parent_child/domain/repositories/parent_child_repository.dart';
+import 'package:mind_lab_app/features/parent_child/domain/usecases/add_child_usecase.dart';
+import 'package:mind_lab_app/features/parent_child/domain/usecases/get_children_usecase.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_local_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_remote_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/repositories/project_list_repository_impl.dart';
@@ -73,11 +81,16 @@ Future<void> initDependencies() async {
 
   // Core
   serviceLocator.registerLazySingleton(() => AppUserCubit());
+
+  // Registering connection checker
   serviceLocator.registerFactory<ConnectionChecker>(
     () => ConnectionCheckerImpl(
       serviceLocator(),
     ),
   );
+
+  // registering App child cubit
+  serviceLocator.registerLazySingleton(() => AppChildCubit());
 }
 
 void _initAuth() {
@@ -338,6 +351,53 @@ void _initAuth() {
   serviceLocator.registerLazySingleton(
     () => PlayerRankBloc(
       playerRankDetails: serviceLocator(),
+    ),
+  );
+
+// dependencies for parent child
+// parent child remote data source
+  serviceLocator.registerFactory<RemoteDataSource>(
+    () => RemoteDataSourceImpl(
+      serviceLocator(),
+    ),
+  );
+
+  // parent child local data source
+  serviceLocator.registerFactory<LocalDataSource>(
+    () => LocalDataSrouceImpl(
+      serviceLocator(),
+    ),
+  );
+
+  // repository
+  serviceLocator.registerFactory<ParentChildRepository>(
+    () => ParentChildRepositoryImpl(
+      serviceLocator(),
+      serviceLocator(),
+      serviceLocator(),
+    ),
+  );
+
+// parent child use case
+// add child use case
+  serviceLocator.registerFactory(
+    () => AddChildUseCase(
+      serviceLocator(),
+    ),
+  );
+
+// get children use case
+  serviceLocator.registerFactory(
+    () => GetChildrenUsecase(
+      serviceLocator(),
+    ),
+  );
+
+// parent child bloc
+  serviceLocator.registerLazySingleton(
+    () => ParentChildBloc(
+      serviceLocator(),
+      serviceLocator(),
     ),
   );
 }

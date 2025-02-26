@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/bluetooth/bluetooth_manager.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/constants/constants.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
@@ -20,6 +21,9 @@ import 'package:mind_lab_app/features/dashboard/presentation/pages/MyIdpage.dart
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/pages/add_child_form.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/pages/parent_page.dart';
 import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
@@ -71,6 +75,12 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<PlayerRankBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<ParentChildBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<AppChildCubit>(),
         )
       ],
       child: const MyApp(),
@@ -123,6 +133,9 @@ class _MyAppState extends State<MyApp> {
           playerRankRoute: (context) => const PlayerRankPage(),
           playerRegistrationRoute: (context) => const PlayerRegistrationPage(),
           myIdRoute: (context) => const Myidpage(),
+          landingRoute: (context) => const ParentPage(),
+          addChildRoute: (context) => const AddChildForm(),
+          dashboardRoute: (context) => const ProjectPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,
@@ -133,8 +146,9 @@ class _MyAppState extends State<MyApp> {
               return state is AppUserLoggedIn;
             },
             builder: (context, isLoggedIn) {
+              log("builder: $isLoggedIn");
               if (isLoggedIn) {
-                return const ProjectPage();
+                return const ParentPage();
               }
               return const LoginPage();
             },

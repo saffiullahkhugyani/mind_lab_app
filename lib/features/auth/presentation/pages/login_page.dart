@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
@@ -91,10 +93,11 @@ class _LoginPageState extends State<LoginPage> {
                   //   FlashBarAction.info,
                   // );
                 } else if (state is AuthSuccess) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const ProjectPage()),
-                      (route) => false);
+                  log('state after refresh: $AuthSuccess');
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const ProjectPage()),
+                  //     (route) => false);
                 }
               },
               builder: (context, state) {

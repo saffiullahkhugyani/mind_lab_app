@@ -17,3 +17,5 @@ const arcadeGameOneRoute = '/arcade-game-one-page';
 const playerRankRoute = '/user-rank-page/';
 const playerRegistrationRoute = '/player-registration-page';
 const myIdRoute = '/my-id-page/';
+const landingRoute = '/landing-page/';
+const addChildRoute = '/add-child-form-page/';
