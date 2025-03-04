@@ -2,6 +2,10 @@ part of 'user_detail_bloc.dart';
 
 abstract class UserDetailEvent {}
 
-class UserDetailFetchUserDetail extends UserDetailEvent {}
+class GetChildDetails extends UserDetailEvent {
+  final int childId;
+
+  GetChildDetails({required this.childId});
+}
 
 class UserDeleteAccount extends UserDetailEvent {}

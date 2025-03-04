@@ -6,12 +6,12 @@ sealed class ProjectListEvent {}
 final class ProjectListFetechAllAvailableProjects extends ProjectListEvent {}
 
 final class SubscriptionRequestEvent extends ProjectListEvent {
-  final String userId;
+  final int childId;
   final int projectId;
   final int subscriptionStatus;
 
   SubscriptionRequestEvent(
-      {required this.userId,
+      {required this.childId,
       required this.projectId,
       required this.subscriptionStatus});
 }

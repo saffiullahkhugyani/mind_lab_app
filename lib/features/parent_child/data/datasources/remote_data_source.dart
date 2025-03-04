@@ -74,7 +74,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     required ChildModel childModel,
   }) async {
     try {
-      final path = '${childModel.id}/${childModel.name}-image';
+      String? fileName = imageFile.path.split('/').last;
+      final path = '${childModel.id}/${fileName}-image';
 
       await supabaseClient.storage
           .from('children-profile-images')

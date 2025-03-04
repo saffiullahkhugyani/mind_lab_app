@@ -9,17 +9,17 @@ sealed class UpdateProfileEvent extends Equatable {
 
 // ignore: must_be_immutable
 final class UpdateUserProfileEvent extends UpdateProfileEvent {
-  String? userId;
+  int? childId;
   String? name;
-  String? number;
-  String? dateOfBirth;
+  String? email;
+  String? ageGroup;
   File? imageFile;
 
   UpdateUserProfileEvent({
-    this.userId,
+    this.childId,
     this.name,
-    this.number,
-    this.dateOfBirth,
+    this.email,
+    this.ageGroup,
     this.imageFile,
   });
 }

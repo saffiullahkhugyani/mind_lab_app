@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -21,9 +22,18 @@ class UpdataProfilePage extends StatefulWidget {
 class _UpdataProfilePageState extends State<UpdataProfilePage> {
   final nameUpdateController = TextEditingController();
   final dobUpdateController = TextEditingController();
-  final numberUpdateController = TextEditingController();
+  final emailUpdateController = TextEditingController();
   File? image;
   final formKey = GlobalKey<FormState>();
+  String? ageGroup;
+
+  final ageGroupListData = [
+    'Under 6 years',
+    '6-13 years',
+    '14-18 years',
+    '19-25 years',
+    'Above 25 years'
+  ];
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -50,17 +60,19 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
 
   void updateProfile() {
     if (nameUpdateController.text.trim().isNotEmpty ||
-        numberUpdateController.text.trim().isNotEmpty ||
+        emailUpdateController.text.trim().isNotEmpty ||
         dobUpdateController.text.trim().isNotEmpty ||
         image != null) {
       final userId =
           (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+      final childId =
+          (context.read<AppChildCubit>().state as AppChildSelected).child.id;
 
       context.read<UpdateProfileBloc>().add(UpdateUserProfileEvent(
-          userId: userId,
+          childId: childId,
           name: nameUpdateController.text.trim(),
-          number: numberUpdateController.text.trim(),
-          dateOfBirth: dobUpdateController.text.trim(),
+          email: emailUpdateController.text.trim(),
+          ageGroup: ageGroup,
           imageFile: image));
     } else {
       showFlashBar(
@@ -203,22 +215,44 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      UpdateTextField(
-                        hintText: "Date of Birth",
-                        controller: dobUpdateController,
-                        iconData: Icons.calendar_today_rounded,
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate();
+                      // UpdateTextField(
+                      //   hintText: "Date of Birth",
+                      //   controller: dobUpdateController,
+                      //   iconData: Icons.calendar_today_rounded,
+                      //   readOnly: true,
+                      //   onTap: () {
+                      //     _selectDate();
+                      //   },
+                      // ),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                            label: Text("Select age Group")),
+                        items: ageGroupListData
+                            .map<DropdownMenuItem<String>>(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "Please select an age group";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          ageGroup = value;
                         },
                       ),
                       const SizedBox(
                         height: 30,
                       ),
                       UpdateTextField(
-                        hintText: "Number",
-                        controller: numberUpdateController,
-                        iconData: Icons.phone_android,
+                        hintText: "Email",
+                        controller: emailUpdateController,
+                        iconData: Icons.email,
                       ),
                       const SizedBox(
                         height: 30,

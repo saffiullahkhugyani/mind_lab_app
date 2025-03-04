@@ -12,7 +12,7 @@ class SubscriptionRequest
   Future<Either<ServerFailure, SubscriptionEntity>> call(
       SubscriptionRequestParams params) async {
     return await projectListRepository.subscriptionRequest(
-      userId: params.userId,
+      childId: params.childId,
       projectId: params.projectId,
       subscriptionStatus: params.subscriptionStatus,
     );
@@ -20,12 +20,12 @@ class SubscriptionRequest
 }
 
 class SubscriptionRequestParams {
-  final String userId;
+  final int childId;
   final int projectId;
   final int subscriptionStatus;
 
   SubscriptionRequestParams({
-    required this.userId,
+    required this.childId,
     required this.projectId,
     required this.subscriptionStatus,
   });

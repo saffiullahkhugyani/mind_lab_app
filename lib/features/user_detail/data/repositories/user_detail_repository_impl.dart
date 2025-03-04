@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
@@ -15,7 +16,6 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_en
 import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
-import 'package:uuid/uuid.dart';
 import '../../../../core/network/connection_checker.dart';
 
 class UserDetailRepositoryImpl implements UserDetailRepository {
@@ -25,28 +25,32 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   UserDetailRepositoryImpl(
       this.userDetailRemoteDataSource, this.connectionChecker);
   @override
-  Future<Either<ServerFailure, UserDetailResult>> getUserDetails() async {
+  Future<Either<ServerFailure, UserDetailResult>> getUserDetails(
+      {required int childId}) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(
             ServerFailure(errorMessage: "Check your internet connection"));
       }
 
-      final userDetail = await userDetailRemoteDataSource.getUserDetails();
+      final childDetail = await userDetailRemoteDataSource.getUserDetails(
+        childId: childId,
+      );
       final userCertificate =
-          await userDetailRemoteDataSource.getCertificates();
-      final certificateMaster =
-          await userDetailRemoteDataSource.getCertificateMasterData();
-      final playerRegistration =
-          await userDetailRemoteDataSource.getPlayerRegistration();
+          await userDetailRemoteDataSource.getCertificates(childId: childId);
+      final certificateMaster = await userDetailRemoteDataSource
+          .getCertificateMasterData(childId: childId);
+      final playerRegistration = await userDetailRemoteDataSource
+          .getPlayerRegistration(childId: childId);
 
       return right(UserDetailResult(
-        userDetails: userDetail,
+        childDetails: childDetail,
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
         playerRegistration: playerRegistration,
       ));
     } on ServerException catch (e) {
+      log(e.toString());
       return left(ServerFailure(errorMessage: e.message));
     }
   }
@@ -85,7 +89,7 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
 
   @override
   Future<Either<ServerFailure, UploadCertificateEntity>> uploadCertificate({
-    required String userId,
+    required int childId,
     required String certificateName,
     required File certificateImage,
     String? skillType,
@@ -94,8 +98,7 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   }) async {
     try {
       UploadCertificateModel certificateModel = UploadCertificateModel(
-        id: const Uuid().v1(),
-        userId: userId,
+        childId: childId,
         certificateName: certificateName,
         certificateImageUrl: "",
         skillType: skillType,
@@ -103,15 +106,17 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
         skillTag: skillCategory,
       );
 
+      final uploadedCertificate =
+          await userDetailRemoteDataSource.uploadCertificate(certificateModel);
+
+      certificateModel = certificateModel.copyWith(id: uploadedCertificate.id);
+
       final url = await userDetailRemoteDataSource.uploadCertificateImage(
         imageFile: certificateImage,
         certificateModel: certificateModel,
       );
 
       certificateModel = certificateModel.copyWith(certificateImageUrl: url);
-
-      final uploadedCertificate =
-          await userDetailRemoteDataSource.uploadCertificate(certificateModel);
 
       return right(uploadedCertificate);
     } on ServerException catch (e) {
@@ -121,18 +126,18 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
 
   @override
   Future<Either<ServerFailure, UpdateProfileEntity>> updateProfile({
-    String? userId,
+    int? childId,
     String? name,
-    String? number,
-    String? dateOfBirth,
+    String? email,
+    String? ageGroup,
     File? profileImageFile,
   }) async {
     try {
       UpdateProfileModel updateProfileModel = UpdateProfileModel(
-        userId: userId,
+        childId: childId,
         name: name,
-        dateOfBirth: dateOfBirth,
-        number: number,
+        ageGroup: ageGroup,
+        email: email,
         profileImageUrl: "",
       );
       final imageUrl = await userDetailRemoteDataSource.updateProfileImage(
@@ -182,13 +187,13 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   @override
   Future<Either<ServerFailure, RegisterPlayerModel>> registerPlayer({
     required String playerId,
-    required String userId,
+    required int childId,
     required String city,
     required String country,
   }) async {
     try {
       RegisterPlayerModel playerModel = RegisterPlayerModel(
-        userId: userId,
+        childId: childId,
         playerId: playerId,
         city: city,
         country: country,

@@ -1,5 +1,7 @@
 import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
+import 'package:mind_lab_app/core/common/entities/child_entity.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/project_list/presentation/widgets/text_box.dart';
@@ -25,17 +27,17 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   String? selectedCountry;
   String? selectedCity;
 
-  String generateShortUUID(String id) {
-    var uuid = id; // Generate a standard UUID
+  String generateShortUUID(String parentId, int childId) {
+    var uuid = '$parentId$childId'; // Generate a standard UUID
     var bytes = utf8.encode(uuid); // Convert it to bytes
     var hash = sha256.convert(bytes); // Create a SHA-256 hash
     return hash.toString().substring(0, 5); // Return the first 8 characters
   }
 
-  void registerUser(String userId, String playerId) {
+  void registerUser(int child, String playerId) {
     if (selectedCountry != null && selectedCity != null) {
       context.read<RegisterPlayerBloc>().add(RegisterPlayer(
-            userId: userId,
+            childId: child,
             playerId: playerId,
             city: selectedCity!,
             country: selectedCountry!,
@@ -51,9 +53,11 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   @override
   Widget build(BuildContext context) {
     final userDetailEntity =
-        ModalRoute.of(context)!.settings.arguments as UserDetailEntity;
+        ModalRoute.of(context)!.settings.arguments as ChildEntity;
+    final parentId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
 
-    final playerId = generateShortUUID(userDetailEntity.id);
+    final playerId = generateShortUUID(parentId, userDetailEntity.id);
 
     return Scaffold(
       appBar: AppBar(

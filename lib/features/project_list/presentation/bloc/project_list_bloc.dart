@@ -25,7 +25,7 @@ class ProjectListBloc extends Bloc<ProjectListEvent, ProjectListState> {
   void _onSubscriptionRequestEvent(
       SubscriptionRequestEvent event, Emitter<ProjectListState> emit) async {
     final res = await _subscriptionRequest(SubscriptionRequestParams(
-      userId: event.userId,
+      childId: event.childId,
       projectId: event.projectId,
       subscriptionStatus: event.subscriptionStatus,
     ));

@@ -24,10 +24,10 @@ class UpdateProfileBloc extends Bloc<UpdateProfileEvent, UpdateProfileState> {
 
   void _onUpdateUserProfile(UpdateUserProfileEvent event, Emitter emit) async {
     final res = await _updateProfile(UpdateProfileParams(
-      userId: event.userId ?? "",
+      childId: event.childId ?? 0,
       name: event.name ?? "",
-      dateOfBirth: event.dateOfBirth ?? "",
-      number: event.number ?? "",
+      ageGroup: event.ageGroup ?? "",
+      email: event.email ?? "",
       profileImageFile: event.imageFile,
     ));
 

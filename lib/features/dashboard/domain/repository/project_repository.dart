@@ -4,6 +4,8 @@ import 'package:mind_lab_app/features/dashboard/domain/entities/project.dart';
 import 'package:mind_lab_app/features/dashboard/domain/entities/subscription.dart';
 
 abstract interface class ProjectRepository {
-  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects();
-  Future<Either<ServerFailure, List<Project>>> getAllProjects();
+  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects(
+      {required int childId});
+  Future<Either<ServerFailure, List<Project>>> getAllProjects(
+      {required int childId});
 }

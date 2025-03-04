@@ -21,10 +21,11 @@ class ProjectListRemoteDataSourceImpl implements ProjectListRemoteDataSource {
       final projectListWithUserSubsInfo = await supabaseClient
           .from('projects')
           .select('id,name,description, subscription(subscription)')
-          .match({'subscription.user_id': supabaseClient.auth.currentUser!.id});
+          .match(
+              {'subscription.child_id': supabaseClient.auth.currentUser!.id});
 
-      subscriptionRequest(SubscriptionModel(
-          userId: 'userId', projectId: 1, subscriptionStatus: 1));
+      subscriptionRequest(
+          SubscriptionModel(childId: 0, projectId: 1, subscriptionStatus: 1));
 
       return projectListWithUserSubsInfo
           .map((json) => ProjectListModel.fromJson(json))
@@ -62,7 +63,7 @@ class ProjectListRemoteDataSourceImpl implements ProjectListRemoteDataSource {
           await getSubscriptionData(subscriptionModel.projectId);
       if (subscriptionData.isEmpty) {
         final result = await supabaseClient.from('subscription').insert({
-          'user_id': subscriptionModel.userId,
+          'child_id': subscriptionModel.childId,
           'project_id': subscriptionModel.projectId,
           'subscription': subscriptionModel.subscriptionStatus,
         }).select();

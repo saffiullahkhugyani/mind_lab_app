@@ -53,7 +53,7 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
 
   @override
   Future<Either<ServerFailure, SubscriptionEntity>> subscriptionRequest(
-      {required String userId,
+      {required int childId,
       required int projectId,
       required subscriptionStatus}) async {
     try {
@@ -61,7 +61,7 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
         return left(ServerFailure(errorMessage: noConnectionErrorMessage));
       }
       SubscriptionModel subscriptionModel = SubscriptionModel(
-        userId: userId,
+        childId: childId,
         projectId: projectId,
         subscriptionStatus: subscriptionStatus,
       );

@@ -2,45 +2,45 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile
 
 class UpdateProfileModel extends UpdateProfileEntity {
   UpdateProfileModel({
-    super.userId,
+    super.childId,
     super.name,
-    super.dateOfBirth,
-    super.number,
+    super.ageGroup,
+    super.email,
     super.profileImageUrl,
   });
 
   UpdateProfileModel copyWith({
-    String? userId,
+    int? childId,
     String? name,
-    String? dateOfBirth,
-    String? number,
+    String? ageGroup,
+    String? email,
     String? profileImageUrl,
   }) {
     return UpdateProfileModel(
-      userId: userId ?? this.userId,
+      childId: childId ?? this.childId,
       name: name ?? this.name,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      number: number ?? this.number,
+      ageGroup: ageGroup ?? this.ageGroup,
+      email: email ?? this.email,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
 
   factory UpdateProfileModel.fromJson(Map<String, dynamic> json) {
     return UpdateProfileModel(
-      userId: json["id"],
+      childId: json["id"],
       name: json["name"],
-      dateOfBirth: json['age'],
-      number: json["mobile"],
+      ageGroup: json['age_group'],
+      email: json["email"],
       profileImageUrl: json['profile_image_url'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      "id": userId,
+      "id": childId,
       "name": name,
-      "age": dateOfBirth,
-      "mobile": number,
+      "age_group": ageGroup,
+      "email": email,
       "profile_image_url": profileImageUrl,
     };
   }

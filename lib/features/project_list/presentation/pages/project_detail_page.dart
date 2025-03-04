@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -52,8 +53,15 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Parent Id
     final userId =
         (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+
+    // Child id
+    final childId =
+        (context.read<AppChildCubit>().state as AppChildSelected).child.id;
+
+    // Arguments
     final args =
         ModalRoute.of(context)!.settings.arguments as ProjectListEntity;
     var subscriptionStatus = -1;
@@ -101,7 +109,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage> {
                       ? () {
                           context.read<ProjectListBloc>().add(
                                 SubscriptionRequestEvent(
-                                    userId: userId,
+                                    childId: childId,
                                     projectId: args.id,
                                     subscriptionStatus: 0),
                               );

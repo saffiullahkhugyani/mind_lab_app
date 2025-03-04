@@ -63,7 +63,7 @@ class AddCertificateBloc
       UploadCertificateEvent event, Emitter<AddCertificateState> emit) async {
     final res = await _uploadCertificate(
       UploadCertificateParms(
-        userId: event.userId,
+        childId: event.childId,
         image: event.image,
         certificateName: event.certificateName,
         skillType: event.skillType,

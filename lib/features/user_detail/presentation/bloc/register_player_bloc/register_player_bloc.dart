@@ -24,7 +24,7 @@ class RegisterPlayerBloc
   void _onRegisterPlayer(RegisterPlayer event, Emitter emit) async {
     final res = await _registerPlayerUsecase(
       RegisterPlayerParams(
-          userId: event.userId!,
+          childId: event.childId!,
           playerId: event.playerId!,
           city: event.city!,
           country: event.country!),

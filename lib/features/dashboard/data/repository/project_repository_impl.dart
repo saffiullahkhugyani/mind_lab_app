@@ -20,8 +20,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
   );
 
   @override
-  Future<Either<ServerFailure, List<Subscription>>>
-      getSubscribedProjects() async {
+  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects(
+      {required int childId}) async {
     try {
       if (!await connectionChecker.isConnected) {
         final projects = projectLocalDataSource.loadProjects();
@@ -39,7 +39,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<Either<ServerFailure, List<Project>>> getAllProjects() async {
+  Future<Either<ServerFailure, List<Project>>> getAllProjects(
+      {required int childId}) async {
     try {
       if (!await connectionChecker.isConnected) {
         final projectList = projectLocalDataSource.loadAllProjects();

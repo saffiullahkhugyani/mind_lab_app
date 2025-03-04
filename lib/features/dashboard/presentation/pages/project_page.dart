@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -99,7 +100,12 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   void initState() {
     super.initState();
-    context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+
+    final childId =
+        (context.read<AppChildCubit>().state as AppChildSelected).child.id;
+    context.read<ProjectBloc>().add(ProjectFetchAllProjects(
+          childId: childId,
+        ));
   }
 
   @override

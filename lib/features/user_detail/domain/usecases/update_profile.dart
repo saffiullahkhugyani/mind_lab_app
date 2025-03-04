@@ -15,27 +15,27 @@ class UpdateProfile
   Future<Either<ServerFailure, UpdateProfileEntity>> call(
       UpdateProfileParams params) async {
     return await repository.updateProfile(
-      userId: params.userId,
+      childId: params.childId,
       name: params.name,
-      number: params.number,
-      dateOfBirth: params.dateOfBirth,
+      email: params.email,
+      ageGroup: params.ageGroup,
       profileImageFile: params.profileImageFile,
     );
   }
 }
 
 class UpdateProfileParams {
-  String? userId;
+  int? childId;
   String? name;
-  String? dateOfBirth;
-  String? number;
+  String? ageGroup;
+  String? email;
   File? profileImageFile;
 
   UpdateProfileParams({
-    this.userId,
+    this.childId,
     this.name,
-    this.dateOfBirth,
-    this.number,
+    this.ageGroup,
+    this.email,
     this.profileImageFile,
   });
 }

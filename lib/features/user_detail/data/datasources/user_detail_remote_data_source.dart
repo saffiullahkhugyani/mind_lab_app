@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 // import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/child_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
@@ -19,11 +20,15 @@ import '../models/upload_certificate_model.dart';
 import 'package:crypto/crypto.dart';
 
 abstract interface class UserDetailRemoteDataSource {
-  Future<List<UserDetailModel>> getUserDetails();
+  Future<List<ChildModel>> getUserDetails({
+    required int childId,
+  });
   Future<List<SkillTypeModel>> getSkillTypes();
   Future<List<SkillTagModel>> getSkillTags();
   Future<List<SkillCategoryModel>> getSkillCategories();
-  Future<List<UploadCertificateModel>> getCertificates();
+  Future<List<UploadCertificateModel>> getCertificates({
+    required int childId,
+  });
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel);
   Future<String> uploadCertificateImage({
@@ -37,28 +42,30 @@ abstract interface class UserDetailRemoteDataSource {
   });
   Future<String> deleteAccount();
   Future<void> signOut();
-  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData(
+      {required int childId});
   Future<RegisterPlayerModel> registerPlayer(RegisterPlayerModel playerModel);
   Future<List<PlayerRankModel>> getPlayerRankDetails();
-  Future<List<RegisterPlayerModel>> getPlayerRegistration();
+  Future<List<RegisterPlayerModel>> getPlayerRegistration(
+      {required int childId});
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   final SupabaseClient supabaseClient;
   UserDetailRemoteDataSourceImpl(this.supabaseClient);
   @override
-  Future<List<UserDetailModel>> getUserDetails() async {
+  Future<List<ChildModel>> getUserDetails({required int childId}) async {
     try {
       // getting current user Uid
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // final userUid = supabaseClient.auth.currentUser!.id;
 
       // fetching user details
-      final userDetail = await supabaseClient
-          .from('profiles')
+      final childDetail = await supabaseClient
+          .from('children')
           .select('*')
-          .match({'id': userUid});
+          .match({'id': childId});
 
-      return userDetail.map((json) => UserDetailModel.fromJson(json)).toList();
+      return childDetail.map((json) => ChildModel.fromJson(json)).toList();
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
@@ -67,16 +74,18 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<UploadCertificateModel>> getCertificates() async {
+  Future<List<UploadCertificateModel>> getCertificates({
+    required int childId,
+  }) async {
     try {
       // getting user UID
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // final userUid = supabaseClient.auth.currentUser!.id;
 
       // fetching user certificates
       final userCertificates = await supabaseClient
           .from('upload_certificate')
           .select('*')
-          .match({'user_id': userUid});
+          .match({'student_id': childId});
 
       return userCertificates
           .map((json) => UploadCertificateModel.fromJson(json))
@@ -133,6 +142,8 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel) async {
     try {
+      final data = certificateModel.toJson();
+      data.remove('id');
       final certificateData = await supabaseClient
           .from('upload_certificate')
           .insert(certificateModel.toJson())
@@ -152,14 +163,20 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     try {
       // final String fileName = basename(imageFile.path);
       final path =
-          '${certificateModel.userId}/${certificateModel.id}/${certificateModel.certificateName}';
+          '${certificateModel.childId}/${certificateModel.id}/${certificateModel.certificateName}';
       await supabaseClient.storage
           .from('certificate_images')
           .upload(path, imageFile);
 
-      return supabaseClient.storage
-          .from('certificate_images')
-          .getPublicUrl(path);
+      final certificateUrl =
+          supabaseClient.storage.from('certificate_images').getPublicUrl(path);
+
+      await supabaseClient
+          .from("upload_certificate")
+          .update({"certificate_image_url": certificateUrl}).eq(
+              "id", certificateModel.id!);
+
+      return certificateUrl;
     } on StorageException catch (e) {
       throw ServerException(e.error!);
     }
@@ -172,29 +189,29 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     try {
       // existing user data
       final userDetail = await supabaseClient
-          .from('profiles')
+          .from('children')
           .select('*')
-          .match({'id': profileModel.userId!});
+          .match({'id': profileModel.childId!});
 
       final UpdateProfileModel model =
           UpdateProfileModel.fromJson(userDetail.first);
 
       final profileData = await supabaseClient
-          .from('profiles')
+          .from('children')
           .update({
             "name":
                 profileModel.name!.isNotEmpty ? profileModel.name : model.name,
-            "age": profileModel.dateOfBirth!.isNotEmpty
-                ? profileModel.dateOfBirth
-                : model.dateOfBirth,
-            "mobile": profileModel.number!.isNotEmpty
-                ? profileModel.number
-                : model.number,
-            "profile_image_url": profileModel.profileImageUrl!.isNotEmpty
+            "age_group": profileModel.ageGroup!.isNotEmpty
+                ? profileModel.ageGroup
+                : model.ageGroup,
+            "email": profileModel.email!.isNotEmpty
+                ? profileModel.email
+                : model.email,
+            "image_url": profileModel.profileImageUrl!.isNotEmpty
                 ? profileModel.profileImageUrl
                 : model.profileImageUrl,
           })
-          .eq('id', profileModel.userId!)
+          .eq('id', profileModel.childId!)
           .select();
 
       return UpdateProfileModel.fromJson(profileData.first);
@@ -209,23 +226,24 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     UpdateProfileModel? profileModel,
   }) async {
     try {
-      final uploadPath = '${profileModel!.userId}/${profileModel.userId}-image';
+      String? fileName = imageFile?.path.split('/').last;
+      final uploadPath = '${profileModel!.childId}/${fileName}-image';
 
       if (imageFile == null) {
         return supabaseClient.storage
-            .from('profile-images')
+            .from('children-profile-images')
             .getPublicUrl(uploadPath);
       }
 
-      final path = '${profileModel.userId}/';
-      final response =
-          await supabaseClient.storage.from('profile-images').list(path: path);
+      final path = '${profileModel.childId}/';
+      final response = await supabaseClient.storage
+          .from('children-profile-images')
+          .list(path: path);
 
 // Check if the file exists
       bool fileExists = false;
       for (final file in response) {
-        log(file.name);
-        if (file.name == "${profileModel.userId}-image") {
+        if (file.name == "${profileModel.name}-image") {
           fileExists = true;
           break;
         }
@@ -234,14 +252,14 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       if (fileExists) {
         log('File exists, updating...');
         await supabaseClient.storage
-            .from('profile-images')
+            .from('children-profile-images')
             .update(uploadPath, imageFile);
 
         log('File updated successfully.');
       } else {
         log('File does not exist, uploading...');
         await supabaseClient.storage
-            .from('profile-images')
+            .from('children-profile-images')
             .upload(uploadPath, imageFile);
 
         log('File uploaded successfully.');
@@ -249,7 +267,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
 
       // cashe busting url for lattest image upload
       final url = supabaseClient.storage
-          .from('profile-images')
+          .from('children-profile-images')
           .getPublicUrl(uploadPath);
 
       return '$url?t=${DateTime.now().millisecondsSinceEpoch}';
@@ -295,23 +313,28 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData() async {
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData({
+    required int childId,
+  }) async {
     try {
-      // getting user UID
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // // getting user UID
+      // final userUid = supabaseClient.auth.currentUser!.id;
 
       // fetching user certificates
       final certificateMaster = await supabaseClient
           .from('certificate_v1_v2_mapping')
-          .select('id, user_id, v1_certificate_id, certificate_master(*)')
-          .match({'user_id': userUid})
+          .select('id, student_id, v1_certificate_id, certificate_master(*)')
+          .match({'student_id': childId})
           .not("certificate_master", "is", null)
           .eq("certificate_master.certificate_status", true);
+
+      log("certificate master data fetched: ${certificateMaster.toString()}");
 
       return certificateMaster
           .map((json) => CertificateV1V2MappingModel.fromJson(json))
           .toList();
     } on PostgrestException catch (e) {
+      log(e.message);
       throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
@@ -387,15 +410,16 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<RegisterPlayerModel>> getPlayerRegistration() async {
+  Future<List<RegisterPlayerModel>> getPlayerRegistration(
+      {required int childId}) async {
     try {
       // getting current user Uid
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // final userUid = supabaseClient.auth.currentUser!.id;
       // fetchingall registered players
       final response = await supabaseClient
           .from('register_player')
           .select("*")
-          .eq("user_id", userUid);
+          .eq("student_id", childId);
 
       return response
           .map((json) => RegisterPlayerModel.fromJson(json))

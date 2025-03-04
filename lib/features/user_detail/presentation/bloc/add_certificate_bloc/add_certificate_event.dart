@@ -16,7 +16,7 @@ class FetchSkillData extends AddCertificateEvent {
 
 // ignore: must_be_immutable
 final class UploadCertificateEvent extends AddCertificateEvent {
-  final String userId;
+  final int childId;
   final String certificateName;
   final File image;
   String? skillType;
@@ -24,7 +24,7 @@ final class UploadCertificateEvent extends AddCertificateEvent {
   String? skillTag;
 
   UploadCertificateEvent({
-    required this.userId,
+    required this.childId,
     required this.certificateName,
     required this.image,
     this.skillType,

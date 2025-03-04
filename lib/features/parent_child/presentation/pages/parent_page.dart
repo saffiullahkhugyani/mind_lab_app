@@ -20,11 +20,11 @@ class _ParentPageState extends State<ParentPage> {
   @override
   void initState() {
     super.initState();
-    log("InitState");
     fetchData();
   }
 
   Future<void> fetchData() async {
+    log('in fetching data ');
     setState(() {
       context.read<ParentChildBloc>().add(GetChildrenEvent());
     });

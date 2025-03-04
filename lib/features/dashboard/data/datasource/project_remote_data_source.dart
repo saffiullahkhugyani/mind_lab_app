@@ -18,7 +18,7 @@ class ProjectRemoteDatSourceImpl implements ProjectRemoteDataSource {
     try {
       final projectList = await supabaseClient
           .from('subscription')
-          .select('profiles(id, name), projects(id, name), subscription')
+          .select('children(id, name), projects(id, name), subscription')
           .match({
         'user_id': supabaseClient.auth.currentUser!.id,
         'subscription': 1

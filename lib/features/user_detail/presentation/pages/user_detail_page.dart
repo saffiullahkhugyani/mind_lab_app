@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_child/app_child_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
@@ -24,6 +25,7 @@ class UserDetailPage extends StatefulWidget {
 
 class _UserDetailPageState extends State<UserDetailPage> {
   File? image;
+  int? childId;
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -37,7 +39,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserDetailBloc>().add(UserDetailFetchUserDetail());
+    childId =
+        (context.read<AppChildCubit>().state as AppChildSelected).child.id;
+
+    context.read<UserDetailBloc>().add(GetChildDetails(childId: childId!));
   }
 
   void handleSelected(int item) {
@@ -46,7 +51,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
         Navigator.pushNamed(context, updateProfileRoute).then(
           (_) => setState(
             () {
-              context.read<UserDetailBloc>().add(UserDetailFetchUserDetail());
+              context
+                  .read<UserDetailBloc>()
+                  .add(GetChildDetails(childId: childId!));
             },
           ),
         );
@@ -81,8 +88,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   // to get the player Id
-  String generateShortUUID(String id) {
-    var uuid = id; // Generate a standard UUID
+  String generateShortUUID(String id, int childId) {
+    var uuid = "$id$childId"; // Generate a standard UUID
     var bytes = utf8.encode(uuid); // Convert it to bytes
     var hash = sha256.convert(bytes); // Create a SHA-256 hash
     return hash.toString().substring(0, 5); // Return the first 8 characters
@@ -90,8 +97,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    var userEmail =
-        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.email;
+    var parentId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -138,7 +145,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
         }
 
         if (state is UserDetailDisplaySuccess) {
-          final userInfo = state.userDetail.userDetails.first;
+          final userInfo = state.userDetail.childDetails.first;
           final userCertificates = state.userDetail.certificates;
           final certificateMaster = state.userDetail.certificateMasterList;
           final playerRegistration = state.userDetail.playerRegistration;
@@ -153,7 +160,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    userInfo.imageUrl.isNotEmpty
+                    userInfo.imageUrl!.isNotEmpty
                         ? Container(
                             width: 200,
                             height: 200,
@@ -169,7 +176,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               shape: BoxShape.circle,
                             ),
                             child: CircleAvatar(
-                              backgroundImage: NetworkImage(userInfo.imageUrl),
+                              backgroundImage: NetworkImage(userInfo.imageUrl!),
                             ),
                           )
                         : Container(
@@ -181,7 +188,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                                 BoxShadow(
                                   spreadRadius: 2,
                                   blurRadius: 10,
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                 ),
                               ],
                               shape: BoxShape.circle,
@@ -218,9 +225,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
                               .then(
                                 (_) => setState(
                                   () {
-                                    context
-                                        .read<UserDetailBloc>()
-                                        .add(UserDetailFetchUserDetail());
+                                    context.read<UserDetailBloc>().add(
+                                        GetChildDetails(childId: childId!));
                                   },
                                 ),
                               );
@@ -308,14 +314,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     ),
                   ),
                   MyTextbox(
-                      text: generateShortUUID(userInfo.id),
+                      text: generateShortUUID(parentId, userInfo.id),
                       sectionName: 'Player ID'),
                   MyTextbox(
-                    text: userEmail,
+                    text: userInfo.email,
                     sectionName: 'User Email',
                   ),
-                  MyTextbox(text: userInfo.age, sectionName: 'Age Group'),
-                  MyTextbox(text: userInfo.mobile, sectionName: 'Mobile'),
+                  MyTextbox(text: userInfo.ageGroup, sectionName: 'Age Group'),
+                  // MyTextbox(text: "userInfo.mobile", sectionName: 'Mobile'),
                   MyTextbox(
                       text: userInfo.nationality, sectionName: 'Nationality'),
                 ],

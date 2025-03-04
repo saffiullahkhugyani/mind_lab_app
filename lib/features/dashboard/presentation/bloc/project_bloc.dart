@@ -27,8 +27,8 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     ProjectFetchAllProjects event,
     Emitter<ProjectState> emit,
   ) async {
-    final subscribedProjects = await _getSubscribedProjects(NoParams());
-    final allProjects = await _getAllProjects(NoParams());
+    final subscribedProjects = await _getSubscribedProjects(event.childId);
+    final allProjects = await _getAllProjects(event.childId);
 
     subscribedProjects.fold(
       (failure) => emit(ProjectFailure(failure.errorMessage)),

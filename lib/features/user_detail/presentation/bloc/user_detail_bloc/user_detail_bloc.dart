@@ -16,7 +16,7 @@ class UserDetailBloc extends Bloc<UserDetailEvent, UserDetailState> {
         _deleteAccount = deleteAccount,
         super(UserDetailInitial()) {
     on<UserDetailEvent>((event, emit) => emit(UserDetailLoading()));
-    on<UserDetailFetchUserDetail>(_onFetchUserDetail);
+    on<GetChildDetails>(_onFetchUserDetail);
     on<UserDeleteAccount>(_onUserDeleteAccount);
   }
 
@@ -30,10 +30,10 @@ class UserDetailBloc extends Bloc<UserDetailEvent, UserDetailState> {
   }
 
   void _onFetchUserDetail(
-    UserDetailFetchUserDetail event,
+    GetChildDetails event,
     Emitter emit,
   ) async {
-    final res = await _getUserDetail(NoParams());
+    final res = await _getUserDetail(event.childId);
 
     res.fold(
       (failure) => emit(UserDetailFailure(failure.errorMessage)),

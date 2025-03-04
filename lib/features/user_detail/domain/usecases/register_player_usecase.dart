@@ -14,7 +14,7 @@ class RegisterPlayerUsecase
   Future<Either<ServerFailure, RegisterPlayerEntity>> call(
       RegisterPlayerParams params) async {
     return await repository.registerPlayer(
-      userId: params.userId,
+      childId: params.childId,
       playerId: params.playerId,
       city: params.city,
       country: params.country,
@@ -23,13 +23,13 @@ class RegisterPlayerUsecase
 }
 
 class RegisterPlayerParams {
-  final String userId;
+  final int childId;
   final String playerId;
   final String city;
   final String country;
 
   RegisterPlayerParams({
-    required this.userId,
+    required this.childId,
     required this.playerId,
     required this.city,
     required this.country,

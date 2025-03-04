@@ -1,15 +1,15 @@
 class UpdateProfileEntity {
-  String? userId;
+  int? childId;
   String? name;
-  String? dateOfBirth;
-  String? number;
+  String? ageGroup;
+  String? email;
   String? profileImageUrl;
 
   UpdateProfileEntity({
-    this.userId,
+    this.childId,
     this.name,
-    this.dateOfBirth,
-    this.number,
+    this.ageGroup,
+    this.email,
     this.profileImageUrl,
   });
 }
