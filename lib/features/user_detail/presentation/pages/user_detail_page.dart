@@ -37,6 +37,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   void initState() {
     super.initState();
+
     context.read<UserDetailBloc>().add(UserDetailFetchUserDetail());
   }
 
