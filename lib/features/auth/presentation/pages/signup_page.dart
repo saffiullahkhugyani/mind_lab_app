@@ -43,6 +43,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final genderData = ['Male', 'Female'];
 
+  final registerAs = {'Student': 4, 'Parent': 6};
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
@@ -54,6 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String? ageGroup;
   String? nationality;
   File? avatarImage;
+  String? selectedRole;
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -91,7 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
               } else if (state is AuthSuccess) {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  homePageRoute,
+                  dashboardRoute,
                   (route) => false,
                 );
               }
@@ -303,6 +306,37 @@ class _SignUpPageState extends State<SignUpPage> {
                         phoneNumber = value.completeNumber;
                       },
                     ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.app_registration),
+                        labelText: "Select Registration type",
+                      ),
+                      items: registerAs.keys
+                          .map<DropdownMenuItem<String>>(
+                            (String key) => DropdownMenuItem(
+                              value: key,
+                              child: Text(key),
+                            ),
+                          )
+                          .toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return "Please select your registration type";
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        selectedRole = value;
+                        int? selectedId = registerAs[selectedRole];
+                        print("Selected Role ID: $selectedId ");
+                      },
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       child: RichText(
@@ -368,7 +402,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                     mobile: phoneNumber!,
                                     gender: gender!,
                                     imageFile: avatarImage!,
-                                    nationality: nationality!),
+                                    nationality: nationality!,
+                                    roleId: registerAs[selectedRole]!),
                               );
                         } else {
                           showFlashBar(

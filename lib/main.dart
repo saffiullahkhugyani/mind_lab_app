@@ -123,6 +123,7 @@ class _MyAppState extends State<MyApp> {
           playerRankRoute: (context) => const PlayerRankPage(),
           playerRegistrationRoute: (context) => const PlayerRegistrationPage(),
           myIdRoute: (context) => const Myidpage(),
+          dashboardRoute: (context) => const ProjectPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,

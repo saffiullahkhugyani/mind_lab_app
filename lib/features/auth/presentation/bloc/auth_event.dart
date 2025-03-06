@@ -12,6 +12,7 @@ final class AuthSignUp extends AuthEvent {
   final String gender;
   final String nationality;
   final File imageFile;
+  final int roleId;
 
   AuthSignUp({
     required this.email,
@@ -22,6 +23,7 @@ final class AuthSignUp extends AuthEvent {
     required this.gender,
     required this.nationality,
     required this.imageFile,
+    required this.roleId,
   });
 }
 

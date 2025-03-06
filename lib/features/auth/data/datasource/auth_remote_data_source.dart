@@ -20,6 +20,7 @@ abstract interface class AuthRemoteDataSource {
     required String mobile,
     required String gender,
     required String nationality,
+    required int roleId,
   });
 
   Future<String> uploadUserImage({
@@ -37,6 +38,17 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel> loginWithGoogle();
 
   Future<UserModel> loginWithApple();
+
+  Future<UserModel> uploadStudentDetails({
+    required String userId,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String mobile,
+    required String gender,
+    required String nationality,
+    required String imageUrl,
+  });
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -84,6 +96,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String mobile,
     required String gender,
     required String nationality,
+    required int roleId,
   }) async {
     try {
       final response = await supabaseClient.auth.signUp(
@@ -95,7 +108,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'mobile': mobile,
           'gender': gender,
-          'nationality': nationality
+          'nationality': nationality,
+          'role_id': roleId,
         },
       );
       if (response.user == null) {
@@ -255,6 +269,41 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> uploadStudentDetails({
+    required String userId,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String mobile,
+    required String gender,
+    required String nationality,
+    required String imageUrl,
+  }) async {
+    try {
+      final studentData = {
+        'profile_id': userId,
+        'name': name,
+        'age_group': ageGroup,
+        'email': email,
+        'mobile': mobile,
+        'gender': gender,
+        'nationality': nationality,
+        'image_url': imageUrl,
+      };
+
+      final response =
+          await supabaseClient.from('students').insert(studentData).select();
+
+      return UserModel.fromJson(response.first);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
       throw ServerException(e.toString());
     }
   }

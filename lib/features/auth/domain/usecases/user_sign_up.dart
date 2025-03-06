@@ -22,6 +22,7 @@ class UserSignUp implements UseCase<User, UserSignUpParams> {
       gender: params.gender,
       imageFile: params.imageFile,
       nationality: params.nationality,
+      roleId: params.roleId,
     );
   }
 }
@@ -35,6 +36,7 @@ class UserSignUpParams {
   final String gender;
   final File imageFile;
   final String nationality;
+  final int roleId;
 
   UserSignUpParams({
     required this.email,
@@ -45,5 +47,6 @@ class UserSignUpParams {
     required this.gender,
     required this.imageFile,
     required this.nationality,
+    required this.roleId,
   });
 }

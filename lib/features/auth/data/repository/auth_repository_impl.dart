@@ -38,6 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
           mobile: '',
           gender: '',
           nationality: '',
+          roleId: 0,
         ));
       }
       final user = await remoteDataSource.getCurrentUserData();
@@ -71,23 +72,36 @@ class AuthRepositoryImpl implements AuthRepository {
     required String gender,
     required File imageFile,
     required String nationality,
+    required int roleId,
   }) async {
     return _getUser(() async {
       final user = await remoteDataSource.signUpWithEmailPassword(
-        name: name,
-        email: email,
-        password: password,
-        ageGroup: ageGroup,
-        mobile: mobile,
-        gender: gender,
-        nationality: nationality,
-      );
+          name: name,
+          email: email,
+          password: password,
+          ageGroup: ageGroup,
+          mobile: mobile,
+          gender: gender,
+          nationality: nationality,
+          roleId: roleId);
 
       // upload user profile picture
       final imageUrl = await remoteDataSource.uploadUserImage(
           imageFile: imageFile, userModel: user);
 
-      log(imageUrl);
+      // uploading data into stundents table if role type student selected
+      if (roleId == 4) {
+        final student = await remoteDataSource.uploadStudentDetails(
+          userId: user.id,
+          name: name,
+          email: email,
+          ageGroup: ageGroup,
+          mobile: mobile,
+          gender: gender,
+          nationality: nationality,
+          imageUrl: imageUrl,
+        );
+      }
 
       return user;
     });
