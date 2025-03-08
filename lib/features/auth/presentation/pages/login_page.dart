@@ -9,6 +9,7 @@ import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/pages/parent_page.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../widgets/social_login_button.dart';
@@ -93,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                 } else if (state is AuthSuccess) {
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (context) => const ProjectPage()),
+                          builder: (context) => const ParentPage()),
                       (route) => false);
                 }
               },

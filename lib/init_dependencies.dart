@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/core/secrets/app_secrets.dart';
@@ -19,6 +20,13 @@ import 'package:mind_lab_app/features/dashboard/domain/repository/project_reposi
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_all_projects.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_subscribec_projects.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/data/datasource/local_data_source.dart';
+import 'package:mind_lab_app/features/parent_child/data/datasource/remote_data_source.dart';
+import 'package:mind_lab_app/features/parent_child/data/repositories/parent_child_repository_impl.dart';
+import 'package:mind_lab_app/features/parent_child/domain/repositories/parent_child_repository.dart';
+import 'package:mind_lab_app/features/parent_child/domain/usecases/add_student_usecase.dart';
+import 'package:mind_lab_app/features/parent_child/domain/usecases/get_students_usecase.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_local_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_remote_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/repositories/project_list_repository_impl.dart';
@@ -78,6 +86,8 @@ Future<void> initDependencies() async {
       serviceLocator(),
     ),
   );
+
+  serviceLocator.registerLazySingleton(() => AppStudentCubit());
 }
 
 void _initAuth() {
@@ -338,6 +348,53 @@ void _initAuth() {
   serviceLocator.registerLazySingleton(
     () => PlayerRankBloc(
       playerRankDetails: serviceLocator(),
+    ),
+  );
+
+  {/*Dependencies for parent child*/}
+  // Parent remote data source
+  serviceLocator.registerFactory<RemoteDataSource>(
+    () => RemoteDataSourceImpl(
+      serviceLocator(),
+    ),
+  );
+
+  // Parent child local data source
+  serviceLocator.registerFactory<LocalDataSource>(
+    () => LocalDataSrouceImpl(
+      serviceLocator(),
+    ),
+  );
+
+  // Repository
+  serviceLocator.registerFactory<ParentChildRepository>(
+    () => ParentChildRepositoryImpl(
+      serviceLocator(),
+      serviceLocator(),
+      serviceLocator(),
+    ),
+  );
+
+  // Parent child use case
+  // add student use case
+  serviceLocator.registerFactory(
+    () => AddStudentUseCase(
+      serviceLocator(),
+    ),
+  );
+
+  // get students use case
+  serviceLocator.registerFactory(
+    () => GetStudentUsecase(
+      serviceLocator(),
+    ),
+  );
+
+  // parent child bloc
+  serviceLocator.registerLazySingleton(
+    () => ParentChildBloc(
+      serviceLocator(),
+      serviceLocator(),
     ),
   );
 }
