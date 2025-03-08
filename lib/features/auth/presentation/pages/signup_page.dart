@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/constants/country_list.dart';
@@ -92,11 +93,23 @@ class _SignUpPageState extends State<SignUpPage> {
                   FlashBarAction.error,
                 );
               } else if (state is AuthSuccess) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  dashboardRoute,
-                  (route) => false,
-                );
+                final roleId =
+                    (context.read<AppUserCubit>().state as AppUserLoggedIn)
+                        .user
+                        .roleId;
+                if (roleId == 6) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    parentRoute,
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    dashboardRoute,
+                    (route) => false,
+                  );
+                }
               }
             },
             builder: (context, state) {

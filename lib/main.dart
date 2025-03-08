@@ -22,6 +22,7 @@ import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/pages/parent_page.dart';
 import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_controller_page.dart';
@@ -101,6 +102,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(AuthIsUserLoggedIn());
+    Future.delayed(Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {}); // Force rebuild
+      }
+    });
   }
 
   @override
@@ -132,6 +138,7 @@ class _MyAppState extends State<MyApp> {
           playerRegistrationRoute: (context) => const PlayerRegistrationPage(),
           myIdRoute: (context) => const Myidpage(),
           dashboardRoute: (context) => const ProjectPage(),
+          parentRoute: (context) => const ParentPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,
@@ -144,7 +151,16 @@ class _MyAppState extends State<MyApp> {
             builder: (context, isLoggedIn) {
               log(isLoggedIn.toString());
               if (isLoggedIn) {
-                return const ProjectPage();
+                final roleId =
+                    (context.read<AppUserCubit>().state as AppUserLoggedIn)
+                        .user
+                        .roleId;
+                log(roleId.toString());
+                if (roleId == 4) {
+                  return const ProjectPage();
+                } else if (roleId == 6) {
+                  return const ParentPage();
+                }
               }
               return const LoginPage();
             },

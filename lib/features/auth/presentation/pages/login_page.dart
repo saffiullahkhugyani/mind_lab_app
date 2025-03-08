@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_provider.dart';
 import 'package:mind_lab_app/core/theme/theme_data.dart';
@@ -92,10 +93,21 @@ class _LoginPageState extends State<LoginPage> {
                   //   FlashBarAction.info,
                   // );
                 } else if (state is AuthSuccess) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const ParentPage()),
-                      (route) => false);
+                  final roleId =
+                      (context.read<AppUserCubit>().state as AppUserLoggedIn)
+                          .user
+                          .roleId;
+                  if (roleId == 6) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const ParentPage()),
+                        (route) => false);
+                  } else {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const ProjectPage()),
+                        (route) => false);
+                  }
                 }
               },
               builder: (context, state) {
