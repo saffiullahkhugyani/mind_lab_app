@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -97,7 +96,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthSignUp(AuthSignUp event, Emitter<AuthState> emit) async {
-    log("In bloc on event signUp: $event");
     final response = await _userSignUpUsecase(
       UserSignUpParams(
         email: event.email,
