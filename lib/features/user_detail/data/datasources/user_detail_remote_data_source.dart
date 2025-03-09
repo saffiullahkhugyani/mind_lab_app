@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
+import 'package:mind_lab_app/features/parent_child/data/models/student_model.dart';
 // import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
@@ -12,14 +13,17 @@ import 'package:mind_lab_app/features/user_detail/data/models/skill_category_mod
 import 'package:mind_lab_app/features/user_detail/data/models/skill_tag_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_type_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/update_profile_model.dart';
-import 'package:mind_lab_app/features/user_detail/data/models/user_detail_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:path/path.dart';
 import '../models/upload_certificate_model.dart';
 import 'package:crypto/crypto.dart';
 
 abstract interface class UserDetailRemoteDataSource {
-  Future<List<UserDetailModel>> getUserDetails();
+  Future<List<StudentModel>> getStudentDetails({
+    required String parentId,
+    required String studentId,
+    required int roleId,
+  });
   Future<List<SkillTypeModel>> getSkillTypes();
   Future<List<SkillTagModel>> getSkillTags();
   Future<List<SkillCategoryModel>> getSkillCategories();
@@ -47,22 +51,50 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   final SupabaseClient supabaseClient;
   UserDetailRemoteDataSourceImpl(this.supabaseClient);
   @override
-  Future<List<UserDetailModel>> getUserDetails() async {
+  Future<List<StudentModel>> getStudentDetails({
+    required String parentId,
+    required String studentId,
+    required int roleId,
+  }) async {
     try {
-      // getting current user Uid
+      // Get the current user's UID
       final userUid = supabaseClient.auth.currentUser!.id;
 
-      // fetching user details
-      final userDetail = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .match({'id': userUid});
+      List<Map<String, dynamic>> studentData;
 
-      return userDetail.map((json) => UserDetailModel.fromJson(json)).toList();
+      if (roleId == 6) {
+        // Fetch student details for parent role
+        final response = await supabaseClient
+            .from('parent_child_relationship')
+            .select('parent_id, students(*)')
+            .eq('parent_id', parentId)
+            .eq('child_id', studentId);
+
+        // Extract student details from the response
+        studentData = (response as List).map((item) {
+          return item['students'] as Map<String, dynamic>;
+        }).toList();
+      } else if (roleId == 4) {
+        // Fetch student details for student role
+        final response =
+            await supabaseClient.from('students').select('*').eq('id', userUid);
+
+        studentData = response;
+      } else {
+        throw ServerException('Invalid role ID');
+      }
+
+      // Check if student data is empty
+      if (studentData.isEmpty) {
+        throw ServerException('No student data found');
+      }
+
+      // Convert the data to a list of StudentModel
+      return studentData.map((json) => StudentModel.fromJson(json)).toList();
     } on PostgrestException catch (e) {
-      throw ServerException(e.message);
+      throw ServerException('Database error: ${e.message}');
     } catch (e) {
-      throw ServerException(e.toString());
+      throw ServerException('Unexpected error: ${e.toString()}');
     }
   }
 
@@ -133,10 +165,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel) async {
     try {
-      final certificateData = await supabaseClient
-          .from('upload_certificate')
-          .insert(certificateModel.toJson())
-          .select();
+      final data = certificateModel.toJson();
+      data.remove('id');
+      final certificateData =
+          await supabaseClient.from('upload_certificate').insert(data).select();
 
       return UploadCertificateModel.fromJson(certificateData.first);
     } catch (e) {
@@ -152,14 +184,20 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     try {
       // final String fileName = basename(imageFile.path);
       final path =
-          '${certificateModel.userId}/${certificateModel.id}/${certificateModel.certificateName}';
+          '${certificateModel.studentId}/${certificateModel.id}/${certificateModel.certificateName}';
       await supabaseClient.storage
           .from('certificate_images')
           .upload(path, imageFile);
 
-      return supabaseClient.storage
-          .from('certificate_images')
-          .getPublicUrl(path);
+      final certificateUrl =
+          supabaseClient.storage.from('certificate_images').getPublicUrl(path);
+
+      await supabaseClient
+          .from('upload_certificate')
+          .update({'certificate_image_url': certificateUrl}).eq(
+              'id', certificateModel.id!);
+
+      return certificateUrl;
     } on StorageException catch (e) {
       throw ServerException(e.error!);
     }

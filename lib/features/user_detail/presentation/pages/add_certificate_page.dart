@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/pick_image.dart';
@@ -40,11 +41,13 @@ class _AddCertificateState extends State<AddCertificate> {
 
   void uploadCertificate() {
     if (formKey.currentState!.validate() && image != null) {
-      final userId =
-          (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+      final studentId =
+          (context.read<AppStudentCubit>().state as AppStudentSelected)
+              .student
+              .id;
       context.read<AddCertificateBloc>().add(
             UploadCertificateEvent(
-              userId: userId,
+              studentId: studentId,
               certificateName: certificateNameController.text.trim(),
               image: image!,
               skillType: selectedSkillTypeEntity?.name,

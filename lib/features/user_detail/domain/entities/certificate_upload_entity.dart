@@ -1,6 +1,6 @@
 class UploadCertificateEntity {
-  final String id;
-  final String userId;
+  final int? id;
+  final String studentId;
   final String certificateName;
   String? skillType;
   String? skillCategory;
@@ -8,8 +8,8 @@ class UploadCertificateEntity {
   final String certificateImageUrl;
 
   UploadCertificateEntity({
-    required this.id,
-    required this.userId,
+    this.id,
+    required this.studentId,
     required this.certificateName,
     this.skillType,
     this.skillCategory,

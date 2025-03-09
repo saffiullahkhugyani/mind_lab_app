@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
@@ -25,14 +26,22 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   UserDetailRepositoryImpl(
       this.userDetailRemoteDataSource, this.connectionChecker);
   @override
-  Future<Either<ServerFailure, UserDetailResult>> getUserDetails() async {
+  Future<Either<ServerFailure, StudentDetailResult>> getStudentDetails({
+    required String parentId,
+    required String studentId,
+    required int roleId,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(
             ServerFailure(errorMessage: "Check your internet connection"));
       }
 
-      final userDetail = await userDetailRemoteDataSource.getUserDetails();
+      final studentDetail = await userDetailRemoteDataSource.getStudentDetails(
+        parentId: parentId,
+        studentId: studentId,
+        roleId: roleId,
+      );
       final userCertificate =
           await userDetailRemoteDataSource.getCertificates();
       final certificateMaster =
@@ -40,13 +49,14 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
       final playerRegistration =
           await userDetailRemoteDataSource.getPlayerRegistration();
 
-      return right(UserDetailResult(
-        userDetails: userDetail,
+      return right(StudentDetailResult(
+        studentDetails: studentDetail,
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
         playerRegistration: playerRegistration,
       ));
     } on ServerException catch (e) {
+      log(e.message);
       return left(ServerFailure(errorMessage: e.message));
     }
   }
@@ -85,24 +95,31 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
 
   @override
   Future<Either<ServerFailure, UploadCertificateEntity>> uploadCertificate({
-    required String userId,
+    required String studentId,
     required String certificateName,
     required File certificateImage,
     String? skillType,
     String? skillCategory,
     String? skillTag,
   }) async {
-    try {
-      UploadCertificateModel certificateModel = UploadCertificateModel(
-        id: const Uuid().v1(),
-        userId: userId,
-        certificateName: certificateName,
-        certificateImageUrl: "",
-        skillType: skillType,
-        skillCategory: skillCategory,
-        skillTag: skillCategory,
-      );
+    UploadCertificateModel certificateModel = UploadCertificateModel(
+      studentId: studentId,
+      certificateName: certificateName,
+      certificateImageUrl: "",
+      skillType: skillType,
+      skillCategory: skillCategory,
+      skillTag: skillCategory,
+    );
 
+    log(certificateModel.toJson().toString());
+    try {
+      // uploading certificate
+      final uploadedCertificate =
+          await userDetailRemoteDataSource.uploadCertificate(certificateModel);
+
+      certificateModel = certificateModel.copyWith(id: uploadedCertificate.id);
+
+      // uploading certificate image
       final url = await userDetailRemoteDataSource.uploadCertificateImage(
         imageFile: certificateImage,
         certificateModel: certificateModel,
@@ -110,11 +127,9 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
 
       certificateModel = certificateModel.copyWith(certificateImageUrl: url);
 
-      final uploadedCertificate =
-          await userDetailRemoteDataSource.uploadCertificate(certificateModel);
-
       return right(uploadedCertificate);
     } on ServerException catch (e) {
+      log(e.message);
       return left(ServerFailure(errorMessage: e.message));
     }
   }

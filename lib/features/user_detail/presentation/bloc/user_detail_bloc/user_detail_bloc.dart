@@ -33,7 +33,13 @@ class UserDetailBloc extends Bloc<UserDetailEvent, UserDetailState> {
     UserDetailFetchUserDetail event,
     Emitter emit,
   ) async {
-    final res = await _getUserDetail(NoParams());
+    final res = await _getUserDetail(
+      StudentDetailParams(
+        parentId: event.parentId,
+        studentId: event.studentId,
+        roleId: event.roleId,
+      ),
+    );
 
     res.fold(
       (failure) => emit(UserDetailFailure(failure.errorMessage)),

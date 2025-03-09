@@ -12,7 +12,7 @@ class UserDetailFailure extends UserDetailState {
 }
 
 class UserDetailDisplaySuccess extends UserDetailState {
-  final UserDetailResult userDetail;
+  final StudentDetailResult userDetail;
 
   UserDetailDisplaySuccess(this.userDetail);
 }

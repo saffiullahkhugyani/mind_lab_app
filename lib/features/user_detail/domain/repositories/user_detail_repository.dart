@@ -16,7 +16,11 @@ import '../entities/update_profile_entity.dart';
 
 abstract interface class UserDetailRepository {
   // fetching user details
-  Future<Either<ServerFailure, UserDetailResult>> getUserDetails();
+  Future<Either<ServerFailure, StudentDetailResult>> getStudentDetails({
+    required String parentId,
+    required String studentId,
+    required int roleId,
+  });
 
   // fetching skill data
   Future<Either<ServerFailure, List<SkillTypeEntity>>> getSkillTypes();
@@ -29,7 +33,7 @@ abstract interface class UserDetailRepository {
 
   // uploading certificate
   Future<Either<ServerFailure, UploadCertificateEntity>> uploadCertificate({
-    required String userId,
+    required String studentId,
     required String certificateName,
     required File certificateImage,
     String? skillType,

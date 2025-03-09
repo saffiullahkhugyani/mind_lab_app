@@ -5,6 +5,7 @@ class StudentEntity {
   final String ageGroup;
   final String gender;
   final String nationality;
+  final String number;
   final String? imageUrl;
 
   StudentEntity({
@@ -13,6 +14,7 @@ class StudentEntity {
     required this.email,
     required this.ageGroup,
     required this.gender,
+    required this.number,
     required this.nationality,
     this.imageUrl,
   });

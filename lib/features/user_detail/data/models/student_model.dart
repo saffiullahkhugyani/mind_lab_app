@@ -4,8 +4,8 @@ class StudentModel extends StudentEntity {
   StudentModel({
     required super.id,
     required super.name,
-    required super.ageGroup,
     required super.email,
+    required super.ageGroup,
     required super.gender,
     required super.nationality,
     required super.number,
@@ -16,7 +16,7 @@ class StudentModel extends StudentEntity {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'ageGroup': ageGroup,
+      'age_group': ageGroup,
       'email': email,
       'gender': gender,
       'nationality': nationality,
@@ -28,7 +28,7 @@ class StudentModel extends StudentEntity {
   factory StudentModel.fromJson(Map<String, dynamic> json) {
     return StudentModel(
       id: json['id'] ?? '',
-      ageGroup: json['ageGroup'] ?? '',
+      ageGroup: json['age_group'] ?? '',
       email: json['email'] ?? '',
       name: json['name'] ?? '',
       gender: json['gender'] ?? '',

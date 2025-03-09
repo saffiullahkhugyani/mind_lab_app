@@ -2,8 +2,8 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_up
 
 class UploadCertificateModel extends UploadCertificateEntity {
   UploadCertificateModel({
-    required super.id,
-    required super.userId,
+    super.id,
+    required super.studentId,
     required super.certificateName,
     required super.certificateImageUrl,
     super.skillType,
@@ -12,8 +12,8 @@ class UploadCertificateModel extends UploadCertificateEntity {
   });
 
   UploadCertificateModel copyWith({
-    String? id,
-    String? userId,
+    int? id,
+    String? studentId,
     String? certificateName,
     String? certificateImageUrl,
     String? skillType,
@@ -22,7 +22,7 @@ class UploadCertificateModel extends UploadCertificateEntity {
   }) {
     return UploadCertificateModel(
       id: id ?? this.id,
-      userId: userId ?? this.userId,
+      studentId: studentId ?? this.studentId,
       certificateName: certificateName ?? this.certificateName,
       certificateImageUrl: certificateImageUrl ?? this.certificateImageUrl,
       skillType: skillType ?? this.skillType,
@@ -33,8 +33,8 @@ class UploadCertificateModel extends UploadCertificateEntity {
 
   factory UploadCertificateModel.fromJson(Map<String, dynamic> json) {
     return UploadCertificateModel(
-        id: json['id'] ?? "",
-        userId: json['user_id'] ?? "",
+        id: json['id'] ?? 0,
+        studentId: json['student_id'] ?? "",
         certificateName: json['certificate_name'] ?? "",
         certificateImageUrl: json['certificate_image_url'] ?? "",
         skillType: json['skill_type'] ?? "",
@@ -45,7 +45,7 @@ class UploadCertificateModel extends UploadCertificateEntity {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'user_id': userId,
+      'student_id': studentId,
       'certificate_image_url': certificateImageUrl,
       'certificate_name': certificateName,
       'skill_type': skillType,
