@@ -52,7 +52,7 @@ class ParentChildBloc extends Bloc<ParentChildEvent, ParentChildState> {
 
   void _onGetStudents(
       GetChildrenEvent event, Emitter<ParentChildState> emit) async {
-    final response = await _getStudents(NoParams());
+    final response = await _getStudents(event.parentId);
 
     response.fold(
       (failure) => emit(ParentChildFailure(failure.errorMessage)),

@@ -25,4 +25,7 @@ final class AddChildEvent extends ParentChildEvent {
   });
 }
 
-final class GetChildrenEvent extends ParentChildEvent {}
+final class GetChildrenEvent extends ParentChildEvent {
+  final String parentId;
+  const GetChildrenEvent({required this.parentId});
+}

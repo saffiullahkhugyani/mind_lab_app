@@ -6,7 +6,9 @@ import 'package:mind_lab_app/features/parent_child/data/models/student_model.dar
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class RemoteDataSource {
-  Future<List<StudentModel>> getStudents();
+  Future<List<StudentModel>> getStudents({
+    required String parentId,
+  });
   Future<StudentModel> addStudent({
     required String name,
     required String email,
@@ -40,9 +42,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         'age_group': ageGroup,
         'gender': gender,
         'nationality': nationality,
+        'profile_id': null,
       }).select();
 
-      log(StudentModel.fromJson(response.first).toString());
+      final studentModel = StudentModel.fromJson(response.first);
+
+      final parentChildRelationship = await supabaseClient
+          .from('parent_child_relationship')
+          .insert({'child_id': studentModel.id});
+
+      log(parentChildRelationship.toString());
 
       return StudentModel.fromJson(response.first);
     } on PostgrestException catch (e) {
@@ -54,12 +63,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<List<StudentModel>> getStudents() async {
+  Future<List<StudentModel>> getStudents({required String parentId}) async {
     try {
-      final response = await supabaseClient.from('students').select('*');
+      final response = await supabaseClient
+          .from('parent_child_relationship')
+          .select('parent_id, students(*)')
+          .eq('parent_id', parentId);
 
-      final list =
-          response.map((student) => StudentModel.fromJson(student)).toList();
+      final list = response
+          .map<StudentModel>(
+              (entry) => StudentModel.fromJson(entry['students']))
+          .toList();
 
       return list;
     } on PostgrestException catch (e) {

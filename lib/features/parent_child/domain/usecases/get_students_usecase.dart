@@ -5,12 +5,12 @@ import 'package:mind_lab_app/core/usecase/usecase.dart';
 
 import '../repositories/parent_child_repository.dart';
 
-class GetStudentUsecase implements UseCase<List<StudentEntity>, NoParams> {
+class GetStudentUsecase implements UseCase<List<StudentEntity>, String> {
   final ParentChildRepository repository;
   GetStudentUsecase(this.repository);
 
   @override
-  Future<Either<ServerFailure, List<StudentEntity>>> call(NoParams params) {
-    return repository.getStudents();
+  Future<Either<ServerFailure, List<StudentEntity>>> call(String parentId) {
+    return repository.getStudents(parentId: parentId);
   }
 }

@@ -62,13 +62,16 @@ class ParentChildRepositoryImpl implements ParentChildRepository {
   }
 
   @override
-  Future<Either<ServerFailure, List<StudentModel>>> getStudents() async {
+  Future<Either<ServerFailure, List<StudentModel>>> getStudents({
+    required String parentId,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         final studentsList = localDataSource.loadStudentsData();
         return right(studentsList);
       }
-      final studentsList = await remoteDataSource.getStudents();
+      final studentsList =
+          await remoteDataSource.getStudents(parentId: parentId);
       localDataSource.uploadStudentData(students: studentsList);
       return right(studentsList);
     } on ServerException catch (e) {

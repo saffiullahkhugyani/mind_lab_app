@@ -5,7 +5,9 @@ import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 
 abstract interface class ParentChildRepository {
-  Future<Either<ServerFailure, List<StudentEntity>>> getStudents();
+  Future<Either<ServerFailure, List<StudentEntity>>> getStudents({
+    required String parentId,
+  });
 
   Future<Either<ServerFailure, StudentEntity>> addStudent({
     required String name,

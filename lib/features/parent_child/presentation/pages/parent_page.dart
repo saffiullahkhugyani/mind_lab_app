@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/widgets/card_item.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/pages/add_child_form.dart';
@@ -25,9 +26,10 @@ class _ParentPageState extends State<ParentPage> {
   }
 
   Future<void> fetchData() async {
-    log('in fetching data ');
+    final parentId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
     setState(() {
-      context.read<ParentChildBloc>().add(GetChildrenEvent());
+      context.read<ParentChildBloc>().add(GetChildrenEvent(parentId: parentId));
     });
   }
 
@@ -101,7 +103,6 @@ class _ParentPageState extends State<ParentPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {}),
     );
   }
 }
