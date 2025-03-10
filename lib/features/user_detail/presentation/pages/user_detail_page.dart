@@ -112,8 +112,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    var userEmail =
-        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.email;
+    // var userEmail =
+    //     (context.read<AppUserCubit>().state as AppUserLoggedIn).user.email;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),

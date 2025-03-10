@@ -16,7 +16,6 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_en
 import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
-import 'package:uuid/uuid.dart';
 import '../../../../core/network/connection_checker.dart';
 
 class UserDetailRepositoryImpl implements UserDetailRepository {

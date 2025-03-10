@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/player_rank_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_player_rank_detail_usecase.dart';
 
