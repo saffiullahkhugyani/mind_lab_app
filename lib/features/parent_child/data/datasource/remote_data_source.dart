@@ -93,11 +93,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       final path = '${studentModel.id}/$fileName-image';
 
       await supabaseClient.storage
-          .from('children-profile-images')
+          .from('student-profile-images')
           .upload(path, imageFile);
 
       final imageUrl = supabaseClient.storage
-          .from('children-profile-images')
+          .from('student-profile-images')
           .getPublicUrl(path);
 
       await supabaseClient.from('students').update({

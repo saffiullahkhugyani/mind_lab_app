@@ -36,10 +36,10 @@ abstract interface class UserDetailRemoteDataSource {
     required File imageFile,
     required UploadCertificateModel certificateModel,
   });
-  Future<UpdateProfileModel> updateProfile(UpdateProfileModel profileModel);
+  Future<UpdateStudentModel> updateProfile(UpdateStudentModel studentModel);
   Future<String> updateProfileImage({
     File? imageFile,
-    UpdateProfileModel? profileModel,
+    UpdateStudentModel? studentModel,
   });
   Future<String> deleteAccount();
   Future<void> signOut();
@@ -209,39 +209,41 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<UpdateProfileModel> updateProfile(
-    UpdateProfileModel profileModel,
+  Future<UpdateStudentModel> updateProfile(
+    UpdateStudentModel studentModel,
   ) async {
+    log("In update profile: ${studentModel.studentId}");
     try {
       // existing user data
       final userDetail = await supabaseClient
-          .from('profiles')
+          .from('students')
           .select('*')
-          .match({'id': profileModel.userId!});
+          .match({'id': studentModel.studentId!});
 
-      final UpdateProfileModel model =
-          UpdateProfileModel.fromJson(userDetail.first);
+      final UpdateStudentModel model =
+          UpdateStudentModel.fromJson(userDetail.first);
 
       final profileData = await supabaseClient
-          .from('profiles')
+          .from('students')
           .update({
             "name":
-                profileModel.name!.isNotEmpty ? profileModel.name : model.name,
-            "age": profileModel.dateOfBirth!.isNotEmpty
-                ? profileModel.dateOfBirth
+                studentModel.name!.isNotEmpty ? studentModel.name : model.name,
+            "age_group": studentModel.dateOfBirth!.isNotEmpty
+                ? studentModel.dateOfBirth
                 : model.dateOfBirth,
-            "mobile": profileModel.number!.isNotEmpty
-                ? profileModel.number
+            "mobile": studentModel.number!.isNotEmpty
+                ? studentModel.number
                 : model.number,
-            "profile_image_url": profileModel.profileImageUrl!.isNotEmpty
-                ? profileModel.profileImageUrl
+            "image_url": studentModel.profileImageUrl!.isNotEmpty
+                ? studentModel.profileImageUrl
                 : model.profileImageUrl,
           })
-          .eq('id', profileModel.userId!)
+          .eq('id', studentModel.studentId!)
           .select();
 
-      return UpdateProfileModel.fromJson(profileData.first);
+      return UpdateStudentModel.fromJson(profileData.first);
     } catch (e) {
+      log("in update student: $e.toString()");
       throw ServerException(e.toString());
     }
   }
@@ -249,26 +251,29 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   @override
   Future<String> updateProfileImage({
     File? imageFile,
-    UpdateProfileModel? profileModel,
+    UpdateStudentModel? studentModel,
   }) async {
     try {
-      final uploadPath = '${profileModel!.userId}/${profileModel.userId}-image';
+      String? fileName = imageFile?.path.split('/').last;
+      final uploadPath =
+          '${studentModel!.studentId}/${studentModel.studentId}-image';
 
       if (imageFile == null) {
         return supabaseClient.storage
-            .from('profile-images')
+            .from('student-profile-images')
             .getPublicUrl(uploadPath);
       }
 
-      final path = '${profileModel.userId}/';
-      final response =
-          await supabaseClient.storage.from('profile-images').list(path: path);
+      final path = '${studentModel.studentId}/';
+      final response = await supabaseClient.storage
+          .from('student-profile-images')
+          .list(path: path);
 
 // Check if the file exists
       bool fileExists = false;
       for (final file in response) {
         log(file.name);
-        if (file.name == "${profileModel.userId}-image") {
+        if (file.name == "${studentModel.studentId}-image") {
           fileExists = true;
           break;
         }
@@ -277,14 +282,14 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       if (fileExists) {
         log('File exists, updating...');
         await supabaseClient.storage
-            .from('profile-images')
+            .from('student-profile-images')
             .update(uploadPath, imageFile);
 
         log('File updated successfully.');
       } else {
         log('File does not exist, uploading...');
         await supabaseClient.storage
-            .from('profile-images')
+            .from('student-profile-images')
             .upload(uploadPath, imageFile);
 
         log('File uploaded successfully.');
@@ -292,11 +297,12 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
 
       // cashe busting url for lattest image upload
       final url = supabaseClient.storage
-          .from('profile-images')
+          .from('student-profile-images')
           .getPublicUrl(uploadPath);
 
       return '$url?t=${DateTime.now().millisecondsSinceEpoch}';
     } catch (e) {
+      log("in update student image: $e.toString()");
       throw ServerException(e.toString());
     }
   }

@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
+// import 'package:intl/intl.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/update_text_field.dart';
-
 import '../../../../core/utils/pick_image.dart';
 import '../bloc/update_profile_bloc/update_profile_bloc.dart';
 
@@ -23,7 +22,16 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
   final dobUpdateController = TextEditingController();
   final numberUpdateController = TextEditingController();
   File? image;
+  String? ageGroup;
   final formKey = GlobalKey<FormState>();
+
+  final ageGroupListData = [
+    'Under 6 years',
+    '6-13 years',
+    '14-18 years',
+    '19-25 years',
+    'Above 25 years'
+  ];
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -34,19 +42,19 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
     }
   }
 
-  Future<void> _selectDate() async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (selectedDate != null) {
-      setState(() {
-        dobUpdateController.text = DateFormat('d-MM-yyy').format(selectedDate);
-      });
-    }
-  }
+  // Future<void> _selectDate() async {
+  //   DateTime? selectedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(1900),
+  //     lastDate: DateTime.now(),
+  //   );
+  //   if (selectedDate != null) {
+  //     setState(() {
+  //       dobUpdateController.text = DateFormat('d-MM-yyy').format(selectedDate);
+  //     });
+  //   }
+  // }
 
   void updateProfile() {
     if (nameUpdateController.text.trim().isNotEmpty ||
@@ -54,13 +62,15 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
         dobUpdateController.text.trim().isNotEmpty ||
         image != null) {
       final userId =
-          (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+          (context.read<AppStudentCubit>().state as AppStudentSelected)
+              .student
+              .id;
 
       context.read<UpdateProfileBloc>().add(UpdateUserProfileEvent(
-          userId: userId,
+          studentId: userId,
           name: nameUpdateController.text.trim(),
           number: numberUpdateController.text.trim(),
-          dateOfBirth: dobUpdateController.text.trim(),
+          dateOfBirth: ageGroup,
           imageFile: image));
     } else {
       showFlashBar(
@@ -203,13 +213,26 @@ class _UpdataProfilePageState extends State<UpdataProfilePage> {
                       const SizedBox(
                         height: 30,
                       ),
-                      UpdateTextField(
-                        hintText: "Date of Birth",
-                        controller: dobUpdateController,
-                        iconData: Icons.calendar_today_rounded,
-                        readOnly: true,
-                        onTap: () {
-                          _selectDate();
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                            label: Text("Select age Group")),
+                        items: ageGroupListData
+                            .map<DropdownMenuItem<String>>(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return "Please select an age group";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          ageGroup = value;
                         },
                       ),
                       const SizedBox(

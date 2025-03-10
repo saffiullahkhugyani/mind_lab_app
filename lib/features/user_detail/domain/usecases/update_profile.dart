@@ -6,16 +6,16 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 
 class UpdateProfile
-    implements UseCase<UpdateProfileEntity, UpdateProfileParams> {
+    implements UseCase<UpdateStudentEntity, UpdateProfileParams> {
   final UserDetailRepository repository;
 
   UpdateProfile(this.repository);
 
   @override
-  Future<Either<ServerFailure, UpdateProfileEntity>> call(
+  Future<Either<ServerFailure, UpdateStudentEntity>> call(
       UpdateProfileParams params) async {
     return await repository.updateProfile(
-      userId: params.userId,
+      studentId: params.studentId,
       name: params.name,
       number: params.number,
       dateOfBirth: params.dateOfBirth,
@@ -25,14 +25,14 @@ class UpdateProfile
 }
 
 class UpdateProfileParams {
-  String? userId;
+  String? studentId;
   String? name;
   String? dateOfBirth;
   String? number;
   File? profileImageFile;
 
   UpdateProfileParams({
-    this.userId,
+    this.studentId,
     this.name,
     this.dateOfBirth,
     this.number,

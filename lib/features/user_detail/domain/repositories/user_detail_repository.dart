@@ -42,10 +42,11 @@ abstract interface class UserDetailRepository {
   });
 
   // updating user profile
-  Future<Either<ServerFailure, UpdateProfileEntity>> updateProfile({
-    String? userId,
+  Future<Either<ServerFailure, UpdateStudentEntity>> updateProfile({
+    String? studentId,
     String? name,
     String? number,
+    String? email,
     String? dateOfBirth,
     File? profileImageFile,
   });

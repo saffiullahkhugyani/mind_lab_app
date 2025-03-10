@@ -138,23 +138,27 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   }
 
   @override
-  Future<Either<ServerFailure, UpdateProfileEntity>> updateProfile({
-    String? userId,
+  Future<Either<ServerFailure, UpdateStudentEntity>> updateProfile({
+    String? studentId,
     String? name,
     String? number,
+    String? email,
     String? dateOfBirth,
     File? profileImageFile,
   }) async {
+    log("here");
+    log(studentId!);
+    log(name!);
     try {
-      UpdateProfileModel updateProfileModel = UpdateProfileModel(
-        userId: userId,
+      UpdateStudentModel updateProfileModel = UpdateStudentModel(
+        studentId: studentId,
         name: name,
         dateOfBirth: dateOfBirth,
         number: number,
         profileImageUrl: "",
       );
       final imageUrl = await userDetailRemoteDataSource.updateProfileImage(
-          imageFile: profileImageFile, profileModel: updateProfileModel);
+          imageFile: profileImageFile, studentModel: updateProfileModel);
 
       updateProfileModel =
           updateProfileModel.copyWith(profileImageUrl: imageUrl);
@@ -164,6 +168,7 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
 
       return right(updatedProfileData);
     } on ServerException catch (e) {
+      log(e.toString());
       return left(
         ServerFailure(errorMessage: e.message),
       );
