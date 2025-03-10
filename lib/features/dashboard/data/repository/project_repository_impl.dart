@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
@@ -51,6 +52,27 @@ class ProjectRepositoryImpl implements ProjectRepository {
       return right(projectList);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, StudentEntity>> updateStudentCubit({
+    required String profileId,
+  }) async {
+    try {
+      // if (!await connectionChecker.isConnected) {
+      //   final student = projectLocalDataSource.loadProjects();
+      //   return right(projects);
+      // }
+
+      final student = await projectRemoteDataSource.updateStudentCubit(
+          profileId: profileId);
+      // projectLocalDataSource.uploadLocalProjects(projects: projects);
+      return right(student);
+    } on ServerException catch (e) {
+      return left(
+        ServerFailure(errorMessage: e.message),
+      );
     }
   }
 }

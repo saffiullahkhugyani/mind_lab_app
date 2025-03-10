@@ -92,7 +92,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // uploading data into stundents table if role type student selected
       if (roleId == 4) {
         await remoteDataSource.uploadStudentDetails(
-          userId: user.id,
+          studentId: user.id,
           name: name,
           email: email,
           ageGroup: ageGroup,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +50,9 @@ class _UserDetailPageState extends State<UserDetailPage> {
     studentId = (context.read<AppStudentCubit>().state as AppStudentSelected)
         .student
         .id;
+
+    log("parentID: $parentId");
+    log("studentID: $studentId");
 
     // fetching student data
     context.read<UserDetailBloc>().add(UserDetailFetchUserDetail(
@@ -164,6 +168,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
           final userCertificates = state.userDetail.certificates;
           final certificateMaster = state.userDetail.certificateMasterList;
           final playerRegistration = state.userDetail.playerRegistration;
+          log("player registration: ${state.userDetail.playerRegistration}");
 
           // log(playerRegistration.toString());
           return ListView(

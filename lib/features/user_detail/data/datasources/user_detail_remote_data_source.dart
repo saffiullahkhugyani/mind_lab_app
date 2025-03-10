@@ -63,6 +63,9 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     required String studentId,
     required int roleId,
   }) async {
+    log('parent id: $parentId');
+    log('student id: $studentId');
+    log('role id: $roleId');
     try {
       // Get the current user's UID
       final userUid = supabaseClient.auth.currentUser!.id;
@@ -83,8 +86,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
         }).toList();
       } else if (roleId == 4) {
         // Fetch student details for student role
-        final response =
-            await supabaseClient.from('students').select('*').eq('id', userUid);
+        final response = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('profile_id', userUid);
 
         studentData = response;
       } else {
@@ -101,6 +106,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     } on PostgrestException catch (e) {
       throw ServerException('Database error: ${e.message}');
     } catch (e) {
+      log('$e');
       throw ServerException('Unexpected error: ${e.toString()}');
     }
   }
@@ -119,8 +125,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
           .map((json) => UploadCertificateModel.fromJson(json))
           .toList();
     } on PostgrestException catch (e) {
+      log('get certificate: $e');
       throw ServerException(e.message);
     } catch (e) {
+      log('get certificate: $e');
       throw ServerException(e.toString());
     }
   }
@@ -254,7 +262,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     UpdateStudentModel? studentModel,
   }) async {
     try {
-      String? fileName = imageFile?.path.split('/').last;
+      // String? fileName = imageFile?.path.split('/').last;
       final uploadPath =
           '${studentModel!.studentId}/${studentModel.studentId}-image';
 
@@ -456,10 +464,13 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       // getting current user Uid
       // final userUid = supabaseClient.auth.currentUser!.id;
       // fetchingall registered players
+      log("student in get player registration: $studentId");
       final response = await supabaseClient
           .from('register_player')
           .select("*")
           .eq("student_id", studentId);
+
+      log("response of the player registration: $response");
 
       return response
           .map((json) => RegisterPlayerModel.fromJson(json))

@@ -40,7 +40,7 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel> loginWithApple();
 
   Future<UserModel> uploadStudentDetails({
-    required String userId,
+    required String studentId,
     required String name,
     required String email,
     required String ageGroup,
@@ -282,7 +282,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> uploadStudentDetails({
-    required String userId,
+    required String studentId,
     required String name,
     required String email,
     required String ageGroup,
@@ -293,7 +293,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) async {
     try {
       final studentData = {
-        'profile_id': userId,
+        'profile_id': studentId,
         'name': name,
         'age_group': ageGroup,
         'email': email,

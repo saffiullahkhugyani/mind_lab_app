@@ -19,6 +19,7 @@ import 'package:mind_lab_app/features/dashboard/data/repository/project_reposito
 import 'package:mind_lab_app/features/dashboard/domain/repository/project_repository.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_all_projects.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_subscribec_projects.dart';
+import 'package:mind_lab_app/features/dashboard/domain/usecase/update_student_cubit.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
 import 'package:mind_lab_app/features/parent_child/data/datasource/local_data_source.dart';
 import 'package:mind_lab_app/features/parent_child/data/datasource/remote_data_source.dart';
@@ -144,6 +145,7 @@ void _initAuth() {
       userLogin: serviceLocator(),
       currentUser: serviceLocator(),
       appUserCubit: serviceLocator(),
+      appStudentCubit: serviceLocator(),
       loginWithGoogle: serviceLocator(),
       loginWithApple: serviceLocator(),
     ),
@@ -182,10 +184,18 @@ void _initAuth() {
     ),
   );
 
+  serviceLocator.registerFactory(
+    () => UpdateStudentCubit(
+      repository: serviceLocator(),
+    ),
+  );
+
   serviceLocator.registerLazySingleton(
     () => ProjectBloc(
       getAllProjects: serviceLocator(),
       getSubscribedProjects: serviceLocator(),
+      updateStudentCubit: serviceLocator(),
+      appStudentCubit: serviceLocator(),
     ),
   );
 

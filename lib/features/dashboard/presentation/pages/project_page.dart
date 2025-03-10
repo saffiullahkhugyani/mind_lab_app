@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -99,6 +100,15 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   void initState() {
     super.initState();
+    String profileId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+    int roleId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.roleId;
+    if (roleId == 4) {
+      context
+          .read<ProjectBloc>()
+          .add(UpdateStudentCubitEvent(profileId: profileId));
+    }
     context.read<ProjectBloc>().add(ProjectFetchAllProjects());
   }
 
@@ -145,6 +155,10 @@ class _ProjectPageState extends State<ProjectPage> {
           },
           builder: (context, state) {
             if (state is ProjectLoading) {
+              return const Loader();
+            }
+
+            if (state is StudentCubitSuccess) {
               return const Loader();
             }
 

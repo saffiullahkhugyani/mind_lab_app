@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
+import 'package:mind_lab_app/features/auth/domain/mapper/user_to_student_mapper.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_apple.dart';
@@ -21,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserLogin _userLoginUsecase;
   final CurrentUser _currentUser;
   final AppUserCubit _appUserCubit;
+  final AppStudentCubit _appStudentCubit;
   final UserLoginWithGoogle _loginWithGoogle;
   final UserLoginWithApple _loginWithApple;
 
@@ -30,12 +33,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required UserLogin userLogin,
     required CurrentUser currentUser,
     required AppUserCubit appUserCubit,
+    required AppStudentCubit appStudentCubit,
     required UserLoginWithGoogle loginWithGoogle,
     required UserLoginWithApple loginWithApple,
   })  : _userSignUpUsecase = userSignUp,
         _userLoginUsecase = userLogin,
         _currentUser = currentUser,
         _appUserCubit = appUserCubit,
+        _appStudentCubit = appStudentCubit,
         _loginWithGoogle = loginWithGoogle,
         _loginWithApple = loginWithApple,
         super(AuthInitial()) {
@@ -120,6 +125,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     _appUserCubit.updateUser(user);
+
+    //if auth success and role == student == 4 save the data into student cubit
+    // if (user.roleId == 4) {
+    //   final student = mapUserToStudent(user);
+    //   _appStudentCubit.updateStudent(student);
+    // }
     emit(AuthSuccess(user));
   }
 }

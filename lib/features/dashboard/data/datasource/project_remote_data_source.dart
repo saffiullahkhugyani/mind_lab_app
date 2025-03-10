@@ -1,13 +1,18 @@
 import 'dart:developer';
 
+import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/dashboard/data/models/pro_model.dart';
 import 'package:mind_lab_app/features/dashboard/data/models/subs_model.dart';
+import 'package:mind_lab_app/features/parent_child/data/models/student_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class ProjectRemoteDataSource {
   Future<List<SubscriptionModel>> getSubscribedProjects();
   Future<List<ProjectModel>> getAllProjects();
+  Future<StudentEntity> updateStudentCubit({
+    required String profileId,
+  });
 }
 
 class ProjectRemoteDatSourceImpl implements ProjectRemoteDataSource {
@@ -53,6 +58,23 @@ class ProjectRemoteDatSourceImpl implements ProjectRemoteDataSource {
       return projectList
           .map((project) => ProjectModel.fromJson(project))
           .toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<StudentEntity> updateStudentCubit({required String profileId}) async {
+    log("I am here now");
+    try {
+      final student = await supabaseClient
+          .from('students')
+          .select('*')
+          .eq('profile_id', profileId);
+
+      return StudentModel.fromJson(student.first);
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
