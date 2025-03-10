@@ -27,7 +27,9 @@ abstract interface class UserDetailRemoteDataSource {
   Future<List<SkillTypeModel>> getSkillTypes();
   Future<List<SkillTagModel>> getSkillTags();
   Future<List<SkillCategoryModel>> getSkillCategories();
-  Future<List<UploadCertificateModel>> getCertificates();
+  Future<List<UploadCertificateModel>> getCertificates({
+    required String studentId,
+  });
   Future<UploadCertificateModel> uploadCertificate(
       UploadCertificateModel certificateModel);
   Future<String> uploadCertificateImage({
@@ -41,10 +43,15 @@ abstract interface class UserDetailRemoteDataSource {
   });
   Future<String> deleteAccount();
   Future<void> signOut();
-  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData();
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData({
+    required String studentId,
+  });
   Future<RegisterPlayerModel> registerPlayer(RegisterPlayerModel playerModel);
-  Future<List<PlayerRankModel>> getPlayerRankDetails();
-  Future<List<RegisterPlayerModel>> getPlayerRegistration();
+  Future<List<PlayerRankModel>> getPlayerRankDetails(
+      {required String playerId});
+  Future<List<RegisterPlayerModel>> getPlayerRegistration({
+    required String studentId,
+  });
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -99,16 +106,14 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<UploadCertificateModel>> getCertificates() async {
+  Future<List<UploadCertificateModel>> getCertificates(
+      {required String studentId}) async {
     try {
-      // getting user UID
-      final userUid = supabaseClient.auth.currentUser!.id;
-
       // fetching user certificates
       final userCertificates = await supabaseClient
           .from('upload_certificate')
           .select('*')
-          .match({'user_id': userUid});
+          .match({'student_id': studentId});
 
       return userCertificates
           .map((json) => UploadCertificateModel.fromJson(json))
@@ -333,25 +338,35 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData() async {
+  Future<List<CertificateV1V2MappingModel>> getCertificateMasterData({
+    required String studentId,
+  }) async {
     try {
       // getting user UID
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // final userUid = supabaseClient.auth.currentUser!.id;
 
       // fetching user certificates
       final certificateMaster = await supabaseClient
           .from('certificate_v1_v2_mapping')
-          .select('id, user_id, v1_certificate_id, certificate_master(*)')
-          .match({'user_id': userUid})
+          .select('id, student_id, v1_certificate_id, certificate_master(*)')
+          .match({'student_id': studentId})
           .not("certificate_master", "is", null)
           .eq("certificate_master.certificate_status", true);
+
+      log("here");
+      log(certificateMaster
+          .map((json) => CertificateV1V2MappingModel.fromJson(json))
+          .toList()
+          .toString());
 
       return certificateMaster
           .map((json) => CertificateV1V2MappingModel.fromJson(json))
           .toList();
     } on PostgrestException catch (e) {
+      log(e.toString());
       throw ServerException(e.message);
     } catch (e) {
+      log(e.toString());
       throw ServerException(e.toString());
     }
   }
@@ -399,12 +414,15 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<PlayerRankModel>> getPlayerRankDetails() async {
+  Future<List<PlayerRankModel>> getPlayerRankDetails({
+    required String playerId,
+  }) async {
+    log(playerId);
     try {
       // getting current user Uid
       // getting current user Uid
-      final userUid = supabaseClient.auth.currentUser!.id;
-      final playerId = generateShortUUID(userUid);
+      // final userUid = supabaseClient.auth.currentUser!.id;
+      // final playerId = generateShortUUID(userUid);
 
       // fetching user details
       final response = await supabaseClient
@@ -425,15 +443,17 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
   }
 
   @override
-  Future<List<RegisterPlayerModel>> getPlayerRegistration() async {
+  Future<List<RegisterPlayerModel>> getPlayerRegistration({
+    required String studentId,
+  }) async {
     try {
       // getting current user Uid
-      final userUid = supabaseClient.auth.currentUser!.id;
+      // final userUid = supabaseClient.auth.currentUser!.id;
       // fetchingall registered players
       final response = await supabaseClient
           .from('register_player')
           .select("*")
-          .eq("user_id", userUid);
+          .eq("student_id", studentId);
 
       return response
           .map((json) => RegisterPlayerModel.fromJson(json))

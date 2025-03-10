@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
+import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/project_list/presentation/widgets/text_box.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/player_rank_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:crypto/crypto.dart';
 
@@ -26,7 +28,11 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PlayerRankBloc>().add(FetchPlayarRankDetails());
+    final playerId = generateShortUUID(
+        (context.read<AppStudentCubit>().state as AppStudentSelected)
+            .student
+            .id);
+    context.read<PlayerRankBloc>().add(FetchPlayarRankDetails(playerId));
   }
 
   // Function to filter the race data based on selected race type
@@ -73,7 +79,7 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
   @override
   Widget build(BuildContext context) {
     final argsUserDetails =
-        ModalRoute.of(context)!.settings.arguments as UserDetailEntity;
+        ModalRoute.of(context)!.settings.arguments as StudentEntity;
 
     return Scaffold(
         appBar: AppBar(
@@ -117,7 +123,7 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    argsUserDetails.imageUrl.isNotEmpty
+                    argsUserDetails.imageUrl!.isNotEmpty
                         ? Container(
                             width: 200,
                             height: 200,
@@ -134,7 +140,7 @@ class _PlayerRankPageState extends State<PlayerRankPage> {
                             ),
                             child: CircleAvatar(
                               backgroundImage:
-                                  NetworkImage(argsUserDetails.imageUrl),
+                                  NetworkImage(argsUserDetails.imageUrl!),
                             ),
                           )
                         : Container(

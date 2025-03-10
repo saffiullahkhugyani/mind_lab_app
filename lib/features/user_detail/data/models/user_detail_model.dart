@@ -1,23 +1,27 @@
-import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
+import 'package:mind_lab_app/core/common/entities/student.dart';
 
-class UserDetailModel extends UserDetailEntity {
+class UserDetailModel extends StudentEntity {
   UserDetailModel({
     required super.id,
     required super.name,
-    required super.age,
-    required super.mobile,
+    required super.ageGroup,
     required super.imageUrl,
     required super.nationality,
+    required super.email,
+    required super.gender,
+    required super.number,
   });
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'age': age,
-      'mobile': mobile,
-      "profile_image_url": imageUrl,
-      "nationality": nationality,
+      'email': email,
+      'age_group': ageGroup,
+      'number': number,
+      'profile_image_url': imageUrl,
+      'nationality': nationality,
+      'gender': gender,
     };
   }
 
@@ -25,10 +29,12 @@ class UserDetailModel extends UserDetailEntity {
     return UserDetailModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      age: json['age'] ?? '',
-      mobile: json['mobile'] ?? '',
+      ageGroup: json['ageGroup'] ?? '',
+      number: json['number'] ?? '',
       imageUrl: json['profile_image_url'] ?? '',
       nationality: json['nationality'] ?? '',
+      gender: json['gender'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 }

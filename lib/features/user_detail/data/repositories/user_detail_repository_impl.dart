@@ -42,12 +42,16 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
         studentId: studentId,
         roleId: roleId,
       );
-      final userCertificate =
-          await userDetailRemoteDataSource.getCertificates();
+      final userCertificate = await userDetailRemoteDataSource.getCertificates(
+          studentId: studentId);
       final certificateMaster =
-          await userDetailRemoteDataSource.getCertificateMasterData();
+          await userDetailRemoteDataSource.getCertificateMasterData(
+        studentId: studentId,
+      );
       final playerRegistration =
-          await userDetailRemoteDataSource.getPlayerRegistration();
+          await userDetailRemoteDataSource.getPlayerRegistration(
+        studentId: studentId,
+      );
 
       return right(StudentDetailResult(
         studentDetails: studentDetail,
@@ -197,13 +201,13 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   @override
   Future<Either<ServerFailure, RegisterPlayerModel>> registerPlayer({
     required String playerId,
-    required String userId,
+    required String studentId,
     required String city,
     required String country,
   }) async {
     try {
       RegisterPlayerModel playerModel = RegisterPlayerModel(
-        userId: userId,
+        studentId: studentId,
         playerId: playerId,
         city: city,
         country: country,
@@ -219,16 +223,17 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
   }
 
   @override
-  Future<Either<ServerFailure, List<PlayerRankModel>>>
-      getPlayerRankDetails() async {
+  Future<Either<ServerFailure, List<PlayerRankModel>>> getPlayerRankDetails({
+    required String playerId,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(
             ServerFailure(errorMessage: "Check your internet connection"));
       }
 
-      final playerRankDetails =
-          await userDetailRemoteDataSource.getPlayerRankDetails();
+      final playerRankDetails = await userDetailRemoteDataSource
+          .getPlayerRankDetails(playerId: playerId);
 
       return right(playerRankDetails);
     } on ServerException catch (e) {

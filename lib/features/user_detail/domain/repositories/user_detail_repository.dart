@@ -60,11 +60,13 @@ abstract interface class UserDetailRepository {
   // registering player for up comming race
   Future<Either<ServerFailure, RegisterPlayerEntity>> registerPlayer({
     required String playerId,
-    required String userId,
+    required String studentId,
     required String city,
     required String country,
   });
 
   // fething player rank details
-  Future<Either<ServerFailure, List<PlayerRankEntity>>> getPlayerRankDetails();
+  Future<Either<ServerFailure, List<PlayerRankEntity>>> getPlayerRankDetails({
+    required String playerId,
+  });
 }

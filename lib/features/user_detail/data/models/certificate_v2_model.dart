@@ -4,7 +4,7 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2
 class CertificateV1V2MappingModel extends CertificateV1V2MappingEntity {
   CertificateV1V2MappingModel({
     required super.id,
-    required super.userId,
+    required super.stuentId,
     required super.certificateV1Id,
     required super.certificateMaster,
   });
@@ -12,7 +12,7 @@ class CertificateV1V2MappingModel extends CertificateV1V2MappingEntity {
   factory CertificateV1V2MappingModel.fromJson(Map<String, dynamic> json) =>
       CertificateV1V2MappingModel(
         id: json["id"].toString(),
-        userId: json["user_id"],
+        stuentId: json["student_id"],
         certificateV1Id: json["v1_certificate_id"],
         certificateMaster:
             CertificateMasterFetch.fromJson(json["certificate_master"]),
@@ -21,7 +21,7 @@ class CertificateV1V2MappingModel extends CertificateV1V2MappingEntity {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'user_id': userId,
+      'user_id': stuentId,
       'v1_certificate_id': certificateV1Id,
       'certificate_master': certificateMaster,
     };

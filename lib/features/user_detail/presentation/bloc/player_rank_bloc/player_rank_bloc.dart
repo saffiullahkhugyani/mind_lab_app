@@ -23,7 +23,7 @@ class PlayerRankBloc extends Bloc<PlayerRankEvent, PlayerRankState> {
 
   void _onFetchPlayerRankDetails(
       FetchPlayarRankDetails playerRank, Emitter emit) async {
-    final res = await _playerRankDetails(NoParams());
+    final res = await _playerRankDetails(playerRank.playerId);
     res.fold(
       (failure) => emit(
         PlayerRankFailure(

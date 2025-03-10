@@ -2,13 +2,13 @@ import 'package:mind_lab_app/features/user_detail/data/models/tag_model.dart';
 
 class CertificateV1V2MappingEntity {
   final String id;
-  final String userId;
-  final String certificateV1Id;
+  final String stuentId;
+  final int certificateV1Id;
   final CertificateMaster certificateMaster;
 
   CertificateV1V2MappingEntity({
     required this.id,
-    required this.userId,
+    required this.stuentId,
     required this.certificateV1Id,
     required this.certificateMaster,
   });

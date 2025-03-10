@@ -7,4 +7,8 @@ sealed class PlayerRankEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchPlayarRankDetails extends PlayerRankEvent {}
+class FetchPlayarRankDetails extends PlayerRankEvent {
+  final String playerId;
+
+  const FetchPlayarRankDetails(this.playerId);
+}

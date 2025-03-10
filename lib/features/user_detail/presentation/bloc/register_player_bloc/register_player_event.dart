@@ -9,13 +9,13 @@ sealed class RegisterPlayerEvent extends Equatable {
 
 // ignore: must_be_immutable
 final class RegisterPlayer extends RegisterPlayerEvent {
-  String? userId;
+  String? studentId;
   String? playerId;
   String? city;
   String? country;
 
   RegisterPlayer({
-    this.userId,
+    this.studentId,
     this.playerId,
     this.city,
     this.country,

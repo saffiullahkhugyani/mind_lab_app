@@ -1,5 +1,6 @@
 import 'package:csc_picker_plus/csc_picker_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/project_list/presentation/widgets/text_box.dart';
@@ -7,7 +8,6 @@ import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_pla
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 
 class PlayerRegistrationPage extends StatefulWidget {
   const PlayerRegistrationPage({super.key});
@@ -32,10 +32,10 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
     return hash.toString().substring(0, 5); // Return the first 8 characters
   }
 
-  void registerUser(String userId, String playerId) {
+  void registerUser(String studentId, String playerId) {
     if (selectedCountry != null && selectedCity != null) {
       context.read<RegisterPlayerBloc>().add(RegisterPlayer(
-            userId: userId,
+            studentId: studentId,
             playerId: playerId,
             city: selectedCity!,
             country: selectedCountry!,
@@ -51,7 +51,7 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
   @override
   Widget build(BuildContext context) {
     final userDetailEntity =
-        ModalRoute.of(context)!.settings.arguments as UserDetailEntity;
+        ModalRoute.of(context)!.settings.arguments as StudentEntity;
 
     final playerId = generateShortUUID(userDetailEntity.id);
 

@@ -1,11 +1,11 @@
 class RegisterPlayerEntity {
-  final String userId;
+  final String studentId;
   final String playerId;
   final String city;
   final String country;
 
   RegisterPlayerEntity({
-    required this.userId,
+    required this.studentId,
     required this.playerId,
     required this.city,
     required this.country,
