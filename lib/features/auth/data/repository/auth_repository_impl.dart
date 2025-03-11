@@ -12,7 +12,6 @@ import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dar
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
-import '../../../../core/common/entities/user.dart';
 import '../../../parent_child/data/models/student_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -68,12 +67,26 @@ class AuthRepositoryImpl implements AuthRepository {
         return left(ServerFailure(errorMessage: 'No internet connection!'));
       }
 
+      // Step 1 Authenticate the user
       final user = await remoteDataSource.loginWithEmailPassword(
         email: email,
         password: password,
       );
 
-      return right(AuthResult(user: user));
+      // Step 2 Check if the user is a student (roleId == 4)
+      StudentModel? studentModel;
+      if (user.roleId == 4) {
+        // Fetch student data from the students table
+        studentModel =
+            await remoteDataSource.getStudentDetails(userId: user.id);
+      }
+
+      return right(
+        AuthResult(
+          user: user,
+          student: studentModel,
+        ),
+      );
     } on sb.AuthException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
@@ -168,19 +181,19 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  Future<Either<ServerFailure, User>> _getUser(
-    Future<User> Function() fn,
-  ) async {
-    try {
-      if (!await (connectionChecker.isConnected)) {
-        return left(ServerFailure(errorMessage: 'No internet connection!'));
-      }
-      final user = await fn();
-      return right(user);
-    } on sb.AuthException catch (e) {
-      return left(ServerFailure(errorMessage: e.message));
-    } on ServerException catch (e) {
-      return left(ServerFailure(errorMessage: e.message));
-    }
-  }
+  // Future<Either<ServerFailure, User>> _getUser(
+  //   Future<User> Function() fn,
+  // ) async {
+  //   try {
+  //     if (!await (connectionChecker.isConnected)) {
+  //       return left(ServerFailure(errorMessage: 'No internet connection!'));
+  //     }
+  //     final user = await fn();
+  //     return right(user);
+  //   } on sb.AuthException catch (e) {
+  //     return left(ServerFailure(errorMessage: e.message));
+  //   } on ServerException catch (e) {
+  //     return left(ServerFailure(errorMessage: e.message));
+  //   }
+  // }
 }

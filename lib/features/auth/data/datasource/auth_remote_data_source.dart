@@ -52,6 +52,8 @@ abstract interface class AuthRemoteDataSource {
     required String nationality,
     required String imageUrl,
   });
+
+  Future<StudentModel> getStudentDetails({required String userId});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -310,6 +312,23 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final response =
           await supabaseClient.from('students').insert(studentData).select();
+
+      return StudentModel.fromJson(response.first);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<StudentModel> getStudentDetails({required String userId}) async {
+    try {
+      final response = await supabaseClient
+          .from('students')
+          .select("*")
+          .eq("profile_id", userId);
 
       return StudentModel.fromJson(response.first);
     } on AuthException catch (e) {

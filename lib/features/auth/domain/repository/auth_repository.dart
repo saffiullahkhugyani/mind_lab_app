@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
-import 'package:mind_lab_app/core/common/entities/user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 
 abstract interface class AuthRepository {

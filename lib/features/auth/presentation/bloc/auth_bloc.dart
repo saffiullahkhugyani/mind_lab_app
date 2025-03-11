@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
-import 'package:mind_lab_app/features/auth/domain/mapper/user_to_student_mapper.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_apple.dart';
@@ -94,10 +93,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ),
     );
 
-    response.fold(
-      (failure) => emit(AuthFailure(failure.errorMessage)),
-      (user) => _emitAuthSuccess(user, emit),
-    );
+    response.fold((failure) => emit(AuthFailure(failure.errorMessage)),
+        (authResult) {
+      log("Profile Id: ${authResult.user.id}");
+      log("Student id: ${authResult.student!.id}");
+      _emitAuthSuccess(authResult, emit);
+    });
   }
 
   void _onAuthSignUp(AuthSignUp event, Emitter<AuthState> emit) async {
@@ -117,10 +118,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     response.fold(
       (failure) => emit(AuthFailure(failure.errorMessage)),
-      (signUpResult) {
-        log(signUpResult.user.id);
-        log(signUpResult.student!.id);
-        _emitAuthSuccess(signUpResult, emit);
+      (authResult) {
+        log(authResult.user.id);
+        log(authResult.student!.id);
+        _emitAuthSuccess(authResult, emit);
       },
     );
   }
