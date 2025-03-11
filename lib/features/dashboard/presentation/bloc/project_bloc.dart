@@ -29,18 +29,27 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     ProjectFetchAllProjects event,
     Emitter<ProjectState> emit,
   ) async {
-    final subscribedProjects = await _getSubscribedProjects(NoParams());
-    final allProjects = await _getAllProjects(NoParams());
+    emit(ProjectLoading());
+    try {
+      final subscribedProjects = await _getSubscribedProjects(NoParams());
+      final allProjects = await _getAllProjects(NoParams());
 
-    subscribedProjects.fold(
-      (failure) => emit(ProjectFailure(failure.errorMessage)),
-      (subscribedProjects) => allProjects.fold(
+      subscribedProjects.fold(
         (failure) => emit(ProjectFailure(failure.errorMessage)),
-        (allProjects) => emit(
-          ProjectDisplaySuccess(subscribedProjects, allProjects),
+        (subscribedProjects) => allProjects.fold(
+          (failure) => emit(ProjectFailure(failure.errorMessage)),
+          (allProjects) => emit(
+            ProjectDisplaySuccess(subscribedProjects, allProjects),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      emit(
+        ProjectFailure(
+          e.toString(),
+        ),
+      );
+    }
   }
 
   // void _onUpdateStudentCubit(

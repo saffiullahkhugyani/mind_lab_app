@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -116,21 +117,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     response.fold(
       (failure) => emit(AuthFailure(failure.errorMessage)),
-      (user) => _emitAuthSuccess(user, emit),
+      (signUpResult) {
+        log(signUpResult.user.id);
+        log(signUpResult.student!.id);
+        _emitAuthSuccess(signUpResult, emit);
+      },
     );
   }
 
   void _emitAuthSuccess(
-    User user,
+    AuthResult signUpDetails,
     Emitter<AuthState> emit,
   ) {
-    _appUserCubit.updateUser(user);
+    _appUserCubit.updateUser(signUpDetails.user);
 
     //if auth success and role == student == 4 save the data into student cubit
-    // if (user.roleId == 4) {
-    //   final student = mapUserToStudent(user);
-    //   _appStudentCubit.updateStudent(student);
-    // }
-    emit(AuthSuccess(user));
+    if (signUpDetails.user.roleId == 4) {
+      _appStudentCubit.updateStudent(signUpDetails.student);
+    }
+    emit(AuthSuccess(signUpDetails.user));
   }
 }

@@ -338,9 +338,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       ),
                     ),
                   ),
-                  MyTextbox(
-                      text: generateShortUUID(userInfo.id),
-                      sectionName: 'Player ID'),
+                  MyTextbox(text: userInfo.id, sectionName: 'Student ID'),
                   MyTextbox(
                     text: userInfo.email,
                     sectionName: 'User Email',

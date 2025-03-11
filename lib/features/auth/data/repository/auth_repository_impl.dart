@@ -9,9 +9,11 @@ import 'package:mind_lab_app/core/utils/shourt_uuid_generator.dart';
 import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 import '../../../../core/common/entities/user.dart';
+import '../../../parent_child/data/models/student_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -22,7 +24,7 @@ class AuthRepositoryImpl implements AuthRepository {
   );
 
   @override
-  Future<Either<ServerFailure, User>> getCurrentUser() async {
+  Future<Either<ServerFailure, AuthResult>> getCurrentUser() async {
     try {
       if (!await (connectionChecker.isConnected)) {
         final session = remoteDataSource.currentUserSession;
@@ -31,7 +33,7 @@ class AuthRepositoryImpl implements AuthRepository {
           return left(ServerFailure(errorMessage: 'User not logged in.'));
         }
 
-        return right(UserModel(
+        final user = UserModel(
           id: session.user.id,
           email: session.user.email ?? '',
           name: '',
@@ -40,31 +42,47 @@ class AuthRepositoryImpl implements AuthRepository {
           gender: '',
           nationality: '',
           roleId: 0,
-        ));
+        );
+
+        return right(AuthResult(user: user));
       }
+
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
         return left(ServerFailure(errorMessage: "Please sign in!"));
       }
-      return right(user);
+
+      return right(AuthResult(user: user));
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }
   }
 
   @override
-  Future<Either<ServerFailure, User>> signInWithEmailPassword({
+  Future<Either<ServerFailure, AuthResult>> signInWithEmailPassword({
     required String email,
     required String password,
   }) async {
-    return _getUser(
-      () async => await remoteDataSource.loginWithEmailPassword(
-          email: email, password: password),
-    );
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(ServerFailure(errorMessage: 'No internet connection!'));
+      }
+
+      final user = await remoteDataSource.loginWithEmailPassword(
+        email: email,
+        password: password,
+      );
+
+      return right(AuthResult(user: user));
+    } on sb.AuthException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
   }
 
   @override
-  Future<Either<ServerFailure, User>> signUpWithEmailPasword({
+  Future<Either<ServerFailure, AuthResult>> signUpWithEmailPasword({
     required String name,
     required String email,
     required String password,
@@ -75,7 +93,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String nationality,
     required int roleId,
   }) async {
-    return _getUser(() async {
+    try {
       final user = await remoteDataSource.signUpWithEmailPassword(
           name: name,
           email: email,
@@ -90,9 +108,10 @@ class AuthRepositoryImpl implements AuthRepository {
       final imageUrl = await remoteDataSource.uploadUserImage(
           imageFile: imageFile, userModel: user);
 
+      StudentModel? studentModel;
       // uploading data into stundents table if role type student selected
       if (roleId == 4) {
-        await remoteDataSource.uploadStudentDetails(
+        studentModel = await remoteDataSource.uploadStudentDetails(
           id: generateShortUUID(user.id),
           studentId: user.id,
           name: name,
@@ -105,16 +124,7 @@ class AuthRepositoryImpl implements AuthRepository {
         );
       }
 
-      return user;
-    });
-  }
-
-  @override
-  Future<Either<ServerFailure, User>> signInWithGoogle() async {
-    try {
-      return _getUser(
-        () async => await remoteDataSource.loginWithGoogle(),
-      );
+      return right(AuthResult(user: user, student: studentModel));
     } on sb.AuthException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
@@ -127,15 +137,34 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<ServerFailure, User>> signInWithApple() async {
+  Future<Either<ServerFailure, AuthResult>> signInWithGoogle() async {
     try {
-      return _getUser(() async => remoteDataSource.loginWithApple());
+      if (!await (connectionChecker.isConnected)) {
+        return left(ServerFailure(errorMessage: 'No internet connection!'));
+      }
+
+      final user = await remoteDataSource.loginWithGoogle();
+      return right(AuthResult(user: user));
     } on sb.AuthException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
-      return left(ServerFailure(
-        errorMessage: e.toString(),
-      ));
+      return left(ServerFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, AuthResult>> signInWithApple() async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(ServerFailure(errorMessage: 'No internet connection!'));
+      }
+
+      final user = await remoteDataSource.loginWithApple();
+      return right(AuthResult(user: user));
+    } on sb.AuthException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.toString()));
     }
   }
 

@@ -144,7 +144,7 @@ class _ProjectPageState extends State<ProjectPage> {
             }
           },
           builder: (context, state) {
-            if (state is ProjectLoading) {
+            if (state is ProjectLoading || state is ProjectInitial) {
               return const Loader();
             }
 

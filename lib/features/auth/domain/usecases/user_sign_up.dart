@@ -1,18 +1,20 @@
 import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
 
 import '../../../../core/common/entities/user.dart';
 
-class UserSignUp implements UseCase<User, UserSignUpParams> {
+class UserSignUp implements UseCase<AuthResult, UserSignUpParams> {
   final AuthRepository authRepository;
   UserSignUp(this.authRepository);
 
   @override
-  Future<Either<ServerFailure, User>> call(UserSignUpParams params) async {
+  Future<Either<ServerFailure, AuthResult>> call(
+      UserSignUpParams params) async {
     return await authRepository.signUpWithEmailPasword(
       name: params.name,
       email: params.email,
@@ -48,5 +50,15 @@ class UserSignUpParams {
     required this.imageFile,
     required this.nationality,
     required this.roleId,
+  });
+}
+
+class AuthResult {
+  final User user;
+  final StudentEntity? student;
+
+  AuthResult({
+    required this.user,
+    this.student,
   });
 }

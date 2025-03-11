@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/common/entities/user.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 
 abstract interface class AuthRepository {
-  Future<Either<ServerFailure, User>> getCurrentUser();
+  Future<Either<ServerFailure, AuthResult>> getCurrentUser();
 
-  Future<Either<ServerFailure, User>> signUpWithEmailPasword({
+  Future<Either<ServerFailure, AuthResult>> signUpWithEmailPasword({
     required String name,
     required String email,
     required String password,
@@ -19,12 +20,12 @@ abstract interface class AuthRepository {
     required int roleId,
   });
 
-  Future<Either<ServerFailure, User>> signInWithEmailPassword({
+  Future<Either<ServerFailure, AuthResult>> signInWithEmailPassword({
     required String email,
     required String password,
   });
 
-  Future<Either<ServerFailure, User>> signInWithGoogle();
+  Future<Either<ServerFailure, AuthResult>> signInWithGoogle();
 
-  Future<Either<ServerFailure, User>> signInWithApple();
+  Future<Either<ServerFailure, AuthResult>> signInWithApple();
 }

@@ -9,6 +9,8 @@ import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:crypto/crypto.dart';
 
+import '../../../parent_child/data/models/student_model.dart';
+
 abstract interface class AuthRemoteDataSource {
   Session? get currentUserSession;
 
@@ -39,7 +41,7 @@ abstract interface class AuthRemoteDataSource {
 
   Future<UserModel> loginWithApple();
 
-  Future<UserModel> uploadStudentDetails({
+  Future<StudentModel> uploadStudentDetails({
     required String id,
     required String studentId,
     required String name,
@@ -282,7 +284,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> uploadStudentDetails({
+  Future<StudentModel> uploadStudentDetails({
     required String id,
     required String studentId,
     required String name,
@@ -309,7 +311,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response =
           await supabaseClient.from('students').insert(studentData).select();
 
-      return UserModel.fromJson(response.first);
+      return StudentModel.fromJson(response.first);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
