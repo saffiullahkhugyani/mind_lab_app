@@ -145,17 +145,14 @@ class _MyAppState extends State<MyApp> {
           upgrader: _upgrader,
           child: BlocSelector<AppUserCubit, AppUserState, bool>(
             selector: (state) {
-              log("Bloc selector: $state");
               return state is AppUserLoggedIn;
             },
             builder: (context, isLoggedIn) {
-              log(isLoggedIn.toString());
               if (isLoggedIn) {
                 final roleId =
                     (context.read<AppUserCubit>().state as AppUserLoggedIn)
                         .user
                         .roleId;
-                log(roleId.toString());
                 if (roleId == 4) {
                   return const ProjectPage();
                 } else if (roleId == 6) {

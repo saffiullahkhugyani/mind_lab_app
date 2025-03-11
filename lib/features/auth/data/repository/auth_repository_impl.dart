@@ -5,6 +5,7 @@ import 'package:fpdart/src/either.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
+import 'package:mind_lab_app/core/utils/shourt_uuid_generator.dart';
 import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
@@ -92,6 +93,7 @@ class AuthRepositoryImpl implements AuthRepository {
       // uploading data into stundents table if role type student selected
       if (roleId == 4) {
         await remoteDataSource.uploadStudentDetails(
+          id: generateShortUUID(user.id),
           studentId: user.id,
           name: name,
           email: email,
