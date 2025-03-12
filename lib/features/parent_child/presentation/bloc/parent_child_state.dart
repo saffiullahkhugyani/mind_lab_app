@@ -16,7 +16,20 @@ class ParentChildSuccess extends ParentChildState {
   const ParentChildSuccess(this.children);
 }
 
+class ParentChildRequested extends ParentChildState {
+  final ParentChildRelationshipEntity relationshipEntity;
+  const ParentChildRequested(this.relationshipEntity);
+}
+
 class ParentChildFailure extends ParentChildState {
   final String message;
   const ParentChildFailure(this.message);
+}
+
+class StudentDetailsLoaded extends ParentChildState {
+  final StudentEntity studentEntity;
+
+  const StudentDetailsLoaded({
+    required this.studentEntity,
+  });
 }

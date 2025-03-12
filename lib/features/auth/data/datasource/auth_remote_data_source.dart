@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mind_lab_app/core/utils/shourt_uuid_generator.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
@@ -81,9 +82,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userMetadata = response.user!.userMetadata!;
       userMetadata['id'] = response.user!.id;
 
-      log(response.user.toString());
+      final userData = await supabaseClient
+          .from('profiles')
+          .select("*")
+          .eq('id', response.user!.id);
+
       return UserModel.fromJson(
-        userMetadata,
+        userData.first,
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -125,8 +130,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userMetadata = response.user!.userMetadata!;
       userMetadata['id'] = response.user!.id;
 
+      final userData = await supabaseClient
+          .from('profiles')
+          .select("*")
+          .eq('id', response.user!.id);
+
       return UserModel.fromJson(
-        userMetadata,
+        userData.first,
       );
     } on AuthException catch (e) {
       throw ServerException(e.message);
@@ -325,16 +335,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<StudentModel> getStudentDetails({required String userId}) async {
     try {
+      StudentModel? studentModel;
       final response = await supabaseClient
           .from('students')
           .select("*")
           .eq("profile_id", userId);
 
-      return StudentModel.fromJson(response.first);
+      // converting response into student model
+      if (response.isNotEmpty) {
+        studentModel = StudentModel.fromJson(response.first);
+      }
+
+      if (response.isEmpty) {
+        final profileData =
+            await supabaseClient.from('profiles').select("*").eq('id', userId);
+
+        if (profileData.isNotEmpty) {
+          final profileModel = UserModel.fromJson(profileData.first);
+
+          final studentData = await supabaseClient.from('students').insert({
+            'id': generateShortUUID(profileModel.id),
+            'name': profileModel.name,
+            'email': profileModel.email,
+            "age_group": profileModel.ageGroup,
+            'gender': profileModel.gender,
+            'nationality': profileModel.nationality,
+            'image_url': profileModel.imageUrl,
+            'profile_id': profileModel.id,
+          }).select();
+
+          // converting student data to student Model
+          studentModel = StudentModel.fromJson(studentData.first);
+        }
+      }
+
+      return studentModel!;
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
-      log(e.toString());
       throw ServerException(e.toString());
     }
   }

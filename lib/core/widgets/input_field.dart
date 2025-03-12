@@ -7,6 +7,9 @@ class InputField extends StatelessWidget {
   final bool isObscureText;
   final IconData icon;
   IconButton? sufixIcon;
+  bool? isEnabled;
+  final String? Function(String?)? validator; // Add validator parameter
+
   InputField({
     super.key,
     required this.hintText,
@@ -14,6 +17,8 @@ class InputField extends StatelessWidget {
     required this.icon,
     this.sufixIcon,
     this.isObscureText = false,
+    this.isEnabled = true,
+    this.validator, // Make validator optional
   });
 
   @override
@@ -21,17 +26,13 @@ class InputField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon),
-        hintText: hintText,
-        suffixIcon: sufixIcon,
-      ),
-      validator: (value) {
-        if (value!.isEmpty) {
-          return "$hintText is missing";
-        }
-        return null;
-      },
+          prefixIcon: Icon(icon),
+          hintText: hintText,
+          suffixIcon: sufixIcon,
+          errorStyle: TextStyle(color: Colors.red)),
+      validator: validator,
       obscureText: isObscureText,
+      enabled: isEnabled,
     );
   }
 }

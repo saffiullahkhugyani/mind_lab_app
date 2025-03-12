@@ -8,24 +8,22 @@ abstract class ParentChildEvent extends Equatable {
 }
 
 final class AddChildEvent extends ParentChildEvent {
-  final String email;
-  final String name;
-  final String ageGroup;
-  final String gender;
-  final String nationality;
-  final File imageFile;
+  final String childId;
 
   const AddChildEvent({
-    required this.email,
-    required this.name,
-    required this.ageGroup,
-    required this.gender,
-    required this.nationality,
-    required this.imageFile,
+    required this.childId,
   });
 }
 
 final class GetChildrenEvent extends ParentChildEvent {
   final String parentId;
   const GetChildrenEvent({required this.parentId});
+}
+
+final class FetchStudentDetailsEvent extends ParentChildEvent {
+  final String studentId;
+
+  const FetchStudentDetailsEvent({
+    required this.studentId,
+  });
 }

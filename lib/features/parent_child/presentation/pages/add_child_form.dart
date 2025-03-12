@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
-import 'package:mind_lab_app/core/constants/country_list.dart';
-import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/widgets/gradient_button.dart';
 import 'package:mind_lab_app/core/widgets/input_field.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
@@ -20,41 +18,61 @@ class AddChildForm extends StatefulWidget {
 }
 
 class _AddChildFormState extends State<AddChildForm> {
-  final ageGroupListData = [
-    'Under 6 years',
-    '6-13 years',
-    '14-18 years',
-    '19-25 years',
-    'Above 25 years'
-  ];
-
-  final genderData = ['Male', 'Female'];
-
   final emailController = TextEditingController();
   final nameController = TextEditingController();
-  final ageController = TextEditingController();
+  final ageGroupController = TextEditingController();
   final mobileController = TextEditingController();
+  final studentIdController = TextEditingController();
+  final genderController = TextEditingController();
+  final nationalityController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? gender;
   String? ageGroup;
   String? nationality;
   File? avatarImage;
+  bool isStudentFound = false;
 
-  void selectImage() async {
-    final pickedImage = await pickImage();
-    if (pickedImage != null) {
-      setState(() {
-        avatarImage = pickedImage;
-      });
+  // void selectImage() async {
+  //   final pickedImage = await pickImage();
+  //   if (pickedImage != null) {
+  //     setState(() {
+  //       avatarImage = pickedImage;
+  //     });
+  //   }
+  // }
+
+  void searchStudent() async {
+    final studentId = studentIdController.text.trim();
+    if (studentId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid student ID.'),
+        ),
+      );
+      return;
     }
+
+    // Simulate fetching student details (replace with actual API call)
+    // Example: Fetch student details from backend
+    context.read<ParentChildBloc>().add(
+          FetchStudentDetailsEvent(studentId: studentId),
+        );
+  }
+
+  @override
+  void initState() {
+    studentIdController.text = "8c80a";
+    super.initState();
   }
 
   @override
   void dispose() {
     emailController.dispose();
     nameController.dispose();
-    ageController.dispose();
+    ageGroupController.dispose();
     mobileController.dispose();
+    genderController.dispose();
+    nationalityController.dispose();
     super.dispose();
   }
 
@@ -72,13 +90,24 @@ class _AddChildFormState extends State<AddChildForm> {
                 content: Text(state.message),
               ),
             );
-          } else if (state is ParentChildSuccess) {
+          } else if (state is ParentChildRequested) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Child added successfully'),
+                content:
+                    Text('Requested to add ${emailController.text} as a child'),
               ),
             );
             Navigator.pop(context);
+          } else if (state is StudentDetailsLoaded) {
+            setState(() {
+              nameController.text = state.studentEntity.name;
+              emailController.text = state.studentEntity.email;
+              mobileController.text = state.studentEntity.number;
+              ageGroupController.text = state.studentEntity.ageGroup;
+              genderController.text = state.studentEntity.gender;
+              nationalityController.text = state.studentEntity.nationality;
+              isStudentFound = true;
+            });
           }
         },
         builder: (context, state) {
@@ -92,71 +121,23 @@ class _AddChildFormState extends State<AddChildForm> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      selectImage();
+                  InputField(
+                    hintText: 'Student ID',
+                    controller: studentIdController,
+                    icon: Icons.school_outlined,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Student ID is required';
+                      }
+                      return null;
                     },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        avatarImage != null
-                            ? Container(
-                                width: 200,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 4, color: Colors.white),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      spreadRadius: 2,
-                                      blurRadius: 10,
-                                      color: Colors.black.withOpacity(0.1),
-                                    ),
-                                  ],
-                                  shape: BoxShape.circle,
-                                ),
-                                child: CircleAvatar(
-                                  backgroundImage: FileImage(avatarImage!),
-                                ),
-                              )
-                            : Container(
-                                width: 200,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 4, color: Colors.white),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      spreadRadius: 2,
-                                      blurRadius: 10,
-                                      color: Colors.black.withOpacity(0.1),
-                                    ),
-                                  ],
-                                  shape: BoxShape.circle,
-                                  image: const DecorationImage(
-                                      fit: BoxFit.fitWidth,
-                                      image: AssetImage(
-                                          'lib/assets/images/no-user-image.png')),
-                                ),
-                              ),
-                        Positioned(
-                          bottom: 10,
-                          right: 10,
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  width: 4,
-                                  color: Colors.white,
-                                ),
-                                color: Colors.grey),
-                            child: const Icon(Icons.edit),
-                          ),
-                        ),
-                      ],
-                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  GradientButton(
+                    buttonText: "Search Student",
+                    onPressed: searchStudent,
                   ),
                   const SizedBox(
                     height: 30,
@@ -165,88 +146,61 @@ class _AddChildFormState extends State<AddChildForm> {
                     hintText: 'Name',
                     controller: nameController,
                     icon: Icons.person_2_outlined,
+                    isEnabled: false,
                   ),
                   const SizedBox(
                     height: 15,
                   ),
                   InputField(
-                      hintText: 'Email',
-                      controller: emailController,
-                      icon: Icons.email_outlined),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.calendar_today_outlined),
-                        label: Text("Select age Group")),
-                    items: ageGroupListData
-                        .map<DropdownMenuItem<String>>(
-                          (e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ),
-                        )
-                        .toList(),
+                    hintText: 'Email',
+                    controller: emailController,
+                    icon: Icons.email_outlined,
+                    isEnabled: false,
                     validator: (value) {
-                      if (value == null) {
-                        return "Please select an age group";
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Enter a valid email address';
                       }
                       return null;
-                    },
-                    onChanged: (value) {
-                      ageGroup = value;
                     },
                   ),
                   const SizedBox(
                     height: 15,
                   ),
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.male),
-                        label: Text("Select a gender")),
-                    items: genderData
-                        .map<DropdownMenuItem<String>>(
-                          (e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ),
-                        )
-                        .toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return "Please select your gender";
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      gender = value;
-                    },
+                  InputField(
+                    hintText: 'Mobile Number',
+                    controller: mobileController,
+                    icon: Icons.email_outlined,
+                    isEnabled: false,
                   ),
                   const SizedBox(
                     height: 15,
                   ),
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.flag),
-                        label: Text("Select nationality")),
-                    items: countryList
-                        .map<DropdownMenuItem<String>>(
-                          (e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ),
-                        )
-                        .toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return "Please select your nationality";
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      nationality = value;
-                    },
+                  InputField(
+                    hintText: 'Age Group',
+                    controller: ageGroupController,
+                    icon: Icons.calendar_today_outlined,
+                    isEnabled: false,
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  InputField(
+                    hintText: 'Gender',
+                    controller: genderController,
+                    icon: Icons.male,
+                    isEnabled: false,
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  InputField(
+                    hintText: 'Nationality',
+                    controller: nationalityController,
+                    icon: Icons.flag,
+                    isEnabled: false,
                   ),
                   const SizedBox(
                     height: 20,
@@ -254,17 +208,10 @@ class _AddChildFormState extends State<AddChildForm> {
                   GradientButton(
                     buttonText: "Add Child",
                     onPressed: () {
-                      if (formKey.currentState!.validate() &&
-                          avatarImage != null) {
+                      if (formKey.currentState!.validate()) {
                         context.read<ParentChildBloc>().add(
                               AddChildEvent(
-                                email: emailController.text.trim(),
-                                name: nameController.text.trim(),
-                                ageGroup: ageGroup!,
-                                gender: gender!,
-                                nationality: nationality!,
-                                imageFile: avatarImage!,
-                              ),
+                                  childId: studentIdController.text.trim()),
                             );
                       }
                     },

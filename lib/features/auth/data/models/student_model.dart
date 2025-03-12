@@ -9,6 +9,7 @@ class StudentModel extends StudentEntity {
     required super.gender,
     required super.nationality,
     required super.number,
+    super.profileId,
     super.imageUrl,
   });
 
@@ -22,6 +23,7 @@ class StudentModel extends StudentEntity {
       'nationality': nationality,
       'image_url': imageUrl,
       'mobile': number,
+      'profile_id': profileId,
     };
   }
 
@@ -35,6 +37,7 @@ class StudentModel extends StudentEntity {
       nationality: json['nationality'] ?? '',
       imageUrl: json['image_url'] ?? '',
       number: json['mobile'] ?? '',
+      profileId: json['profile_id'] ?? '',
     );
   }
 }

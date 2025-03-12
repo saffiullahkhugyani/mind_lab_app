@@ -10,7 +10,21 @@ class UserModel extends User {
     required super.gender,
     required super.nationality,
     required super.roleId,
+    super.imageUrl,
   });
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'age_group': ageGroup,
+      'email': email,
+      'gender': gender,
+      'nationality': nationality,
+      'image_url': imageUrl,
+      'mobile': mobile,
+    };
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> map) {
     return UserModel(
@@ -22,6 +36,7 @@ class UserModel extends User {
       gender: map['gender'] ?? '-',
       nationality: map['nationality'] ?? '-',
       roleId: map['role_id'] ?? 0,
+      imageUrl: map['profile_image_url'] ?? '-',
     );
   }
 
@@ -34,6 +49,7 @@ class UserModel extends User {
     String? gender,
     String? nationality,
     int? roleId,
+    String? imageUrl,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -44,6 +60,7 @@ class UserModel extends User {
       gender: gender ?? this.gender,
       nationality: nationality ?? this.nationality,
       roleId: roleId ?? this.roleId,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 }

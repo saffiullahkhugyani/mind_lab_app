@@ -25,6 +25,7 @@ import 'package:mind_lab_app/features/parent_child/data/datasource/remote_data_s
 import 'package:mind_lab_app/features/parent_child/data/repositories/parent_child_repository_impl.dart';
 import 'package:mind_lab_app/features/parent_child/domain/repositories/parent_child_repository.dart';
 import 'package:mind_lab_app/features/parent_child/domain/usecases/add_student_usecase.dart';
+import 'package:mind_lab_app/features/parent_child/domain/usecases/get_student_details_usecase.dart';
 import 'package:mind_lab_app/features/parent_child/domain/usecases/get_students_usecase.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_local_data_source.dart';
@@ -392,9 +393,17 @@ void _initAuth() {
     ),
   );
 
+  // fetch stuent details usecase
+  serviceLocator.registerFactory(
+    () => GetStudentDetailsUsecase(
+      serviceLocator(),
+    ),
+  );
+
   // parent child bloc
   serviceLocator.registerLazySingleton(
     () => ParentChildBloc(
+      serviceLocator(),
       serviceLocator(),
       serviceLocator(),
     ),

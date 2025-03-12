@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -95,8 +94,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     response.fold((failure) => emit(AuthFailure(failure.errorMessage)),
         (authResult) {
-      log("Profile Id: ${authResult.user.id}");
-      log("Student id: ${authResult.student!.id}");
       _emitAuthSuccess(authResult, emit);
     });
   }
@@ -119,8 +116,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold(
       (failure) => emit(AuthFailure(failure.errorMessage)),
       (authResult) {
-        log(authResult.user.id);
-        log(authResult.student!.id);
         _emitAuthSuccess(authResult, emit);
       },
     );
