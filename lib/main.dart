@@ -31,6 +31,7 @@ import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/add_certificate_page.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/pages/notifications_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/player_registration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/update_profile_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/player_rank_page.dart';
@@ -137,6 +138,7 @@ class _MyAppState extends State<MyApp> {
           myIdRoute: (context) => const Myidpage(),
           dashboardRoute: (context) => const ProjectPage(),
           parentRoute: (context) => const ParentPage(),
+          notificationsRoute: (context) => const NotificationsPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -125,6 +126,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthResult signUpDetails,
     Emitter<AuthState> emit,
   ) {
+    log("user role id: ${signUpDetails.user.roleId}");
+    // log("user role id: ${signUpDetails.student!.id}");
+
     _appUserCubit.updateUser(signUpDetails.user);
 
     //if auth success and role == student == 4 save the data into student cubit

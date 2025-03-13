@@ -18,3 +18,4 @@ const playerRankRoute = '/user-rank-page/';
 const playerRegistrationRoute = '/player-registration-page';
 const myIdRoute = '/my-id-page/';
 const parentRoute = '/parent-page/';
+const notificationsRoute = '/notifications-page/';

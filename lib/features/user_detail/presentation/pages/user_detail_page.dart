@@ -122,6 +122,18 @@ class _UserDetailPageState extends State<UserDetailPage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, notificationsRoute);
+              },
+              icon: Badge(
+                isLabelVisible: true,
+                offset: const Offset(8, 8),
+                backgroundColor: Theme.of(context).colorScheme.error,
+                child: const Icon(
+                  Icons.notifications_outlined,
+                ),
+              )),
           PopupMenuButton<int>(
               icon: const Icon(Icons.menu),
               onSelected: (item) => handleSelected(item),

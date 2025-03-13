@@ -51,7 +51,15 @@ class AuthRepositoryImpl implements AuthRepository {
         return left(ServerFailure(errorMessage: "Please sign in!"));
       }
 
-      return right(AuthResult(user: user));
+      // Step 2 Check if the user is a student (roleId == 4)
+      StudentModel? studentModel;
+      if (user.roleId == 4) {
+        // Fetch student data from the students table
+        studentModel =
+            await remoteDataSource.getStudentDetails(userId: user.id);
+      }
+
+      return right(AuthResult(user: user, student: studentModel));
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }
