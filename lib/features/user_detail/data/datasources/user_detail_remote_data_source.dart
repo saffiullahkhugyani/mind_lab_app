@@ -7,6 +7,8 @@ import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/parent_child/data/models/student_model.dart';
 // import 'package:mind_lab_app/features/user_detail/data/models/certificate_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/certificate_v2_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/notification_model.dart';
+import 'package:mind_lab_app/features/user_detail/data/models/parent_child_relationship_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/player_rank_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/register_player_model.dart';
 import 'package:mind_lab_app/features/user_detail/data/models/skill_category_model.dart';
@@ -17,6 +19,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:path/path.dart';
 import '../models/upload_certificate_model.dart';
 import 'package:crypto/crypto.dart';
+
+import '../models/user_model.dart';
 
 abstract interface class UserDetailRemoteDataSource {
   Future<List<StudentModel>> getStudentDetails({
@@ -52,6 +56,16 @@ abstract interface class UserDetailRemoteDataSource {
   Future<List<RegisterPlayerModel>> getPlayerRegistration({
     required String studentId,
   });
+  Future<List<NotificationModel>> getNotifications(
+      {required String studentProfileId});
+  Future<UserModel> getNotificaionSenderDetails(
+      {required String notificationSenderId});
+  Future<ParentChildRelationshipModel> allowParentAccess({
+    required int notificationId,
+    required String parentId,
+    required String childId,
+    required String studentProfileId,
+  });
 }
 
 class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
@@ -63,9 +77,6 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     required String studentId,
     required int roleId,
   }) async {
-    log('parent id: $parentId');
-    log('student id: $studentId');
-    log('role id: $roleId');
     try {
       // Get the current user's UID
       final userUid = supabaseClient.auth.currentUser!.id;
@@ -367,11 +378,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
           .not("certificate_master", "is", null)
           .eq("certificate_master.certificate_status", true);
 
-      log("here");
-      log(certificateMaster
-          .map((json) => CertificateV1V2MappingModel.fromJson(json))
-          .toList()
-          .toString());
+      // log(certificateMaster
+      //     .map((json) => CertificateV1V2MappingModel.fromJson(json))
+      //     .toList()
+      //     .toString());
 
       return certificateMaster
           .map((json) => CertificateV1V2MappingModel.fromJson(json))
@@ -464,13 +474,10 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
       // getting current user Uid
       // final userUid = supabaseClient.auth.currentUser!.id;
       // fetchingall registered players
-      log("student in get player registration: $studentId");
       final response = await supabaseClient
           .from('register_player')
           .select("*")
           .eq("student_id", studentId);
-
-      log("response of the player registration: $response");
 
       return response
           .map((json) => RegisterPlayerModel.fromJson(json))
@@ -481,6 +488,109 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
     } catch (e) {
       log(e.toString());
       throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<NotificationModel>> getNotifications(
+      {required String studentProfileId}) async {
+    try {
+      final response = await supabaseClient
+          .from('notifications')
+          .select('*')
+          .eq('recipient_id', studentProfileId);
+
+      final List<NotificationModel> notifications = response
+          .map((notification) => NotificationModel.fromJson(notification))
+          .toList();
+
+      log("notification response: $response");
+
+      return notifications;
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> getNotificaionSenderDetails(
+      {required String notificationSenderId}) async {
+    try {
+      final response = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', notificationSenderId);
+
+      log("notificaion sender details: $response");
+
+      return UserModel.fromJson(response.first);
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<ParentChildRelationshipModel> allowParentAccess({
+    required int notificationId,
+    required String parentId,
+    required String childId,
+    required String studentProfileId,
+  }) async {
+    try {
+      final checkExistingData = await supabaseClient
+          .from('parent_child_relationship')
+          .select('*')
+          .eq('parent_id', parentId)
+          .eq('child_id', childId);
+
+      if (checkExistingData.isEmpty) {
+        throw ServerException("Request not completed");
+      }
+
+      final existingData =
+          ParentChildRelationshipModel.fromJson(checkExistingData.first);
+
+      if (checkExistingData.isNotEmpty &&
+          existingData.isParentRequestApproved) {
+        throw ServerException("Permission already granted");
+      }
+
+      ParentChildRelationshipModel relationshipModel = existingData;
+      if (checkExistingData.isNotEmpty &&
+          !existingData.isParentRequestApproved) {
+        final response = await supabaseClient
+            .from('parent_child_relationship')
+            .update({'is_parent_request_approved': true})
+            .eq('parent_id', parentId)
+            .eq('child_id', childId)
+            .select();
+
+        relationshipModel =
+            ParentChildRelationshipModel.fromJson(response.first);
+
+        await supabaseClient
+            .from('notifications')
+            .update({'status': 'accepted'})
+            .eq('sender_id', parentId)
+            .eq(
+              'recipient_id',
+              studentProfileId,
+            );
+      }
+
+      return relationshipModel;
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on ServerException catch (e) {
+      throw ServerException(e.message);
     }
   }
 }

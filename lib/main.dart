@@ -27,6 +27,7 @@ import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_cont
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/step_duration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
@@ -79,6 +80,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<ParentChildBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<NotificationsBloc>(),
         ),
       ],
       child: const MyApp(),

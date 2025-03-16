@@ -61,7 +61,7 @@ class _AddChildFormState extends State<AddChildForm> {
 
   @override
   void initState() {
-    studentIdController.text = "8c80a";
+    studentIdController.text = "a3255";
     super.initState();
   }
 
@@ -172,7 +172,7 @@ class _AddChildFormState extends State<AddChildForm> {
                   InputField(
                     hintText: 'Mobile Number',
                     controller: mobileController,
-                    icon: Icons.email_outlined,
+                    icon: Icons.phone_rounded,
                     isEnabled: false,
                   ),
                   const SizedBox(

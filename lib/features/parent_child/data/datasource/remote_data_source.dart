@@ -41,7 +41,6 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           .eq('child_id', studentId);
 
       if (existingRelationship.isNotEmpty) {
-        log('here');
         throw ServerException("Relationship already exists");
       }
 
@@ -52,6 +51,28 @@ class RemoteDataSourceImpl implements RemoteDataSource {
         'child_id': studentId,
         'is_parent_request_approved': false
       }).select();
+
+      if (response.isNotEmpty) {
+        final studentData = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('id', studentId);
+
+        final studentModel = StudentModel.fromJson(studentData.first);
+
+        final insertData = {
+          'recipient_id': studentModel.profileId,
+          'notification_type': "parent_request",
+          'message': "Parent requested to add you as their child",
+        };
+
+        final notificationResponse = await supabaseClient
+            .from('notifications')
+            .insert(insertData)
+            .select();
+
+        log("Notification id: ${notificationResponse.first}");
+      }
 
       return ParentChildRelationshipModel.fromJson(response.first);
     } on PostgrestException catch (e) {

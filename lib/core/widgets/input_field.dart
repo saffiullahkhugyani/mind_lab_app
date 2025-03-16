@@ -27,7 +27,7 @@ class InputField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
           prefixIcon: Icon(icon),
-          hintText: hintText,
+          labelText: hintText,
           suffixIcon: sufixIcon,
           errorStyle: TextStyle(color: Colors.red)),
       validator: validator,

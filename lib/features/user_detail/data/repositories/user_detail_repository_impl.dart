@@ -17,6 +17,7 @@ import 'package:mind_lab_app/features/user_detail/domain/entities/update_profile
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 import '../../../../core/network/connection_checker.dart';
+import '../models/parent_child_relationship_model.dart';
 
 class UserDetailRepositoryImpl implements UserDetailRepository {
   final UserDetailRemoteDataSource userDetailRemoteDataSource;
@@ -29,6 +30,7 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
     required String parentId,
     required String studentId,
     required int roleId,
+    required String studentProfileId,
   }) async {
     try {
       if (!await connectionChecker.isConnected) {
@@ -52,11 +54,32 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
         studentId: studentId,
       );
 
+      final notifications = await userDetailRemoteDataSource.getNotifications(
+          studentProfileId: studentProfileId);
+
+      // Fetch sender details for notifications that have a sender
+      for (var i = 0; i < notifications.length; i++) {
+        if (notifications[i].senderId != null &&
+            notifications[i].senderId!.isNotEmpty) {
+          final senderDetails =
+              await userDetailRemoteDataSource.getNotificaionSenderDetails(
+                  notificationSenderId: notifications[i].senderId!);
+
+          // Assign the new updated object back to the list
+          notifications[i] =
+              notifications[i].copyWith(senderDetails: senderDetails);
+
+          log('notification check ${senderDetails.id}');
+          log('notification check ${notifications[i].senderDetails}'); // Now it will have a value
+        }
+      }
+
       return right(StudentDetailResult(
         studentDetails: studentDetail,
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
         playerRegistration: playerRegistration,
+        notifications: notifications,
       ));
     } on ServerException catch (e) {
       log(e.message);
@@ -240,6 +263,34 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
           .getPlayerRankDetails(playerId: playerId);
 
       return right(playerRankDetails);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, ParentChildRelationshipModel>>
+      allowParentAccess({
+    required int notificationId,
+    required String parentId,
+    required String studentId,
+    required String studentProfileId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
+
+      final allowParentAccess =
+          await userDetailRemoteDataSource.allowParentAccess(
+        notificationId: notificationId,
+        parentId: parentId,
+        childId: studentId,
+        studentProfileId: studentProfileId,
+      );
+
+      return right(allowParentAccess);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }

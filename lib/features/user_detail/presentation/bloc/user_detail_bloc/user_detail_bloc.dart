@@ -38,6 +38,7 @@ class UserDetailBloc extends Bloc<UserDetailEvent, UserDetailState> {
         parentId: event.parentId,
         studentId: event.studentId,
         roleId: event.roleId,
+        studentProfileId: event.studentProfileId,
       ),
     );
 

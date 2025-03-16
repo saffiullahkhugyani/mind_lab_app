@@ -4,12 +4,12 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_upload_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/certificate_v2_entity.dart';
+import 'package:mind_lab_app/features/user_detail/domain/entities/parent_child_relationship_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/player_rank_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/register_player_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_category_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skill_tag_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/entities/skills_type_entity.dart';
-// import 'package:mind_lab_app/features/user_detail/domain/entities/user_detail_entity.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_user_detail.dart';
 
 import '../entities/update_profile_entity.dart';
@@ -20,6 +20,7 @@ abstract interface class UserDetailRepository {
     required String parentId,
     required String studentId,
     required int roleId,
+    required String studentProfileId,
   });
 
   // fetching skill data
@@ -69,5 +70,14 @@ abstract interface class UserDetailRepository {
   // fething player rank details
   Future<Either<ServerFailure, List<PlayerRankEntity>>> getPlayerRankDetails({
     required String playerId,
+  });
+
+  // allowing parent access
+  Future<Either<ServerFailure, ParentChildRelationshipEntity>>
+      allowParentAccess({
+    required int notificationId,
+    required String parentId,
+    required String studentId,
+    required String studentProfileId,
   });
 }

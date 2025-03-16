@@ -53,7 +53,7 @@ class _PlayerRegistrationPageState extends State<PlayerRegistrationPage> {
     final userDetailEntity =
         ModalRoute.of(context)!.settings.arguments as StudentEntity;
 
-    final playerId = generateShortUUID(userDetailEntity.id);
+    final playerId = userDetailEntity.id;
 
     return Scaffold(
       appBar: AppBar(

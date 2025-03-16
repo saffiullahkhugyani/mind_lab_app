@@ -38,6 +38,7 @@ import 'package:mind_lab_app/features/project_list/presentation/bloc/project_lis
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
 import 'package:mind_lab_app/features/user_detail/data/repositories/user_detail_repository_impl.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
+import 'package:mind_lab_app/features/user_detail/domain/usecases/allow_parent_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/delete_account.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_player_rank_detail_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
@@ -48,6 +49,7 @@ import 'package:mind_lab_app/features/user_detail/domain/usecases/register_playe
 import 'package:mind_lab_app/features/user_detail/domain/usecases/update_profile.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
+import 'package:mind_lab_app/features/user_detail/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
@@ -406,6 +408,20 @@ void _initAuth() {
       serviceLocator(),
       serviceLocator(),
       serviceLocator(),
+    ),
+  );
+
+  {/* Dependencies for notificaions */}
+  // allow parent use case
+  serviceLocator.registerFactory(
+    () => AllowParentUseCase(
+      serviceLocator(),
+    ),
+  );
+  // notification bloc
+  serviceLocator.registerLazySingleton(
+    () => NotificationsBloc(
+      allowParentUsecase: serviceLocator(),
     ),
   );
 }
