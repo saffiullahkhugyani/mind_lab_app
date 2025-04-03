@@ -7,6 +7,12 @@ sealed class NotificationsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class GetNotifications extends NotificationsEvent {
+  final String userId;
+
+  const GetNotifications({required this.userId});
+}
+
 class AllowParentAccess extends NotificationsEvent {
   final int notificaionId;
   final String parentId;
@@ -17,5 +23,14 @@ class AllowParentAccess extends NotificationsEvent {
     this.parentId,
     this.studenId,
     this.studentProfileId,
+  );
+}
+
+class ReadNotificationEvent extends NotificationsEvent {
+  final int notificationId;
+  final String userId;
+  const ReadNotificationEvent(
+    this.notificationId,
+    this.userId,
   );
 }

@@ -5,17 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/app_upgrader_dialog.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc/project_bloc.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/widgets/card_item.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_list_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/user_detail_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/common/cubits/app_student/app_student_cubit.dart';
 import '../../../../core/widgets/show_dialog.dart';
+import '../../domain/entities/notification_entity.dart';
 
 final listProjectImages = [
   {"id": 1, "image_asset": 'lib/assets/images/rashid_rover.png'},
@@ -44,6 +48,11 @@ class ProjectPage extends StatefulWidget {
 }
 
 class _ProjectPageState extends State<ProjectPage> {
+  int? roleId;
+  List<NotificationEntity>? notifications;
+  String? profileId;
+  String? studentId;
+
   final _upgrader = AppUpgrader(
     debugLogging: true,
     durationUntilAlertAgain: const Duration(
@@ -62,6 +71,41 @@ class _ProjectPageState extends State<ProjectPage> {
     );
     if (context.mounted) {
       _signOut(action);
+    }
+  }
+
+  Future<void> _allowParentAccessDialog(
+      BuildContext context, NotificationEntity entity) async {
+    final action = await Dialogs.yesAbortDialog(
+      context,
+      "Guardian request access",
+      "Do you want to allow ${entity.senderDetails?.name} for parent access.",
+      abortBtnText: "Decline",
+      yesButtonText: "Approve",
+      icon: Icons.notifications_active,
+    );
+    if (context.mounted) {
+      _handleAllowRequest(context, action, entity);
+    }
+  }
+
+  void _handleAllowRequest(
+      BuildContext context, DialogAction action, NotificationEntity entity) {
+    if (action == DialogAction.yes) {
+      context.read<NotificationsBloc>().add(
+            AllowParentAccess(
+              entity.id,
+              entity.senderId!,
+              studentId!,
+              profileId!,
+            ),
+          );
+    }
+
+    if (action == DialogAction.abort) {
+      context
+          .read<NotificationsBloc>()
+          .add(ReadNotificationEvent(entity.id, profileId!));
     }
   }
 
@@ -99,7 +143,15 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   void initState() {
     super.initState();
+    profileId = (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+    studentId = (context.read<AppStudentCubit>().state as AppStudentSelected)
+        .student
+        .id;
+    roleId =
+        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.roleId;
     context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+    context.read<NotificationsBloc>().add(GetNotifications(userId: profileId!));
+    log("roleId $roleId");
   }
 
   @override
@@ -108,6 +160,21 @@ class _ProjectPageState extends State<ProjectPage> {
       appBar: AppBar(
         title: const Text('Home Page'),
         actions: [
+          if (roleId == 4 || roleId == 1 || roleId == 6)
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, notificationsRoute,
+                    arguments: notifications);
+              },
+              icon: Badge(
+                isLabelVisible: true,
+                offset: const Offset(8, 8),
+                backgroundColor: Theme.of(context).colorScheme.error,
+                child: const Icon(
+                  Icons.notifications_outlined,
+                ),
+              ),
+            ),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(
@@ -130,79 +197,141 @@ class _ProjectPageState extends State<ProjectPage> {
           ),
         ],
       ),
-      body: AppUpgraderDialog(
-        upgrader: _upgrader,
-        child: BlocConsumer<ProjectBloc, ProjectState>(
-          listener: (context, state) {
-            if (state is ProjectFailure) {
-              log(state.error);
-              showFlashBar(
-                context,
-                'Error while loading subscribed projects!',
-                FlashBarAction.error,
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is ProjectLoading || state is ProjectInitial) {
-              return const Loader();
-            }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          profileId =
+              (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+          context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+          context
+              .read<NotificationsBloc>()
+              .add(GetNotifications(userId: profileId!));
+        },
+        child: AppUpgraderDialog(
+          upgrader: _upgrader,
+          child: MultiBlocListener(
+              listeners: [
+                BlocListener<ProjectBloc, ProjectState>(
+                  listener: (context, state) {
+                    if (state is ProjectFailure) {
+                      showFlashBar(
+                        context,
+                        state.error,
+                        FlashBarAction.error,
+                      );
+                    }
+                  },
+                ),
+                BlocListener<NotificationsBloc, NotificationsState>(
+                  listener: (context, state) {
+                    log("Notification state: $state");
+                    if (state is NotificationsListSuccess) {
+                      notifications = state.notifications;
 
-            if (state is ProjectDisplaySuccess) {
-              return GridView.builder(
-                padding: const EdgeInsets.only(top: 20),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: (MediaQuery.of(context).orientation ==
-                            Orientation.portrait)
-                        ? 2
-                        : 3),
-                itemCount: state.projectList.length,
-                itemBuilder: (BuildContext context, index) {
-                  final project = state.projectList[index];
-                  final subscribedProjects = state.subscribedProjectList;
-                  final imageAsset = listProjectImages
-                      .firstWhere((element) => element['id'] == project.id);
+                      final List<NotificationEntity> filteredNotification =
+                          notifications!
+                              .where((notification) =>
+                                  notification.notificationType ==
+                                      'parent_request' &&
+                                  notification.status == 'pending')
+                              .toList();
 
-                  bool isSubscribed = subscribedProjects.any(
-                      (subscribedProject) =>
-                          subscribedProject.project.id == project.id);
+                      if (filteredNotification.isNotEmpty) {
+                        for (var entity in filteredNotification) {
+                          _allowParentAccessDialog(context, entity);
+                        }
+                      }
+                    }
 
-                  if (project.id == 1) {
-                    isSubscribed = true;
+                    if (state is ParentChildAccessSuccess) {
+                      showFlashBar(
+                        context,
+                        "Access granted",
+                        FlashBarAction.success,
+                      );
+                    }
+
+                    if (state is NotificationsFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Failed to load notifications"),
+                      ));
+                    }
+
+                    if (state is ReadNotificationSuccess) {
+                      if (state.notification.status == 'read' &&
+                          state.notification.notificationType ==
+                              'parent_request') {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Parent request has been declined'),
+                        ));
+                      }
+                    }
+                  },
+                ),
+              ],
+              child: BlocBuilder<ProjectBloc, ProjectState>(
+                builder: (context, state) {
+                  if (state is ProjectLoading || state is ProjectInitial) {
+                    return const Loader();
                   }
 
-                  return CardItem(
-                      color: isSubscribed
-                          ? Colors.grey.withOpacity(0.3)
-                          : Colors.grey.withOpacity(0.1),
-                      elevation: isSubscribed ? 2 : 0,
-                      text: project.name,
-                      image: imageAsset['image_asset'].toString(),
-                      onTap: () {
-                        if (isSubscribed) {
-                          switch (project.id) {
-                            case 1:
-                              Navigator.pushNamed(context, roverMainPageRoute);
-                              break;
-                            case 7:
-                              Navigator.pushNamed(context, arcadeGameOneRoute);
-                              break;
-                          }
-                        } else {
-                          // showFlushBar(context, 'Feature Coming soon',
-                          //     FlushBarAction.info);
-                          showFlashBar(context, "Feature Coming soon",
-                              FlashBarAction.info);
-                        }
-                      });
-                },
-              );
-            }
+                  if (state is ProjectDisplaySuccess) {
+                    return GridView.builder(
+                      padding: const EdgeInsets.only(top: 20),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: (MediaQuery.of(context).orientation ==
+                                  Orientation.portrait)
+                              ? 2
+                              : 3),
+                      itemCount: state.projectList.length,
+                      itemBuilder: (BuildContext context, index) {
+                        final project = state.projectList[index];
+                        final subscribedProjects = state.subscribedProjectList;
+                        final imageAsset = listProjectImages.firstWhere(
+                            (element) => element['id'] == project.id);
 
-            return const Center(
-              child: Text("To get access, Please subscribe to a project"),
-            );
-          },
+                        bool isSubscribed = subscribedProjects.any(
+                            (subscribedProject) =>
+                                subscribedProject.project.id == project.id);
+
+                        if (project.id == 1) {
+                          isSubscribed = true;
+                        }
+
+                        return CardItem(
+                            color: isSubscribed
+                                ? Colors.grey.withValues(alpha: 0.3)
+                                : Colors.grey.withValues(alpha: 0.1),
+                            elevation: isSubscribed ? 2 : 0,
+                            text: project.name,
+                            image: imageAsset['image_asset'].toString(),
+                            onTap: () {
+                              if (isSubscribed) {
+                                switch (project.id) {
+                                  case 1:
+                                    Navigator.pushNamed(
+                                        context, roverMainPageRoute);
+                                    break;
+                                  case 7:
+                                    Navigator.pushNamed(
+                                        context, arcadeGameOneRoute);
+                                    break;
+                                }
+                              } else {
+                                // showFlushBar(context, 'Feature Coming soon',
+                                //     FlushBarAction.info);
+                                showFlashBar(context, "Feature Coming soon",
+                                    FlashBarAction.info);
+                              }
+                            });
+                      },
+                    );
+                  }
+
+                  return const Center(
+                    child: Text("To get access, Please subscribe to a project"),
+                  );
+                },
+              )),
         ),
       ),
       floatingActionButton: Column(

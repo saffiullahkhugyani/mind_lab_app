@@ -38,13 +38,12 @@ class _SignUpPageState extends State<SignUpPage> {
     'Under 6 years',
     '6-13 years',
     '14-18 years',
-    '19-25 years',
-    'Above 25 years'
+    'Above 18 years'
   ];
 
   final genderData = ['Male', 'Female'];
 
-  final registerAs = {'Student': 4, 'Parent': 6};
+  final registerAs = {'Student': 4, 'Guardian': 6};
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();

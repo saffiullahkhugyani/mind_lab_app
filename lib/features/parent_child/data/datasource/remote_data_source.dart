@@ -6,6 +6,9 @@ import 'package:mind_lab_app/features/parent_child/data/models/parent_child_rela
 import 'package:mind_lab_app/features/parent_child/data/models/student_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../models/notification_model.dart';
+import '../models/user_model.dart';
+
 abstract interface class RemoteDataSource {
   Future<List<StudentModel>> getStudents({
     required String parentId,
@@ -18,6 +21,15 @@ abstract interface class RemoteDataSource {
 
   Future<StudentModel> getStudentDetails({
     required String studentId,
+  });
+  Future<List<NotificationModel>> getNotifications(
+      {required String studentProfileId});
+  Future<UserModel> getNotificaionSenderDetails(
+      {required String notificationSenderId});
+
+  Future<NotificationModel> readNotification({
+    required int notificationId,
+    required String userId,
   });
 }
 
@@ -64,6 +76,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
           'recipient_id': studentModel.profileId,
           'notification_type': "parent_request",
           'message': "Parent requested to add you as their child",
+          "status": "pending"
         };
 
         final notificationResponse = await supabaseClient
@@ -152,6 +165,69 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     } on ServerException catch (e) {
       log(e.message);
       throw ServerException(e.message);
+    }
+  }
+
+  @override
+  Future<List<NotificationModel>> getNotifications(
+      {required String studentProfileId}) async {
+    try {
+      final response = await supabaseClient
+          .from('notifications')
+          .select('*')
+          .eq('recipient_id', studentProfileId);
+
+      final List<NotificationModel> notifications = response
+          .map((notification) => NotificationModel.fromJson(notification))
+          .toList();
+
+      return notifications;
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> getNotificaionSenderDetails(
+      {required String notificationSenderId}) async {
+    try {
+      final response = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', notificationSenderId);
+
+      return UserModel.fromJson(response.first);
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<NotificationModel> readNotification(
+      {required int notificationId, required String userId}) async {
+    try {
+      final response = await supabaseClient
+          .from('notifications')
+          .update({'status': 'read'})
+          .eq('id', notificationId)
+          .eq('recipient_id', userId)
+          .select();
+
+      return NotificationModel.fromJson(response.first);
+    } on PostgrestException catch (e) {
+      log(e.message);
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw ServerException(e.toString());
     }
   }
 }

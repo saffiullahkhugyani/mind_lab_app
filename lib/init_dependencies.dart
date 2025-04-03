@@ -5,6 +5,7 @@ import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.da
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/core/secrets/app_secrets.dart';
+import 'package:mind_lab_app/features/auth/data/datasource/auth_local_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
@@ -19,15 +20,10 @@ import 'package:mind_lab_app/features/dashboard/data/repository/project_reposito
 import 'package:mind_lab_app/features/dashboard/domain/repository/project_repository.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_all_projects.dart';
 import 'package:mind_lab_app/features/dashboard/domain/usecase/get_subscribec_projects.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
-import 'package:mind_lab_app/features/parent_child/data/datasource/local_data_source.dart';
-import 'package:mind_lab_app/features/parent_child/data/datasource/remote_data_source.dart';
-import 'package:mind_lab_app/features/parent_child/data/repositories/parent_child_repository_impl.dart';
-import 'package:mind_lab_app/features/parent_child/domain/repositories/parent_child_repository.dart';
-import 'package:mind_lab_app/features/parent_child/domain/usecases/add_student_usecase.dart';
-import 'package:mind_lab_app/features/parent_child/domain/usecases/get_student_details_usecase.dart';
-import 'package:mind_lab_app/features/parent_child/domain/usecases/get_students_usecase.dart';
-import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/domain/usecase/read_notificaion_usecase.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/notification_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_local_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/datasources/project_list_remote_data_source.dart';
 import 'package:mind_lab_app/features/project_list/data/repositories/project_list_repository_impl.dart';
@@ -38,7 +34,6 @@ import 'package:mind_lab_app/features/project_list/presentation/bloc/project_lis
 import 'package:mind_lab_app/features/user_detail/data/datasources/user_detail_remote_data_source.dart';
 import 'package:mind_lab_app/features/user_detail/data/repositories/user_detail_repository_impl.dart';
 import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
-import 'package:mind_lab_app/features/user_detail/domain/usecases/allow_parent_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/delete_account.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_player_rank_detail_usecase.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/get_skill_categories.dart';
@@ -49,7 +44,6 @@ import 'package:mind_lab_app/features/user_detail/domain/usecases/register_playe
 import 'package:mind_lab_app/features/user_detail/domain/usecases/update_profile.dart';
 import 'package:mind_lab_app/features/user_detail/domain/usecases/upload_certificate.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
@@ -58,6 +52,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'features/auth/domain/usecases/user_sign_in.dart';
+import 'features/dashboard/domain/usecase/allow_parent_access_usecase.dart';
+import 'features/dashboard/domain/usecase/get_notifications_usecase.dart';
+import 'features/parent_child/data/datasource/local_data_source.dart';
+import 'features/parent_child/data/datasource/remote_data_source.dart';
+import 'features/parent_child/data/repositories/parent_child_repository_impl.dart';
+import 'features/parent_child/domain/repositories/parent_child_repository.dart';
+import 'features/parent_child/domain/usecases/add_student_usecase.dart';
+import 'features/parent_child/domain/usecases/get_notifications_usecase.dart';
+import 'features/parent_child/domain/usecases/get_student_details_usecase.dart';
+import 'features/parent_child/domain/usecases/get_students_usecase.dart';
+import 'features/parent_child/domain/usecases/read_notificaion_usecase.dart';
+import 'features/parent_child/presentation/bloc/parent_child_bloc/parent_child_bloc.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -78,6 +84,18 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton(
     () => Hive.box(name: 'projects'),
   );
+
+  // Open both Hive boxes
+  final projectsBox = Hive.box(name: 'projects');
+  final authBox = Hive.box(name: 'auth'); // NEW BOX for auth data
+
+  // Register the Hive boxes
+  serviceLocator.registerLazySingleton(() => projectsBox,
+      instanceName: 'projects');
+  serviceLocator.registerLazySingleton(() => authBox,
+      instanceName: 'auth'); // Register new box
+  serviceLocator.registerLazySingleton(() => authBox,
+      instanceName: 'parent_child'); // Register new box
 
   // registering internet connection checker
   serviceLocator.registerFactory(() => InternetConnection());
@@ -101,9 +119,17 @@ void _initAuth() {
     ),
   );
 
+  // registering local data source
+  serviceLocator.registerFactory<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(
+      serviceLocator<Box>(instanceName: 'auth'),
+    ),
+  );
+
   // registering repository
   serviceLocator.registerFactory<AuthRepository>(
     () => AuthRepositoryImpl(
+      serviceLocator(),
       serviceLocator(),
       serviceLocator(),
     ),
@@ -153,6 +179,7 @@ void _initAuth() {
     ),
   );
 
+  {/*Dependencies for project--dashboard*/}
   // init Subscribed projects
   serviceLocator.registerFactory<ProjectRemoteDataSource>(
     () => ProjectRemoteDatSourceImpl(
@@ -194,6 +221,7 @@ void _initAuth() {
     ),
   );
 
+  {/*Dependencies for project list*/}
   // init available projects
   serviceLocator.registerFactory<ProjectListRemoteDataSource>(
     () => ProjectListRemoteDataSourceImpl(
@@ -203,7 +231,7 @@ void _initAuth() {
 
   serviceLocator.registerFactory<ProjectListLocalDataSource>(
     () => ProjectListLocalDataSourceImpl(
-      serviceLocator(),
+      serviceLocator(instanceName: 'projects'),
     ),
   );
 
@@ -367,7 +395,7 @@ void _initAuth() {
   // Parent child local data source
   serviceLocator.registerFactory<LocalDataSource>(
     () => LocalDataSrouceImpl(
-      serviceLocator(),
+      serviceLocator(instanceName: 'parent_child'),
     ),
   );
 
@@ -402,6 +430,20 @@ void _initAuth() {
     ),
   );
 
+  // use case for parents notifications
+  serviceLocator.registerFactory(
+    () => GetParentsNotificationsUseCase(
+      serviceLocator(),
+    ),
+  );
+
+  // use case for read parents notificaions
+  serviceLocator.registerFactory(
+    () => ReadParentsNotificaionUsecase(
+      repository: serviceLocator(),
+    ),
+  );
+
   // parent child bloc
   serviceLocator.registerLazySingleton(
     () => ParentChildBloc(
@@ -411,17 +453,39 @@ void _initAuth() {
     ),
   );
 
-  {/* Dependencies for notificaions */}
-  // allow parent use case
+  // parents notificaions bloc
+  serviceLocator.registerLazySingleton(
+    () => ParentsNotificationsBloc(
+      getNotifications: serviceLocator(),
+      readNotification: serviceLocator(),
+    ),
+  );
+
+  {/*Notifications dependencies */}
+  // get notificaiont use case
   serviceLocator.registerFactory(
-    () => AllowParentUseCase(
+    () => GetNotificationsUseCase(
       serviceLocator(),
     ),
   );
-  // notification bloc
-  serviceLocator.registerLazySingleton(
-    () => NotificationsBloc(
-      allowParentUsecase: serviceLocator(),
+  // allow parent access use case
+  serviceLocator.registerFactory(
+    () => AllowParentAccessUsecase(
+      serviceLocator(),
     ),
   );
+
+  // read notification use case
+  serviceLocator.registerFactory(
+    () => ReadNotificaionUsecase(
+      repository: serviceLocator(),
+    ),
+  );
+
+  // notifications bloc
+  serviceLocator.registerLazySingleton(() => NotificationsBloc(
+        allowParentUsecase: serviceLocator(),
+        getNotifications: serviceLocator(),
+        readNotification: serviceLocator(),
+      ));
 }

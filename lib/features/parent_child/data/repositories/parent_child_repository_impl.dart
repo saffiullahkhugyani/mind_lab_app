@@ -5,6 +5,7 @@ import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/features/parent_child/data/models/parent_child_relationship_model.dart';
 import 'package:mind_lab_app/features/parent_child/data/models/student_model.dart';
+import 'package:mind_lab_app/features/parent_child/domain/entities/notification_entity.dart';
 import 'package:mind_lab_app/features/parent_child/domain/repositories/parent_child_repository.dart';
 
 import '../datasource/local_data_source.dart';
@@ -69,6 +70,53 @@ class ParentChildRepositoryImpl implements ParentChildRepository {
       final student =
           await remoteDataSource.getStudentDetails(studentId: studentId);
       return right(student);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, List<NotificationEntity>>> getNotifications(
+      {required String studentProfileId}) async {
+    try {
+      final notifications = await remoteDataSource.getNotifications(
+          studentProfileId: studentProfileId);
+
+      // Fetch sender details for notifications that have a sender
+      for (var i = 0; i < notifications.length; i++) {
+        if (notifications[i].senderId != null &&
+            notifications[i].senderId!.isNotEmpty) {
+          final senderDetails =
+              await remoteDataSource.getNotificaionSenderDetails(
+                  notificationSenderId: notifications[i].senderId!);
+
+          // Assign the new updated object back to the list
+          notifications[i] =
+              notifications[i].copyWith(senderDetails: senderDetails);
+        }
+      }
+
+      return right(notifications);
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, NotificationEntity>> readNotificaion(
+      {required int notificationId, required String userId}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
+
+      final readNotification = await remoteDataSource.readNotification(
+        notificationId: notificationId,
+        userId: userId,
+      );
+
+      return right(readNotification);
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     }

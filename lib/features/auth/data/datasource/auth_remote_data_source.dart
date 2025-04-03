@@ -10,7 +10,7 @@ import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:crypto/crypto.dart';
 
-import '../../../parent_child/data/models/student_model.dart';
+import '../models/student_model.dart';
 
 abstract interface class AuthRemoteDataSource {
   Session? get currentUserSession;

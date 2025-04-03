@@ -6,20 +6,23 @@ import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/network/connection_checker.dart';
 import 'package:mind_lab_app/core/utils/shourt_uuid_generator.dart';
+import 'package:mind_lab_app/features/auth/data/datasource/auth_local_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:mind_lab_app/features/auth/data/models/user_model.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
-import '../../../parent_child/data/models/student_model.dart';
+import '../models/student_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource localDataSource;
   final ConnectionChecker connectionChecker;
   AuthRepositoryImpl(
     this.remoteDataSource,
     this.connectionChecker,
+    this.localDataSource,
   );
 
   @override
@@ -40,12 +43,12 @@ class AuthRepositoryImpl implements AuthRepository {
           mobile: '',
           gender: '',
           nationality: '',
-          roleId: 0,
+          roleId: session.user.userMetadata?['role_id'] ?? 0,
         );
 
-        return right(AuthResult(user: user));
+        StudentModel? studentModel = localDataSource.getStudent();
+        return right(AuthResult(user: user, student: studentModel));
       }
-
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
         return left(ServerFailure(errorMessage: "Please sign in!"));
@@ -53,10 +56,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Step 2 Check if the user is a student (roleId == 4)
       StudentModel? studentModel;
-      if (user.roleId == 4) {
+      if (user.roleId == 4 || user.roleId == 1) {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
+        localDataSource.cacheUser(user: user);
+        localDataSource.cacheStudent(student: studentModel);
       }
 
       return right(AuthResult(user: user, student: studentModel));
@@ -83,7 +88,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Step 2 Check if the user is a student (roleId == 4)
       StudentModel? studentModel;
-      if (user.roleId == 4) {
+      if (user.roleId == 4 || user.roleId == 1) {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);

@@ -95,7 +95,7 @@ class UserDetailRemoteDataSourceImpl implements UserDetailRemoteDataSource {
         studentData = (response as List).map((item) {
           return item['students'] as Map<String, dynamic>;
         }).toList();
-      } else if (roleId == 4) {
+      } else if (roleId == 4 || roleId == 1) {
         // Fetch student details for student role
         final response = await supabaseClient
             .from('students')

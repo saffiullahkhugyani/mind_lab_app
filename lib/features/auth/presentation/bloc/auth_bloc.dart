@@ -56,6 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthEvent event,
     Emitter<AuthState> emit,
   ) async {
+    emit(AuthLoading());
     final response = await _currentUser(NoParams());
 
     response.fold(
@@ -132,7 +133,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _appUserCubit.updateUser(signUpDetails.user);
 
     //if auth success and role == student == 4 save the data into student cubit
-    if (signUpDetails.user.roleId == 4) {
+    if (signUpDetails.user.roleId == 4 || signUpDetails.user.roleId == 1) {
       _appStudentCubit.updateStudent(signUpDetails.student);
     }
     emit(AuthSuccess(signUpDetails.user));

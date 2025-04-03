@@ -14,12 +14,13 @@ import 'package:mind_lab_app/features/arcage_game_one/presentation/pages/arcade_
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc.dart';
-import 'package:mind_lab_app/features/dashboard/presentation/pages/MyIdpage.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/bloc/project_bloc/project_bloc.dart';
+import 'package:mind_lab_app/features/dashboard/presentation/pages/my_id_page.dart';
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
-import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/notification_bloc/notifications_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/pages/parent_page.dart';
 import 'package:mind_lab_app/features/project_list/presentation/bloc/project_list_bloc.dart';
 import 'package:mind_lab_app/features/project_list/presentation/pages/project_detail_page.dart';
@@ -27,12 +28,10 @@ import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_cont
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/rover_main_page.dart';
 import 'package:mind_lab_app/features/rashid_rover/presentation/pages/step_duration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/add_certificate_bloc/add_certificate_bloc.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/player_rank_bloc/player_rank_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/register_player_bloc/register_player_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/add_certificate_page.dart';
-import 'package:mind_lab_app/features/user_detail/presentation/pages/notifications_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/player_registration_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/update_profile_page.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/pages/player_rank_page.dart';
@@ -40,6 +39,8 @@ import 'package:mind_lab_app/init_dependencies.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 
+import 'features/dashboard/presentation/bloc/notificaions_bloc/notifications_bloc.dart';
+import 'features/dashboard/presentation/pages/notifications_page.dart';
 import 'features/user_detail/presentation/bloc/update_profile_bloc/update_profile_bloc.dart';
 
 void main() async {
@@ -83,6 +84,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => serviceLocator<NotificationsBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => serviceLocator<ParentsNotificationsBloc>(),
         ),
       ],
       child: const MyApp(),

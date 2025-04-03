@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +10,6 @@ import 'package:mind_lab_app/core/utils/pick_image.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/show_dialog.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/login_page.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/notification_entity.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/bloc/user_detail_bloc/user_detail_bloc.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/image_builder_widget.dart';
 import 'package:mind_lab_app/features/user_detail/presentation/widgets/pie_chart.dart';
@@ -31,7 +29,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
   String? studentId;
   String? studentProfileId;
   int? roleId;
-  List<NotificationEntity>? notifications;
 
   void selectImage() async {
     final pickedImage = await pickImage();
@@ -127,21 +124,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          if (roleId == 4)
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, notificationsRoute,
-                    arguments: notifications);
-              },
-              icon: Badge(
-                isLabelVisible: true,
-                offset: const Offset(8, 8),
-                backgroundColor: Theme.of(context).colorScheme.error,
-                child: const Icon(
-                  Icons.notifications_outlined,
-                ),
-              ),
-            ),
           PopupMenuButton<int>(
               icon: const Icon(Icons.menu),
               onSelected: (item) => handleSelected(item),
@@ -188,8 +170,6 @@ class _UserDetailPageState extends State<UserDetailPage> {
           final userCertificates = state.userDetail.certificates;
           final certificateMaster = state.userDetail.certificateMasterList;
           final playerRegistration = state.userDetail.playerRegistration;
-          notifications = state.userDetail.notifications;
-          log("notification list size: ${notifications?.length}");
 
           // log(playerRegistration.toString());
           return ListView(

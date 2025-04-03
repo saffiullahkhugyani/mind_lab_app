@@ -79,7 +79,6 @@ class UserDetailRepositoryImpl implements UserDetailRepository {
         certificates: userCertificate,
         certificateMasterList: certificateMaster,
         playerRegistration: playerRegistration,
-        notifications: notifications,
       ));
     } on ServerException catch (e) {
       log(e.message);

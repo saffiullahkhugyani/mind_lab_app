@@ -1,13 +1,13 @@
 import 'package:fpdart/src/either.dart';
 import 'package:mind_lab_app/core/errors/failure.dart';
 import 'package:mind_lab_app/core/usecase/usecase.dart';
-import 'package:mind_lab_app/features/user_detail/domain/entities/parent_child_relationship_entity.dart';
-import 'package:mind_lab_app/features/user_detail/domain/repositories/user_detail_repository.dart';
+import 'package:mind_lab_app/features/dashboard/domain/entities/parent_child_relationship_entity.dart';
+import 'package:mind_lab_app/features/dashboard/domain/repository/project_repository.dart';
 
-class AllowParentUseCase
+class AllowParentAccessUsecase
     implements UseCase<ParentChildRelationshipEntity, NotificationParams> {
-  final UserDetailRepository repository;
-  AllowParentUseCase(this.repository);
+  final ProjectRepository repository;
+  AllowParentAccessUsecase(this.repository);
   @override
   Future<Either<ServerFailure, ParentChildRelationshipEntity>> call(
       NotificationParams params) async {

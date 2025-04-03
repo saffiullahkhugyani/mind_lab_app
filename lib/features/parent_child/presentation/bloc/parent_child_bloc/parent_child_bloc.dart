@@ -4,8 +4,8 @@ import 'package:mind_lab_app/core/common/entities/student.dart';
 import 'package:mind_lab_app/features/parent_child/domain/entities/parent_child_relationship_entity.dart';
 import 'package:mind_lab_app/features/parent_child/domain/usecases/get_student_details_usecase.dart';
 
-import '../../domain/usecases/add_student_usecase.dart';
-import '../../domain/usecases/get_students_usecase.dart';
+import '../../../domain/usecases/add_student_usecase.dart';
+import '../../../domain/usecases/get_students_usecase.dart';
 
 part 'parent_child_event.dart';
 part 'parent_child_state.dart';

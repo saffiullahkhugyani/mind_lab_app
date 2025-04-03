@@ -1,8 +1,8 @@
-class User {
+class SubscriptionUser {
   final String id;
   final String name;
 
-  User({
+  SubscriptionUser({
     required this.id,
     required this.name,
   });

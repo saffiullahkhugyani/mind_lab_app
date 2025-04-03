@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
+import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/gradient_button.dart';
 import 'package:mind_lab_app/core/widgets/input_field.dart';
-import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc.dart';
+import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc/parent_child_bloc.dart';
 
 class AddChildForm extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -18,13 +19,13 @@ class AddChildForm extends StatefulWidget {
 }
 
 class _AddChildFormState extends State<AddChildForm> {
-  final emailController = TextEditingController();
+  // final emailController = TextEditingController();
   final nameController = TextEditingController();
-  final ageGroupController = TextEditingController();
-  final mobileController = TextEditingController();
+  // final ageGroupController = TextEditingController();
+  // final mobileController = TextEditingController();
   final studentIdController = TextEditingController();
-  final genderController = TextEditingController();
-  final nationalityController = TextEditingController();
+  // final genderController = TextEditingController();
+  // final nationalityController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? gender;
   String? ageGroup;
@@ -61,18 +62,17 @@ class _AddChildFormState extends State<AddChildForm> {
 
   @override
   void initState() {
-    studentIdController.text = "a3255";
     super.initState();
   }
 
   @override
   void dispose() {
-    emailController.dispose();
+    // emailController.dispose();
     nameController.dispose();
-    ageGroupController.dispose();
-    mobileController.dispose();
-    genderController.dispose();
-    nationalityController.dispose();
+    // ageGroupController.dispose();
+    // mobileController.dispose();
+    // genderController.dispose();
+    // nationalityController.dispose();
     super.dispose();
   }
 
@@ -91,21 +91,26 @@ class _AddChildFormState extends State<AddChildForm> {
               ),
             );
           } else if (state is ParentChildRequested) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content:
-                    Text('Requested to add ${emailController.text} as a child'),
-              ),
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(
+            //     content:
+            //         Text('Requested to add ${nameController.text} as a child'),
+            //   ),
+            // );
+            showFlashBar(
+              context,
+              'Requested to add ${nameController.text} as a child',
+              FlashBarAction.success,
             );
             Navigator.pop(context);
           } else if (state is StudentDetailsLoaded) {
             setState(() {
               nameController.text = state.studentEntity.name;
-              emailController.text = state.studentEntity.email;
-              mobileController.text = state.studentEntity.number;
-              ageGroupController.text = state.studentEntity.ageGroup;
-              genderController.text = state.studentEntity.gender;
-              nationalityController.text = state.studentEntity.nationality;
+              // emailController.text = state.studentEntity.email;
+              // mobileController.text = state.studentEntity.number;
+              // ageGroupController.text = state.studentEntity.ageGroup;
+              // genderController.text = state.studentEntity.gender;
+              // nationalityController.text = state.studentEntity.nationality;
               isStudentFound = true;
             });
           }
@@ -151,57 +156,57 @@ class _AddChildFormState extends State<AddChildForm> {
                   const SizedBox(
                     height: 15,
                   ),
-                  InputField(
-                    hintText: 'Email',
-                    controller: emailController,
-                    icon: Icons.email_outlined,
-                    isEnabled: false,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email is required';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Enter a valid email address';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  InputField(
-                    hintText: 'Mobile Number',
-                    controller: mobileController,
-                    icon: Icons.phone_rounded,
-                    isEnabled: false,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  InputField(
-                    hintText: 'Age Group',
-                    controller: ageGroupController,
-                    icon: Icons.calendar_today_outlined,
-                    isEnabled: false,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  InputField(
-                    hintText: 'Gender',
-                    controller: genderController,
-                    icon: Icons.male,
-                    isEnabled: false,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  InputField(
-                    hintText: 'Nationality',
-                    controller: nationalityController,
-                    icon: Icons.flag,
-                    isEnabled: false,
-                  ),
+                  // InputField(
+                  //   hintText: 'Email',
+                  //   controller: emailController,
+                  //   icon: Icons.email_outlined,
+                  //   isEnabled: false,
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Email is required';
+                  //     }
+                  //     if (!value.contains('@')) {
+                  //       return 'Enter a valid email address';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
+                  // InputField(
+                  //   hintText: 'Mobile Number',
+                  //   controller: mobileController,
+                  //   icon: Icons.phone_rounded,
+                  //   isEnabled: false,
+                  // ),
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
+                  // InputField(
+                  //   hintText: 'Age Group',
+                  //   controller: ageGroupController,
+                  //   icon: Icons.calendar_today_outlined,
+                  //   isEnabled: false,
+                  // ),
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
+                  // InputField(
+                  //   hintText: 'Gender',
+                  //   controller: genderController,
+                  //   icon: Icons.male,
+                  //   isEnabled: false,
+                  // ),
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
+                  // InputField(
+                  //   hintText: 'Nationality',
+                  //   controller: nationalityController,
+                  //   icon: Icons.flag,
+                  //   isEnabled: false,
+                  // ),
                   const SizedBox(
                     height: 20,
                   ),
