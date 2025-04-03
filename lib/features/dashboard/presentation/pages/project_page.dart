@@ -251,9 +251,8 @@ class _ProjectPageState extends State<ProjectPage> {
                     }
 
                     if (state is NotificationsFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Failed to load notifications"),
-                      ));
+                      showFlashBar(context, "Failed to load notifications",
+                          FlashBarAction.error);
                     }
 
                     if (state is ReadNotificationSuccess) {

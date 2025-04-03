@@ -80,8 +80,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final notificationsList =
-        ModalRoute.of(context)!.settings.arguments as List<NotificationEntity>;
+    final List<NotificationEntity> notificationsList = ModalRoute.of(context)!
+            .settings
+            .arguments as List<NotificationEntity>? ??
+        [];
 
     // Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -99,7 +101,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               showFlashBar(
                 context,
                 'Access Granted',
-                FlashBarAction.error,
+                FlashBarAction.success,
               );
             }
           },

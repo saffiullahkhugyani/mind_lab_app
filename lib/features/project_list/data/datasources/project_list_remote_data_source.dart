@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:mind_lab_app/core/errors/exceptions.dart';
 import 'package:mind_lab_app/features/project_list/data/models/project_list_model.dart';
 import 'package:mind_lab_app/features/project_list/data/models/subscription_model.dart';
@@ -15,6 +17,7 @@ class ProjectListRemoteDataSourceImpl implements ProjectListRemoteDataSource {
   ProjectListRemoteDataSourceImpl(this.supabaseClient);
   @override
   Future<List<ProjectListModel>> getAllAvailbleProjects() async {
+    log('here');
     try {
       // final projectList = await supabaseClient.from('projects').select('*');
 
@@ -26,6 +29,7 @@ class ProjectListRemoteDataSourceImpl implements ProjectListRemoteDataSource {
       subscriptionRequest(SubscriptionModel(
           userId: 'userId', projectId: 1, subscriptionStatus: 1));
 
+      log('before admin');
       return projectListWithUserSubsInfo
           .map((json) => ProjectListModel.fromJson(json))
           .toList();
