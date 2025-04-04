@@ -169,8 +169,18 @@ class AuthRepositoryImpl implements AuthRepository {
         return left(ServerFailure(errorMessage: 'No internet connection!'));
       }
 
+      // Step 1 Authenticate the user
       final user = await remoteDataSource.loginWithGoogle();
-      return right(AuthResult(user: user));
+
+      // Step 2 Check if the user is a student (roleId == 4)
+      StudentModel? studentModel;
+      if (user.roleId == 4 || user.roleId == 1) {
+        // Fetch student data from the students table
+        studentModel =
+            await remoteDataSource.getStudentDetails(userId: user.id);
+      }
+
+      return right(AuthResult(user: user, student: studentModel));
     } on sb.AuthException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
@@ -185,8 +195,19 @@ class AuthRepositoryImpl implements AuthRepository {
         return left(ServerFailure(errorMessage: 'No internet connection!'));
       }
 
+      // Step 1 Authenticate the user
       final user = await remoteDataSource.loginWithApple();
-      return right(AuthResult(user: user));
+
+      // Step 2 Check if the user is a student (roleId == 4)
+
+      StudentModel? studentModel;
+      if (user.roleId == 4 || user.roleId == 1) {
+        // Fetch student data from the students table
+        studentModel =
+            await remoteDataSource.getStudentDetails(userId: user.id);
+      }
+
+      return right(AuthResult(user: user, student: studentModel));
     } on sb.AuthException catch (e) {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
