@@ -222,7 +222,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         accessToken: accessToken,
       );
 
-      return UserModel.fromJson(response.user!.userMetadata!);
+      // Extracting the id from the response and merging it with userMetadata
+      final userId = response.user!.id;
+
+      final user =
+          await supabaseClient.from("profiles").select("*").eq("id", userId);
+
+      return UserModel.fromJson(user.first);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
@@ -287,7 +293,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         userMetadata['name'] = "${userName.first['name']}";
       }
 
-      return UserModel.fromJson(userMetadata);
+      // grabing user data from the profiles table
+      final user =
+          await supabaseClient.from("profiles").select("*").eq("id", userId);
+
+      return UserModel.fromJson(user.first);
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
