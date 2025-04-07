@@ -36,7 +36,7 @@ class UserSignUpParams {
   final String ageGroup;
   final String mobile;
   final String gender;
-  final File imageFile;
+  final File? imageFile;
   final String nationality;
   final int roleId;
 

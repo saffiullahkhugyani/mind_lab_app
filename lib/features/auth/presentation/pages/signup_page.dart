@@ -77,6 +77,52 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  void validateForm() {
+    bool isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      // Check individual fields
+      List<String> emptyFields = [];
+
+      if (nameController.text.isEmpty) emptyFields.add('Name');
+      if (emailController.text.isEmpty) emptyFields.add('Email');
+      if (passwordController.text.isEmpty) emptyFields.add('Password');
+      if (ageGroup == null) emptyFields.add('Age Group');
+      if (gender == null) emptyFields.add('Gender');
+      if (nationality == null) emptyFields.add('Nationality');
+      if (phoneNumber == null) emptyFields.add('Phone Number');
+      if (selectedRole == null) emptyFields.add('Registration Type');
+
+      showFlashBar(
+        context,
+        "Please fill: ${emptyFields.join(', ')}",
+        FlashBarAction.error,
+      );
+      return;
+    }
+
+    // if (avatarImage == null) {
+    //   showFlashBar(
+    //     context,
+    //     "Please select a profile image",
+    //     FlashBarAction.error,
+    //   );
+    //   return;
+    // }
+
+    context.read<AuthBloc>().add(
+          AuthSignUp(
+              email: emailController.text.trim(),
+              password: passwordController.text.trim(),
+              name: nameController.text.trim(),
+              ageGroup: ageGroup!,
+              mobile: phoneNumber!,
+              gender: gender!,
+              imageFile: avatarImage,
+              nationality: nationality!,
+              roleId: registerAs[selectedRole]!),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -403,27 +449,28 @@ class _SignUpPageState extends State<SignUpPage> {
                     AuthGradientButton(
                       buttonText: 'Sign Up',
                       onPressed: () {
-                        if (formKey.currentState!.validate() &&
-                            avatarImage != null) {
-                          context.read<AuthBloc>().add(
-                                AuthSignUp(
-                                    email: emailController.text.trim(),
-                                    password: passwordController.text.trim(),
-                                    name: nameController.text.trim(),
-                                    ageGroup: ageGroup!,
-                                    mobile: phoneNumber!,
-                                    gender: gender!,
-                                    imageFile: avatarImage!,
-                                    nationality: nationality!,
-                                    roleId: registerAs[selectedRole]!),
-                              );
-                        } else {
-                          showFlashBar(
-                            context,
-                            "Please fill all the fields",
-                            FlashBarAction.error,
-                          );
-                        }
+                        validateForm();
+                        // if (formKey.currentState!.validate() &&
+                        //     avatarImage != null) {
+                        //   context.read<AuthBloc>().add(
+                        //         AuthSignUp(
+                        //             email: emailController.text.trim(),
+                        //             password: passwordController.text.trim(),
+                        //             name: nameController.text.trim(),
+                        //             ageGroup: ageGroup!,
+                        //             mobile: phoneNumber!,
+                        //             gender: gender!,
+                        //             imageFile: avatarImage!,
+                        //             nationality: nationality!,
+                        //             roleId: registerAs[selectedRole]!),
+                        //       );
+                        // } else {
+                        //   showFlashBar(
+                        //     context,
+                        //     "Please fill all the fields",
+                        //     FlashBarAction.error,
+                        //   );
+                        // }
                       },
                     ),
                     const SizedBox(

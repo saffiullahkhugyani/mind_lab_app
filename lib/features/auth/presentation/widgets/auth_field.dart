@@ -22,7 +22,7 @@ class AuthField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
-        hintText: hintText,
+        labelText: hintText,
         suffixIcon: sufixIcon,
       ),
       validator: (value) {

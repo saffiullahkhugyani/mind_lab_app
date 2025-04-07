@@ -14,7 +14,7 @@ abstract interface class AuthRepository {
     required String ageGroup,
     required String mobile,
     required String gender,
-    required File imageFile,
+    required File? imageFile,
     required String nationality,
     required int roleId,
   });

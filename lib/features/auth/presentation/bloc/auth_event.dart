@@ -11,7 +11,7 @@ final class AuthSignUp extends AuthEvent {
   final String mobile;
   final String gender;
   final String nationality;
-  final File imageFile;
+  final File? imageFile;
   final int roleId;
 
   AuthSignUp({

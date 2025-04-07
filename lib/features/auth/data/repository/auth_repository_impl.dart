@@ -115,7 +115,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String ageGroup,
     required String mobile,
     required String gender,
-    required File imageFile,
+    required File? imageFile,
     required String nationality,
     required int roleId,
   }) async {
@@ -131,8 +131,12 @@ class AuthRepositoryImpl implements AuthRepository {
           roleId: roleId);
 
       // upload user profile picture
-      final imageUrl = await remoteDataSource.uploadUserImage(
-          imageFile: imageFile, userModel: user);
+      String? imageUrl;
+
+      if (imageFile != null) {
+        imageUrl = await remoteDataSource.uploadUserImage(
+            imageFile: imageFile, userModel: user);
+      }
 
       StudentModel? studentModel;
       // uploading data into stundents table if role type student selected
@@ -146,7 +150,7 @@ class AuthRepositoryImpl implements AuthRepository {
           mobile: mobile,
           gender: gender,
           nationality: nationality,
-          imageUrl: imageUrl,
+          imageUrl: imageUrl ?? "",
         );
       }
 
