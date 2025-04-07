@@ -251,6 +251,9 @@ class _ProjectPageState extends State<ProjectPage> {
                     }
 
                     if (state is NotificationsFailure) {
+                      if (state.error == "Permission already granted") {
+                        return;
+                      }
                       showFlashBar(context, "Failed to load notifications",
                           FlashBarAction.error);
                     }

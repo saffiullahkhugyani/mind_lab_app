@@ -41,7 +41,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final action = await Dialogs.yesAbortDialog(
       context,
       "Parent request access",
-      "Do you want to allow ${entity.senderDetails?.email} for parent access.",
+      "Do you want to allow ${entity.senderDetails?.name} for parent access.",
       abortBtnText: "Decline",
       yesButtonText: "Approve",
       icon: Icons.notifications_active,
@@ -93,8 +93,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         body: BlocConsumer<NotificationsBloc, NotificationsState>(
           listener: (context, state) {
             if (state is NotificationsFailure) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.error)));
+              showFlashBar(
+                context,
+                state.error,
+                FlashBarAction.info,
+              );
             }
 
             if (state is ParentChildAccessSuccess) {
