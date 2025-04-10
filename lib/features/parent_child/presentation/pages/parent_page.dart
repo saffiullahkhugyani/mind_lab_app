@@ -103,7 +103,7 @@ class _ParentPageState extends State<ParentPage> {
     final action = await Dialogs.yesAbortDialog(
       context,
       "Guardian request access",
-      "You have been granted access to ${entity.senderDetails!.name}'s account",
+      "You have been granted access to ${entity.senderDetails!.name}'s account having email ${entity.senderDetails!.email}.",
       abortBtnText: "Cancel",
       yesButtonText: "Ok",
       icon: Icons.notifications_active,
@@ -169,42 +169,47 @@ class _ParentPageState extends State<ParentPage> {
                   }
                 }),
                 BlocListener<ParentsNotificationsBloc, NotificationsState>(
-                    listener: (context, state) {
-                  if (state is NotificationsListSuccess) {
-                    notifications = state.notifications;
-                    log("notifications: $notifications");
+                  listener: (context, state) {
+                    if (state is NotificationsListSuccess) {
+                      notifications = state.notifications;
+                      log("notifications: $notifications");
 
-                    final List<NotificationEntity> filteredNotification =
-                        notifications!
-                            .where((notification) =>
-                                notification.notificationType ==
-                                    'parent_request_accepted' &&
-                                notification.status == 'pending')
-                            .toList();
+                      final List<NotificationEntity> filteredNotification =
+                          notifications!
+                              .where((notification) =>
+                                  notification.notificationType ==
+                                      'parent_request_accepted' &&
+                                  notification.status == 'pending')
+                              .toList();
 
-                    if (filteredNotification.isNotEmpty) {
-                      for (var entity in filteredNotification) {
-                        _showAccessGrantedDialog(context, entity);
+                      if (filteredNotification.isNotEmpty) {
+                        for (var entity in filteredNotification) {
+                          _showAccessGrantedDialog(context, entity);
+                        }
                       }
                     }
-                  }
 
-                  if (state is NotificationsFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Failed to load notifications"),
-                    ));
-                  }
-
-                  if (state is ReadNotificationSuccess) {
-                    if (state.notification.status == 'read' &&
-                        state.notification.notificationType ==
-                            'parent_request') {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Parent request has been declined'),
-                      ));
+                    if (state is NotificationsFailure) {
+                      showFlashBar(
+                        context,
+                        state.error,
+                        FlashBarAction.error,
+                      );
                     }
-                  }
-                }),
+
+                    if (state is ReadNotificationSuccess) {
+                      if (state.notification.status == 'read' &&
+                          state.notification.notificationType ==
+                              'parent_request') {
+                        showFlashBar(
+                          context,
+                          'Parent request has been declined',
+                          FlashBarAction.success,
+                        );
+                      }
+                    }
+                  },
+                ),
               ],
               child: BlocBuilder<ParentChildBloc, ParentChildState>(
                 builder: (context, state) {
@@ -257,7 +262,7 @@ class _ParentPageState extends State<ParentPage> {
                   }
 
                   return const Center(
-                    child: Text("To get access, Please subscribe to a project"),
+                    child: Text("To get access, Please add a child"),
                   );
                 },
               ))),

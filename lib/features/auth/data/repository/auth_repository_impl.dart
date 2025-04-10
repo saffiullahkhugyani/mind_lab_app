@@ -35,19 +35,9 @@ class AuthRepositoryImpl implements AuthRepository {
           return left(ServerFailure(errorMessage: 'User not logged in.'));
         }
 
-        final user = UserModel(
-          id: session.user.id,
-          email: session.user.email ?? '',
-          name: '',
-          ageGroup: '',
-          mobile: '',
-          gender: '',
-          nationality: '',
-          roleId: session.user.userMetadata?['role_id'] ?? 0,
-        );
-
+        UserModel? user = localDataSource.getUser();
         StudentModel? studentModel = localDataSource.getStudent();
-        return right(AuthResult(user: user, student: studentModel));
+        return right(AuthResult(user: user!, student: studentModel));
       }
       final user = await remoteDataSource.getCurrentUserData();
       if (user == null) {
@@ -62,6 +52,8 @@ class AuthRepositoryImpl implements AuthRepository {
             await remoteDataSource.getStudentDetails(userId: user.id);
         localDataSource.cacheUser(user: user);
         localDataSource.cacheStudent(student: studentModel);
+      } else if (user.roleId == 6) {
+        localDataSource.cacheUser(user: user);
       }
 
       return right(AuthResult(user: user, student: studentModel));
@@ -92,6 +84,10 @@ class AuthRepositoryImpl implements AuthRepository {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
+        localDataSource.cacheUser(user: user);
+        localDataSource.cacheStudent(student: studentModel);
+      } else if (user.roleId == 6) {
+        localDataSource.cacheUser(user: user);
       }
 
       return right(
@@ -182,6 +178,10 @@ class AuthRepositoryImpl implements AuthRepository {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
+        localDataSource.cacheUser(user: user);
+        localDataSource.cacheStudent(student: studentModel);
+      } else if (user.roleId == 6) {
+        localDataSource.cacheUser(user: user);
       }
 
       return right(AuthResult(user: user, student: studentModel));
@@ -209,6 +209,10 @@ class AuthRepositoryImpl implements AuthRepository {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
+        localDataSource.cacheUser(user: user);
+        localDataSource.cacheStudent(student: studentModel);
+      } else if (user.roleId == 6) {
+        localDataSource.cacheUser(user: user);
       }
 
       return right(AuthResult(user: user, student: studentModel));
@@ -216,6 +220,68 @@ class AuthRepositoryImpl implements AuthRepository {
       return left(ServerFailure(errorMessage: e.message));
     } on ServerException catch (e) {
       return left(ServerFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, AuthResult>> updateUserInfo({
+    required String id,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String mobile,
+    required String gender,
+    required String nationality,
+    required int roleId,
+  }) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(ServerFailure(errorMessage: 'No internet connection!'));
+      }
+
+      // step 1 update user information
+      final user = await remoteDataSource.updateUserInfo(
+          id: id,
+          name: name,
+          email: email,
+          ageGroup: ageGroup,
+          gender: gender,
+          mobile: mobile,
+          nationality: nationality,
+          roleId: roleId);
+
+      // update student information
+      StudentModel? studentModel;
+      // uploading data into stundents table if role type student selected
+      if (roleId == 4) {
+        studentModel = await remoteDataSource.uploadStudentDetails(
+          id: generateShortUUID(user.id),
+          studentId: user.id,
+          name: user.name,
+          email: user.email,
+          ageGroup: user.ageGroup,
+          mobile: user.mobile,
+          gender: user.gender,
+          nationality: user.nationality,
+          imageUrl: user.imageUrl ?? "",
+        );
+
+        localDataSource.cacheUser(user: user);
+        localDataSource.cacheStudent(student: studentModel);
+      } else if (roleId == 6) {
+        localDataSource.cacheUser(user: user);
+      }
+
+      return right(
+        AuthResult(
+          user: user,
+          student: studentModel,
+        ),
+      );
+    } on sb.AuthException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(errorMessage: e.message));
     }
   }
 

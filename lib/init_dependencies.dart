@@ -10,6 +10,7 @@ import 'package:mind_lab_app/features/auth/data/datasource/auth_remote_data_sour
 import 'package:mind_lab_app/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:mind_lab_app/features/auth/domain/repository/auth_repository.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/current_user.dart';
+import 'package:mind_lab_app/features/auth/domain/usecases/update_user_info.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_apple.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_in_google.dart';
 import 'package:mind_lab_app/features/auth/domain/usecases/user_sign_up.dart';
@@ -88,13 +89,15 @@ Future<void> initDependencies() async {
   // Open both Hive boxes
   final projectsBox = Hive.box(name: 'projects');
   final authBox = Hive.box(name: 'auth'); // NEW BOX for auth data
+  final parentChild =
+      Hive.box(name: 'parent_child'); // NEW BOX for parent_child data
 
   // Register the Hive boxes
   serviceLocator.registerLazySingleton(() => projectsBox,
       instanceName: 'projects');
   serviceLocator.registerLazySingleton(() => authBox,
       instanceName: 'auth'); // Register new box
-  serviceLocator.registerLazySingleton(() => authBox,
+  serviceLocator.registerLazySingleton(() => parentChild,
       instanceName: 'parent_child'); // Register new box
 
   // registering internet connection checker
@@ -166,6 +169,12 @@ void _initAuth() {
     ),
   );
 
+  serviceLocator.registerFactory(
+    () => UpdateUserInfoUseCase(
+      authRepository: serviceLocator(),
+    ),
+  );
+
   // registering auth bloc
   serviceLocator.registerLazySingleton(
     () => AuthBloc(
@@ -176,6 +185,7 @@ void _initAuth() {
       appStudentCubit: serviceLocator(),
       loginWithGoogle: serviceLocator(),
       loginWithApple: serviceLocator(),
+      updateUserInfoUseCase: serviceLocator(),
     ),
   );
 

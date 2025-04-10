@@ -79,7 +79,7 @@ class _ProjectPageState extends State<ProjectPage> {
     final action = await Dialogs.yesAbortDialog(
       context,
       "Guardian request access",
-      "Do you want to allow ${entity.senderDetails?.name} for parent access.",
+      "Do you want to allow ${entity.senderDetails?.name} having ${entity.senderDetails!.email} for parent access.",
       abortBtnText: "Decline",
       yesButtonText: "Approve",
       icon: Icons.notifications_active,
@@ -254,8 +254,7 @@ class _ProjectPageState extends State<ProjectPage> {
                       if (state.error == "Permission already granted") {
                         return;
                       }
-                      showFlashBar(context, "Failed to load notifications",
-                          FlashBarAction.error);
+                      showFlashBar(context, state.error, FlashBarAction.error);
                     }
 
                     if (state is ReadNotificationSuccess) {

@@ -6,6 +6,7 @@ import 'package:mind_lab_app/core/providers/credential_manager/user_credentials_
 import 'package:mind_lab_app/core/theme/theme_data.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mind_lab_app/features/auth/presentation/pages/info_form_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_field.dart';
 import 'package:mind_lab_app/features/auth/presentation/widgets/auth_gradient_button.dart';
@@ -93,20 +94,41 @@ class _LoginPageState extends State<LoginPage> {
                   //   FlashBarAction.info,
                   // );
                 } else if (state is AuthSuccess) {
+                  final user =
+                      (context.read<AppUserCubit>().state as AppUserLoggedIn)
+                          .user;
                   final roleId =
                       (context.read<AppUserCubit>().state as AppUserLoggedIn)
                           .user
                           .roleId;
                   if (roleId == 6) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => const ParentPage()),
-                        (route) => false);
+                    if (user.isProfileComplete == true) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const ParentPage()),
+                          (route) => false);
+                    } else {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const InfoFormPage()),
+                          (route) => false);
+                    }
                   } else {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => const ProjectPage()),
-                        (route) => false);
+                    if (user.isProfileComplete == true) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const ProjectPage(),
+                            settings: RouteSettings(arguments: user),
+                          ),
+                          (route) => false);
+                    } else {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const InfoFormPage(),
+                            settings: RouteSettings(arguments: user),
+                          ),
+                          (route) => false);
+                    }
                   }
                 }
               },

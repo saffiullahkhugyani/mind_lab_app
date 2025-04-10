@@ -42,3 +42,25 @@ final class AuthIsUserLoggedIn extends AuthEvent {}
 final class AuthLoginWithGoogle extends AuthEvent {}
 
 final class AuthLoginWithApple extends AuthEvent {}
+
+final class AuthUpdateUserInfo extends AuthEvent {
+  final String id;
+  final String email;
+  final String name;
+  final String ageGroup;
+  final String mobile;
+  final String gender;
+  final String nationality;
+  final int roleId;
+
+  AuthUpdateUserInfo({
+    required this.id,
+    required this.email,
+    required this.name,
+    required this.ageGroup,
+    required this.mobile,
+    required this.gender,
+    required this.nationality,
+    required this.roleId,
+  });
+}

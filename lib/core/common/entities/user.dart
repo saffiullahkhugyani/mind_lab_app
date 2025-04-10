@@ -8,6 +8,8 @@ class User {
   final String nationality;
   final int roleId;
   final String? imageUrl;
+  final bool? isProfileComplete;
+  final String? signupMethod;
 
   User({
     required this.id,
@@ -19,5 +21,7 @@ class User {
     required this.nationality,
     required this.roleId,
     this.imageUrl,
+    this.isProfileComplete,
+    this.signupMethod,
   });
 }

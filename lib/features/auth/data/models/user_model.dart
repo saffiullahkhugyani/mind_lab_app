@@ -11,33 +11,39 @@ class UserModel extends User {
     required super.nationality,
     required super.roleId,
     super.imageUrl,
+    super.isProfileComplete,
+    super.signupMethod,
   });
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'age_group': ageGroup,
+      'age': ageGroup,
       'email': email,
       'gender': gender,
       'nationality': nationality,
-      'image_url': imageUrl,
+      'profile_image_url': imageUrl,
       'mobile': mobile,
+      'role_id': roleId,
+      'is_profile_complete': isProfileComplete,
+      'signup_method': signupMethod,
     };
   }
 
   factory UserModel.fromJson(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'] ?? '-',
-      email: map['email'] ?? '-',
-      name: map['name'] ?? '-',
-      ageGroup: map['age'] ?? '-',
-      mobile: map['mobile'] ?? '-',
-      gender: map['gender'] ?? '-',
-      nationality: map['nationality'] ?? '-',
-      roleId: map['role_id'] ?? 0,
-      imageUrl: map['profile_image_url'] ?? '-',
-    );
+        id: map['id'] ?? '-',
+        email: map['email'] ?? '-',
+        name: map['name'] ?? '-',
+        ageGroup: map['age'] ?? '-', // 'age' from API, maps to ageGroup
+        mobile: map['mobile'] ?? '-',
+        gender: map['gender'] ?? '-',
+        nationality: map['nationality'] ?? '-',
+        roleId: map['role_id'] ?? 0,
+        imageUrl: map['profile_image_url'] ?? '-',
+        isProfileComplete: map['is_profile_complete'] ?? false,
+        signupMethod: map['signup_method'] ?? '-');
   }
 
   UserModel copyWith({
@@ -50,6 +56,8 @@ class UserModel extends User {
     String? nationality,
     int? roleId,
     String? imageUrl,
+    bool? isProfileComplete,
+    String? signupMethod,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -61,6 +69,8 @@ class UserModel extends User {
       nationality: nationality ?? this.nationality,
       roleId: roleId ?? this.roleId,
       imageUrl: imageUrl ?? this.imageUrl,
+      isProfileComplete: isProfileComplete ?? this.isProfileComplete,
+      signupMethod: signupMethod ?? this.signupMethod,
     );
   }
 }

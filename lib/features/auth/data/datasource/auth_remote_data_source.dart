@@ -55,6 +55,16 @@ abstract interface class AuthRemoteDataSource {
   });
 
   Future<StudentModel> getStudentDetails({required String userId});
+  Future<UserModel> updateUserInfo({
+    required String id,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String gender,
+    required String mobile,
+    required String nationality,
+    required int roleId,
+  });
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -126,6 +136,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const ServerException('User is null');
       }
 
+      // explicitly updating the profile to mark it complete
+      await supabaseClient.from("profiles").update({
+        'is_profile_complete': true,
+        'signup_method': 'email',
+      }).eq("id", response.user!.id);
+
       // Extracting the id from the response and merging it with userMetadata
       final userMetadata = response.user!.userMetadata!;
       userMetadata['id'] = response.user!.id;
@@ -139,8 +155,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         userData.first,
       );
     } on AuthException catch (e) {
+      log(e.message);
       throw ServerException(e.message);
     } catch (e) {
+      log(e.toString());
       throw ServerException(e.toString());
     }
   }
@@ -225,6 +243,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Extracting the id from the response and merging it with userMetadata
       final userId = response.user!.id;
 
+      // explicitly updating the profile to mark it complete
+      await supabaseClient.from("profiles").update({
+        'signup_method': 'google',
+      }).eq("id", response.user!.id);
+
       final user =
           await supabaseClient.from("profiles").select("*").eq("id", userId);
 
@@ -268,6 +291,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userData = {
         "id": userId,
         "email": credential.email ?? response.user?.email,
+        "role_id": 4,
+        "is_profile_complete": false,
+        "signup_method": "apple",
       };
 
       // Only include the name if this is the first time Apple is providing it
@@ -383,6 +409,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on AuthException catch (e) {
       throw ServerException(e.message);
     } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> updateUserInfo({
+    required String id,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String gender,
+    required String mobile,
+    required String nationality,
+    required int roleId,
+  }) async {
+    try {
+      final userInfo = {
+        'name': name,
+        'age': ageGroup,
+        'email': email,
+        'mobile': mobile,
+        'gender': gender,
+        'nationality': nationality,
+        'is_profile_complete': true,
+        'role_id': roleId,
+      };
+
+      final response = await supabaseClient
+          .from('profiles')
+          .update(userInfo)
+          .eq('id', id)
+          .select();
+
+      return UserModel.fromJson(response.first);
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      log(e.toString());
       throw ServerException(e.toString());
     }
   }

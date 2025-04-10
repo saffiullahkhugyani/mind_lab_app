@@ -79,6 +79,10 @@ class ParentChildRepositoryImpl implements ParentChildRepository {
   Future<Either<ServerFailure, List<NotificationEntity>>> getNotifications(
       {required String studentProfileId}) async {
     try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
       final notifications = await remoteDataSource.getNotifications(
           studentProfileId: studentProfileId);
 

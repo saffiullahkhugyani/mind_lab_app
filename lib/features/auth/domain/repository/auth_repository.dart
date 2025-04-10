@@ -27,4 +27,15 @@ abstract interface class AuthRepository {
   Future<Either<ServerFailure, AuthResult>> signInWithGoogle();
 
   Future<Either<ServerFailure, AuthResult>> signInWithApple();
+
+  Future<Either<ServerFailure, AuthResult>> updateUserInfo({
+    required String id,
+    required String name,
+    required String email,
+    required String ageGroup,
+    required String mobile,
+    required String gender,
+    required String nationality,
+    required int roleId,
+  });
 }

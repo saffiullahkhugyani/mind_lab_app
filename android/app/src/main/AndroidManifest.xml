@@ -14,6 +14,11 @@
     <!-- legacy for Android 9 or lower -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
 
+    <!-- getSerial() flag -->
+    <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" tools:ignore="MissingPermission"/> -->
+
+
+
     <application
         android:label="STEM by UAE Inventors"
         android:name="${applicationName}"

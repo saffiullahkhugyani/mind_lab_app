@@ -19,7 +19,7 @@ class AddChildForm extends StatefulWidget {
 }
 
 class _AddChildFormState extends State<AddChildForm> {
-  // final emailController = TextEditingController();
+  final emailController = TextEditingController();
   final nameController = TextEditingController();
   // final ageGroupController = TextEditingController();
   // final mobileController = TextEditingController();
@@ -45,11 +45,12 @@ class _AddChildFormState extends State<AddChildForm> {
   void searchStudent() async {
     final studentId = studentIdController.text.trim();
     if (studentId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid student ID.'),
-        ),
+      showFlashBar(
+        context,
+        'Please enter a valid student ID.',
+        FlashBarAction.error,
       );
+
       return;
     }
 
@@ -67,7 +68,7 @@ class _AddChildFormState extends State<AddChildForm> {
 
   @override
   void dispose() {
-    // emailController.dispose();
+    emailController.dispose();
     nameController.dispose();
     // ageGroupController.dispose();
     // mobileController.dispose();
@@ -85,28 +86,22 @@ class _AddChildFormState extends State<AddChildForm> {
       body: BlocConsumer<ParentChildBloc, ParentChildState>(
         listener: (context, state) {
           if (state is ParentChildFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-              ),
-            );
-          } else if (state is ParentChildRequested) {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(
-            //     content:
-            //         Text('Requested to add ${nameController.text} as a child'),
-            //   ),
-            // );
             showFlashBar(
               context,
-              'Requested to add ${nameController.text} as a child',
+              state.message,
+              FlashBarAction.success,
+            );
+          } else if (state is ParentChildRequested) {
+            showFlashBar(
+              context,
+              'Requested to add ${nameController.text} having email ${emailController.text} as a child',
               FlashBarAction.success,
             );
             Navigator.pop(context);
           } else if (state is StudentDetailsLoaded) {
             setState(() {
               nameController.text = state.studentEntity.name;
-              // emailController.text = state.studentEntity.email;
+              emailController.text = state.studentEntity.email;
               // mobileController.text = state.studentEntity.number;
               // ageGroupController.text = state.studentEntity.ageGroup;
               // genderController.text = state.studentEntity.gender;
@@ -117,7 +112,19 @@ class _AddChildFormState extends State<AddChildForm> {
         },
         builder: (context, state) {
           if (state is ParentChildLoading) {
-            return const Loader();
+            // return Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     const Loader(),
+            //     const SizedBox(
+            //       height: 20,
+            //     ),
+            //     Text(
+            //       'Loading...',
+            //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            //     ),
+            //   ],
+            // );
           }
           return SingleChildScrollView(
             padding: const EdgeInsets.all(15),
@@ -153,9 +160,9 @@ class _AddChildFormState extends State<AddChildForm> {
                     icon: Icons.person_2_outlined,
                     isEnabled: false,
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
+                  // const SizedBox(
+                  //   height: 15,
+                  // ),
                   // InputField(
                   //   hintText: 'Email',
                   //   controller: emailController,

@@ -88,6 +88,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Either<ServerFailure, List<NotificationModel>>> getNotifications(
       {required String studentProfileId}) async {
     try {
+      if (!await connectionChecker.isConnected) {
+        return left(
+            ServerFailure(errorMessage: "Check your internet connection"));
+      }
       final notifications = await projectRemoteDataSource.getNotifications(
           studentProfileId: studentProfileId);
 

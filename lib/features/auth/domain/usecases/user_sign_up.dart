@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
@@ -15,6 +16,7 @@ class UserSignUp implements UseCase<AuthResult, UserSignUpParams> {
   @override
   Future<Either<ServerFailure, AuthResult>> call(
       UserSignUpParams params) async {
+    log("in use case ${params.email}");
     return await authRepository.signUpWithEmailPasword(
       name: params.name,
       email: params.email,

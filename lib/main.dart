@@ -157,11 +157,15 @@ class _MyAppState extends State<MyApp> {
             },
             builder: (context, isLoggedIn) {
               if (isLoggedIn) {
+                final user =
+                    (context.read<AppUserCubit>().state as AppUserLoggedIn)
+                        .user;
+
                 final roleId =
                     (context.read<AppUserCubit>().state as AppUserLoggedIn)
                         .user
                         .roleId;
-                if (roleId == 4) {
+                if (roleId == 4 && user.isProfileComplete == true) {
                   return const ProjectPage();
                 } else if (roleId == 6) {
                   return const ParentPage();
