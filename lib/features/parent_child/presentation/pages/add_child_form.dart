@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
 import 'package:mind_lab_app/core/widgets/gradient_button.dart';
 import 'package:mind_lab_app/core/widgets/input_field.dart';
