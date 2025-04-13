@@ -41,7 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
     'Above 18 years'
   ];
 
-  final genderData = ['Male', 'Female'];
+  final genderData = ['Not Specified', 'Male', 'Female'];
 
   final registerAs = {'Student': 4, 'Guardian': 6};
 

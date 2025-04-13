@@ -43,7 +43,7 @@ class _InfoFormPageState extends State<InfoFormPage> {
     'Above 18 years',
   ];
 
-  final List<String> _genders = ['Male', 'Female'];
+  final List<String> _genders = ['Not Specified', 'Male', 'Female'];
 
   final Map<String, int> _registrationTypes = {
     'Student': 4,

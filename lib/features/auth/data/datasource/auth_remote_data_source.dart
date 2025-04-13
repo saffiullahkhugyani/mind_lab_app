@@ -44,7 +44,7 @@ abstract interface class AuthRemoteDataSource {
 
   Future<StudentModel> uploadStudentDetails({
     required String id,
-    required String studentId,
+    required String profileId,
     required String name,
     required String email,
     required String ageGroup,
@@ -334,7 +334,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<StudentModel> uploadStudentDetails({
     required String id,
-    required String studentId,
+    required String profileId,
     required String name,
     required String email,
     required String ageGroup,
@@ -346,7 +346,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final studentData = {
         'id': id,
-        'profile_id': studentId,
+        'profile_id': profileId,
         'name': name,
         'age_group': ageGroup,
         'email': email,
