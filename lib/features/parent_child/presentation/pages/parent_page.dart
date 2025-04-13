@@ -13,7 +13,6 @@ import '../../../../core/constants/routes.dart';
 import '../../../../core/utils/show_snackbar.dart';
 import '../../../../core/widgets/loader.dart';
 import '../../../../core/widgets/show_dialog.dart';
-import '../../../dashboard/presentation/bloc/project_bloc/project_bloc.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../bloc/parent_child_bloc/parent_child_bloc.dart';
 import 'add_child_form.dart';
@@ -47,7 +46,7 @@ class _ParentPageState extends State<ParentPage> {
     // studentId = (context.read<AppStudentCubit>().state as AppStudentSelected)
     //     .student
     //     .id;
-    context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+    // context.read<ProjectBloc>().add(ProjectFetchAllProjects());
     context
         .read<ParentsNotificationsBloc>()
         .add(GetNotifications(userId: profileId!));
@@ -153,7 +152,7 @@ class _ParentPageState extends State<ParentPage> {
                   .read<ParentChildBloc>()
                   .add(GetChildrenEvent(parentId: parentId));
 
-              context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+              // context.read<ProjectBloc>().add(ProjectFetchAllProjects());
               context
                   .read<ParentsNotificationsBloc>()
                   .add(GetNotifications(userId: profileId!));

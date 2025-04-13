@@ -31,7 +31,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   ) async {
     emit(ProjectLoading());
     try {
-      final subscribedProjects = await _getSubscribedProjects(NoParams());
+      final subscribedProjects = await _getSubscribedProjects(event.studentId);
       final allProjects = await _getAllProjects(NoParams());
 
       subscribedProjects.fold(

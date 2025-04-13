@@ -61,6 +61,7 @@ dependencies:
   shared_preferences: ^2.2.3
   sign_in_with_apple: ^6.1.2
   supabase_flutter: ^2.5.9
+  syncfusion_flutter_sliders: ^29.1.37
   upgrader: ^11.2.0
   uuid: ^4.4.0
 

@@ -24,15 +24,16 @@ class ProjectRepositoryImpl implements ProjectRepository {
   );
 
   @override
-  Future<Either<ServerFailure, List<Subscription>>>
-      getSubscribedProjects() async {
+  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects(
+      {required String studentId}) async {
     try {
       if (!await connectionChecker.isConnected) {
         final projects = projectLocalDataSource.loadProjects();
         return right(projects);
       }
 
-      final projects = await projectRemoteDataSource.getSubscribedProjects();
+      final projects = await projectRemoteDataSource.getSubscribedProjects(
+          studentId: studentId);
       projectLocalDataSource.uploadLocalProjects(projects: projects);
       return right(projects);
     } on ServerException catch (e) {

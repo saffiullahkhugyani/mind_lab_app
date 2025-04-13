@@ -21,8 +21,8 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
     this.connectionChecker,
   );
   @override
-  Future<Either<ServerFailure, List<ProjectListEntity>>>
-      getAvailableProjects() async {
+  Future<Either<ServerFailure, List<ProjectListEntity>>> getAvailableProjects(
+      {required String studentId}) async {
     try {
       //checking internet connection and if not connected then fetching data from hive box
       // if (!await connectionChecker.isConnected) {
@@ -31,8 +31,8 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
       // }
 
       // fateching from remote data source and storing into hive box
-      final projectList =
-          await projectListRemoteDataSource.getAllAvailbleProjects();
+      final projectList = await projectListRemoteDataSource
+          .getAllAvailbleProjects(studentId: studentId);
       // projectListLocalDataSource.uploadLocalProjectList(
       //     projectList: projectList);
 
@@ -53,7 +53,7 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
 
   @override
   Future<Either<ServerFailure, SubscriptionEntity>> subscriptionRequest(
-      {required String userId,
+      {required String studentId,
       required int projectId,
       required subscriptionStatus}) async {
     try {
@@ -61,7 +61,7 @@ class ProjectListRepositoryImpl implements ProjectListRepository {
         return left(ServerFailure(errorMessage: noConnectionErrorMessage));
       }
       SubscriptionModel subscriptionModel = SubscriptionModel(
-        userId: userId,
+        studentId: studentId,
         projectId: projectId,
         subscriptionStatus: subscriptionStatus,
       );

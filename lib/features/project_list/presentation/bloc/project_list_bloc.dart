@@ -25,7 +25,7 @@ class ProjectListBloc extends Bloc<ProjectListEvent, ProjectListState> {
   void _onSubscriptionRequestEvent(
       SubscriptionRequestEvent event, Emitter<ProjectListState> emit) async {
     final res = await _subscriptionRequest(SubscriptionRequestParams(
-      userId: event.userId,
+      studentId: event.studentId,
       projectId: event.projectId,
       subscriptionStatus: event.subscriptionStatus,
     ));
@@ -38,7 +38,7 @@ class ProjectListBloc extends Bloc<ProjectListEvent, ProjectListState> {
 
   void _onFetchAvailablrProjects(ProjectListFetechAllAvailableProjects event,
       Emitter<ProjectListState> emit) async {
-    final res = await _getAvailableProjectList(NoParams());
+    final res = await _getAvailableProjectList(event.studentId);
 
     res.fold(
       (failure) => emit(ProjectListFailure(failure.errorMessage)),
