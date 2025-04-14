@@ -379,6 +379,16 @@ class _ProjectPageState extends State<ProjectPage> {
                 Navigator.pushNamed(context, addCertificateRoute);
               },
               label: const Text('Upload Certificate')),
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton.extended(
+              icon: const Icon(CupertinoIcons.line_horizontal_3),
+              heroTag: 'herotag4',
+              onPressed: () {
+                Navigator.pushNamed(context, harmonograpghRoute);
+              },
+              label: const Text('Harmonograph')),
         ],
       ),
     );
