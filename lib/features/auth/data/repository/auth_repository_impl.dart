@@ -46,7 +46,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Step 2 Check if the user is a student (roleId == 4)
       StudentModel? studentModel;
-      if (user.roleId == 4 || user.roleId == 1) {
+      if ((user.roleId == 4 || user.roleId == 1) &&
+          user.isProfileComplete == true) {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
@@ -139,7 +140,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (roleId == 4) {
         studentModel = await remoteDataSource.uploadStudentDetails(
           id: generateShortUUID(user.id),
-          studentId: user.id,
+          profileId: user.id,
           name: name,
           email: email,
           ageGroup: ageGroup,
@@ -174,7 +175,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Step 2 Check if the user is a student (roleId == 4)
       StudentModel? studentModel;
-      if (user.roleId == 4 || user.roleId == 1) {
+      if ((user.roleId == 4 || user.roleId == 1) &&
+          user.isProfileComplete == true) {
         // Fetch student data from the students table
         studentModel =
             await remoteDataSource.getStudentDetails(userId: user.id);
@@ -256,7 +258,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (roleId == 4) {
         studentModel = await remoteDataSource.uploadStudentDetails(
           id: generateShortUUID(user.id),
-          studentId: user.id,
+          profileId: user.id,
           name: user.name,
           email: user.email,
           ageGroup: user.ageGroup,
