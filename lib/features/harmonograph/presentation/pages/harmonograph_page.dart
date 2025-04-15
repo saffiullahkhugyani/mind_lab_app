@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:mind_lab_app/core/flutter_blue_plus/flutter_blue_plus_manager.dart';
 import 'package:mind_lab_app/core/theme/app_pallete.dart';
 import 'package:mind_lab_app/features/harmonograph/presentation/widgets/rover_buttons.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../../../../core/constants/routes.dart';
 import '../widgets/bt_connection_button.dart';
 
@@ -29,6 +30,11 @@ class _HarmonographPageState extends State<HarmonographPage> {
 
   final ScrollController _scrollController = ScrollController();
 
+  // Timer for
+  Timer? _timer;
+
+  bool _isStopFlag = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,29 +43,13 @@ class _HarmonographPageState extends State<HarmonographPage> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _scrollController.dispose();
     for (final controller in _controllers) {
       controller.dispose();
     }
 
     super.dispose();
-  }
-
-  void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
-    _resetSliders();
-    _sendSliderValues(bluetoothManager);
-  }
-
-  void _resetSliders() {
-    if (mounted) {
-      // Check if widget is still mounted before calling setState
-      setState(() {
-        for (int i = 0; i < motorCount; i++) {
-          _sliderValues[i] = 0.0;
-          _controllers[i].text = '0';
-        }
-      });
-    }
   }
 
   void _syncControllersWithSliders() {
@@ -81,23 +71,77 @@ class _HarmonographPageState extends State<HarmonographPage> {
     log(allMotorSpeeds.toString());
 
     // Send the entire command
-    // sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+    sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+  }
+
+  // void _sendSliderValues(FlutterBluetoothPlus bluetoothManager) {
+  //   _timer?.cancel(); // Just in case it's already running
+
+  //   final Map<String, String> allMotorSpeeds = {};
+
+  //   for (int i = 0; i < motorCount; i++) {
+  //     final motor = 'M${i + 1}';
+  //     final speed = _sliderValues[i].toInt().toString();
+  //     allMotorSpeeds[motor] = speed;
+  //   }
+
+  //   if (_isStopFlag) {
+  //     // Log the whole command
+  //     log(allMotorSpeeds.toString());
+
+  //     // Send the entire command
+  //     // sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+  //     _isStopFlag = false; // Reset the stop flag
+  //   } else {
+  //     _timer = Timer.periodic(
+  //       const Duration(milliseconds: 1000),
+  //       (_) {
+  //         // Log the whole command
+  //         log(allMotorSpeeds.toString());
+
+  //         // Send the entire command
+  //         sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+  //       },
+  //     );
+  //   }
+  // }
+
+  void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
+    _resetSliders(bluetoothManager);
+    _sendSliderValues(bluetoothManager);
+  }
+
+  // void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
+  //   if (!_isStopFlag) {
+  //     _isStopFlag = true;
+  //   }
+  //   _resetSliders(bluetoothManager);
+  //   _sendSliderValues(bluetoothManager);
+  // }
+
+  void _resetSliders(FlutterBluetoothPlus bluetoothManager) {
+    _timer?.cancel(); // Stop the timer
+    _timer = null; // Also reset sliders and send zeros
+    if (mounted) {
+      // Check if widget is still mounted before calling setState
+      setState(() {
+        for (int i = 0; i < motorCount; i++) {
+          _sliderValues[i] = 0.0;
+          _controllers[i].text = '0';
+        }
+      });
+    }
   }
 
   Widget _buildSliderControl(int index) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Text(
           'Motor ${index + 1}',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
-        const Text('13',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        _buildVerticalSlider(index),
-        const Text('-13',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        Expanded(child: _buildVerticalSlider(index)),
         const SizedBox(height: 8),
         _buildValueField(index),
       ],
@@ -115,20 +159,20 @@ class _HarmonographPageState extends State<HarmonographPage> {
   Widget _buildVerticalSlider(int index) {
     return SizedBox(
       height: 200,
-      child: RotatedBox(
-        quarterTurns: 3,
-        child: Slider(
-          min: minSliderValue,
-          max: maxSliderValue,
-          divisions: (maxSliderValue - minSliderValue).toInt(),
-          value: _sliderValues[index],
-          onChanged: (value) {
-            setState(() {
-              _sliderValues[index] = value;
-              _controllers[index].text = value.toStringAsFixed(0);
-            });
-          },
-        ),
+      child: SfSlider.vertical(
+        min: minSliderValue,
+        max: maxSliderValue,
+        showLabels: true,
+        showTicks: true,
+        showDividers: true,
+        interval: 2,
+        value: _sliderValues[index],
+        onChanged: (value) {
+          setState(() {
+            _sliderValues[index] = value;
+            _controllers[index].text = value.toStringAsFixed(0);
+          });
+        },
       ),
     );
   }
@@ -166,100 +210,97 @@ class _HarmonographPageState extends State<HarmonographPage> {
   }
 
   Widget _buildSlidersSection() {
-    return Expanded(
-      flex: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(motorCount, (index) {
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: _buildSliderControl(index),
-              ),
-            );
-          }),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: List.generate(motorCount, (index) {
+          return Expanded(child: _buildSliderControl(index));
+        }),
       ),
     );
   }
 
-  Widget _buildControlButtons(bool isConnected, bool isKeyboardVisible,
-      FlutterBluetoothPlus bluetoothManager) {
-    return Expanded(
-      flex: 1,
-      child: Column(
-        children: [
-          BluetoothConnectionButton(
-            connectionStatusColor: isConnected ? Colors.green : Colors.red,
-            onTap: () => Navigator.pushNamed(context, flutterBluePlusRoute),
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            alignment: WrapAlignment.center,
-            children: [
-              ProjectButton(
-                onPressed: () {
-                  _sendSliderValues(bluetoothManager);
-                },
-                buttonText: 'Start',
-                buttonColor: AppPallete.contentColorGreen,
-                iconData: Icons.play_circle,
-              ),
-              ProjectButton(
-                onPressed: () {
-                  _stopSliders(bluetoothManager);
-                },
-                buttonText: 'Stop',
-                buttonColor: AppPallete.contentColorRed,
-                iconData: Icons.stop_circle,
-              ),
-              ProjectButton(
-                onPressed: _resetSliders,
-                buttonText: 'Reset',
-                buttonColor: AppPallete.contentColorYellow,
-                iconData: Icons.refresh,
-              ),
-            ],
-          ),
-          // if (isKeyboardVisible) const SizedBox(height: 200),
-        ],
+  Widget _buildControlButtons(
+      bool isConnected, FlutterBluetoothPlus bluetoothManager) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          children: [
+            BluetoothConnectionButton(
+              connectionStatusColor: isConnected ? Colors.green : Colors.red,
+              onTap: () => Navigator.pushNamed(context, flutterBluePlusRoute),
+            ),
+            const SizedBox(height: 24),
+            ProjectButton(
+              onPressed: () {
+                _sendSliderValues(bluetoothManager);
+              },
+              buttonText: 'Start',
+              buttonColor: AppPallete.contentColorGreen,
+              iconData: Icons.play_circle,
+            ),
+            ProjectButton(
+              onPressed: () {
+                _stopSliders(bluetoothManager);
+              },
+              buttonText: 'Stop',
+              buttonColor: AppPallete.contentColorRed,
+              iconData: Icons.stop_circle,
+            ),
+            ProjectButton(
+              onPressed: () {
+                _resetSliders(bluetoothManager);
+              },
+              buttonText: 'Reset',
+              buttonColor: AppPallete.contentColorYellow,
+              iconData: Icons.refresh,
+            ),
+            // if (isKeyboardVisible) const SizedBox(height: 200),
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text('Harmonograph'),
         centerTitle: true,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: IntrinsicHeight(
-              child: Consumer<FlutterBluetoothPlus>(
-                builder: (context, bluetoothManager, _) {
-                  final isConnected =
-                      bluetoothManager.connectedDevice?.isConnected ?? false;
+      body: Consumer<FlutterBluetoothPlus>(
+        builder: (context, bluetoothManager, _) {
+          final isConnected =
+              bluetoothManager.connectedDevice?.isConnected ?? false;
 
-                  return Column(
-                    children: [
-                      _buildSlidersSection(),
-                      _buildControlButtons(
-                          isConnected, isKeyboardVisible, bluetoothManager),
-                    ],
-                  );
-                },
-              ),
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                controller: _scrollController,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: _buildSlidersSection(),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: _buildControlButtons(
+                              isConnected, bluetoothManager),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
