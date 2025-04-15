@@ -291,8 +291,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userData = {
         "id": userId,
         "email": credential.email ?? response.user?.email,
-        "role_id": 4,
-        "is_profile_complete": false,
         "signup_method": "apple",
       };
 
