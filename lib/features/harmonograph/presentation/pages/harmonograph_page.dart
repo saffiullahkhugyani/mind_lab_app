@@ -33,7 +33,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
   // Timer for
   Timer? _timer;
 
-  bool _isStopFlag = false;
+  // bool _isStopFlag = false;
 
   @override
   void initState() {
@@ -150,8 +150,6 @@ class _HarmonographPageState extends State<HarmonographPage> {
 
   Future<void> sendBluetoothCommand(FlutterBluetoothPlus bluetoothManager,
       Map<String, String> command) async {
-    // const interval = Duration(milliseconds: 50);
-    // _elapsedMillis = 0;
     bluetoothManager.sendCommand(command.toString());
     log(command.toString());
   }
