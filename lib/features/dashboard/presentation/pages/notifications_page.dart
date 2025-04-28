@@ -41,7 +41,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final action = await Dialogs.yesAbortDialog(
       context,
       "Parent request access",
-      "Do you want to allow ${entity.senderDetails?.name} for parent access.",
+      "Do you want to allow ${entity.senderDetails?.name} having ${entity.senderDetails!.email} for parent access.",
       abortBtnText: "Decline",
       yesButtonText: "Approve",
       icon: Icons.notifications_active,
