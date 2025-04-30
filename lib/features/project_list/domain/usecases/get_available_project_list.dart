@@ -5,13 +5,14 @@ import 'package:mind_lab_app/features/project_list/domain/entities/projet_list_e
 import 'package:mind_lab_app/features/project_list/domain/repositories/project_list_repository.dart';
 
 class GetAvailableProjectList
-    implements UseCase<List<ProjectListEntity>, NoParams> {
+    implements UseCase<List<ProjectListEntity>, String> {
   final ProjectListRepository projectListRepository;
   GetAvailableProjectList(this.projectListRepository);
 
   @override
   Future<Either<ServerFailure, List<ProjectListEntity>>> call(
-      NoParams params) async {
-    return await projectListRepository.getAvailableProjects();
+      String studentId) async {
+    return await projectListRepository.getAvailableProjects(
+        studentId: studentId);
   }
 }

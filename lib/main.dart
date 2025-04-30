@@ -19,6 +19,7 @@ import 'package:mind_lab_app/features/dashboard/presentation/pages/my_id_page.da
 import 'package:mind_lab_app/features/dashboard/presentation/pages/project_page.dart';
 import 'package:mind_lab_app/features/bluetooth/bluetooth_page.dart';
 import 'package:mind_lab_app/features/flutter_blue_plus/presentation/pages/bluetooth_plus_page.dart';
+import 'package:mind_lab_app/features/harmonograph/presentation/pages/harmonograph_page.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/notification_bloc/notifications_bloc.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/bloc/parent_child_bloc/parent_child_bloc.dart';
 import 'package:mind_lab_app/features/parent_child/presentation/pages/parent_page.dart';
@@ -147,6 +148,7 @@ class _MyAppState extends State<MyApp> {
           dashboardRoute: (context) => const ProjectPage(),
           parentRoute: (context) => const ParentPage(),
           notificationsRoute: (context) => const NotificationsPage(),
+          harmonograpghRoute: (context) => const HarmonographPage(),
         },
         home: AppUpgraderDialog(
           shouldPopScope: () => false,

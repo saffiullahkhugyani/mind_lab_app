@@ -1,10 +1,10 @@
 class SubscriptionEntity {
-  final String userId;
+  final String studentId;
   final int projectId;
   final int subscriptionStatus;
 
   SubscriptionEntity({
-    required this.userId,
+    required this.studentId,
     required this.projectId,
     required this.subscriptionStatus,
   });

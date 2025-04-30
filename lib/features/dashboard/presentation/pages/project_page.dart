@@ -29,6 +29,7 @@ final listProjectImages = [
   {"id": 5, "image_asset": 'lib/assets/images/airplane.png'},
   {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
   {"id": 7, "image_asset": 'lib/assets/icons/car.png'},
+  {"id": 8, "image_asset": 'lib/assets/images/harmonograph.png'},
 ];
 
 final listProjectIcons = [
@@ -149,7 +150,9 @@ class _ProjectPageState extends State<ProjectPage> {
         .id;
     roleId =
         (context.read<AppUserCubit>().state as AppUserLoggedIn).user.roleId;
-    context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+    context
+        .read<ProjectBloc>()
+        .add(ProjectFetchAllProjects(studentId: studentId!));
     context.read<NotificationsBloc>().add(GetNotifications(userId: profileId!));
     log("roleId $roleId");
   }
@@ -201,7 +204,9 @@ class _ProjectPageState extends State<ProjectPage> {
         onRefresh: () async {
           profileId =
               (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
-          context.read<ProjectBloc>().add(ProjectFetchAllProjects());
+          context
+              .read<ProjectBloc>()
+              .add(ProjectFetchAllProjects(studentId: studentId!));
           context
               .read<NotificationsBloc>()
               .add(GetNotifications(userId: profileId!));
@@ -306,6 +311,7 @@ class _ProjectPageState extends State<ProjectPage> {
                             text: project.name,
                             image: imageAsset['image_asset'].toString(),
                             onTap: () {
+                              log(project.id.toString());
                               if (isSubscribed) {
                                 switch (project.id) {
                                   case 1:
@@ -316,6 +322,9 @@ class _ProjectPageState extends State<ProjectPage> {
                                     Navigator.pushNamed(
                                         context, arcadeGameOneRoute);
                                     break;
+                                  case 8:
+                                    Navigator.pushNamed(
+                                        context, harmonograpghRoute);
                                 }
                               } else {
                                 // showFlushBar(context, 'Feature Coming soon',
@@ -370,6 +379,16 @@ class _ProjectPageState extends State<ProjectPage> {
                 Navigator.pushNamed(context, addCertificateRoute);
               },
               label: const Text('Upload Certificate')),
+          const SizedBox(
+            height: 10,
+          ),
+          // FloatingActionButton.extended(
+          //     icon: const Icon(CupertinoIcons.line_horizontal_3),
+          //     heroTag: 'herotag4',
+          //     onPressed: () {
+          //       Navigator.pushNamed(context, harmonograpghRoute);
+          //     },
+          //     label: const Text('Harmonograph')),
         ],
       ),
     );

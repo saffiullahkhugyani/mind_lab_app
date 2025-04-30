@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mind_lab_app/core/common/cubits/app_student/app_student_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
 import 'package:mind_lab_app/core/constants/routes.dart';
 import 'package:mind_lab_app/core/utils/show_snackbar.dart';
@@ -13,13 +14,19 @@ class ProjectListPage extends StatefulWidget {
 }
 
 class _ProjectListPageState extends State<ProjectListPage> {
+  String? studentId;
+
   @override
   void initState() {
     super.initState();
 
+    studentId = (context.read<AppStudentCubit>().state as AppStudentSelected)
+        .student
+        .id;
+
     context
         .read<ProjectListBloc>()
-        .add(ProjectListFetechAllAvailableProjects());
+        .add(ProjectListFetechAllAvailableProjects(studentId: studentId!));
   }
 
   @override
@@ -43,9 +50,8 @@ class _ProjectListPageState extends State<ProjectListPage> {
               FlashBarAction.success,
             );
             setState(() {
-              context
-                  .read<ProjectListBloc>()
-                  .add(ProjectListFetechAllAvailableProjects());
+              context.read<ProjectListBloc>().add(
+                  ProjectListFetechAllAvailableProjects(studentId: studentId!));
             });
           }
         },

@@ -7,7 +7,8 @@ import '../entities/notification_entity.dart';
 import '../entities/parent_child_relationship_entity.dart';
 
 abstract interface class ProjectRepository {
-  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects();
+  Future<Either<ServerFailure, List<Subscription>>> getSubscribedProjects(
+      {required String studentId});
   Future<Either<ServerFailure, List<Project>>> getAllProjects();
   Future<Either<ServerFailure, List<NotificationEntity>>> getNotifications(
       {required String studentProfileId});

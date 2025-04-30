@@ -1,6 +1,6 @@
-import 'package:mind_lab_app/features/dashboard/domain/entities/subscription_user.dart';
+import 'package:mind_lab_app/features/dashboard/domain/entities/subscription_student.dart';
 
-class SubscriptionUserModel extends SubscriptionUser {
+class SubscriptionUserModel extends SubscriptionStudent {
   SubscriptionUserModel({
     required super.id,
     required super.name,

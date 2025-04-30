@@ -134,7 +134,8 @@ class FlutterBluetoothPlus with ChangeNotifier {
   Future sendCommand(String command) async {
     if (controlCharacteristic != null) {
       print('sending.. ${command}');
-      await controlCharacteristic?.write(command.codeUnits);
+      await controlCharacteristic?.write(command.codeUnits,
+          allowLongWrite: true);
     }
   }
 

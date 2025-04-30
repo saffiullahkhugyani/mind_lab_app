@@ -8,7 +8,8 @@ import 'package:mind_lab_app/features/dashboard/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class ProjectRemoteDataSource {
-  Future<List<SubscriptionModel>> getSubscribedProjects();
+  Future<List<SubscriptionModel>> getSubscribedProjects(
+      {required String studentId});
   Future<List<ProjectModel>> getAllProjects();
   Future<List<NotificationModel>> getNotifications(
       {required String studentProfileId});
@@ -30,15 +31,13 @@ class ProjectRemoteDatSourceImpl implements ProjectRemoteDataSource {
   final SupabaseClient supabaseClient;
   ProjectRemoteDatSourceImpl(this.supabaseClient);
   @override
-  Future<List<SubscriptionModel>> getSubscribedProjects() async {
+  Future<List<SubscriptionModel>> getSubscribedProjects(
+      {required String studentId}) async {
     try {
       final projectList = await supabaseClient
           .from('subscription')
-          .select('students(id, name), projects(id, name), subscription')
-          .match({
-        'student_id': supabaseClient.auth.currentUser!.id,
-        'subscription': 1
-      });
+          .select('*, students(id, name), projects(id, name)')
+          .match({'student_id': studentId, 'subscription': 1});
 
       final data =
           projectList.map((json) => SubscriptionModel.fromJson(json)).toList();
@@ -51,7 +50,7 @@ class ProjectRemoteDatSourceImpl implements ProjectRemoteDataSource {
       log('PostgrestException');
       throw ServerException(e.message);
     } catch (e) {
-      log('General Catch');
+      log(e.toString());
       throw ServerException(e.toString());
     }
   }
