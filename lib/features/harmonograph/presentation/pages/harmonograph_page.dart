@@ -90,7 +90,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
       log(allMotorSpeeds.toString());
 
       // Send the entire command
-      // sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+      sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
       _isStopFlag = false; // Reset the stop flag
     } else {
       _timer = Timer.periodic(
@@ -163,7 +163,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
         showLabels: true,
         showTicks: true,
         showDividers: true,
-        interval: 2,
+        interval: 13,
         stepSize: 1,
         value: _sliderValues[index],
         onChanged: (value) {
