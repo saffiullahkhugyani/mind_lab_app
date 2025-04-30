@@ -1,9 +1,8 @@
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mind_lab_app/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:mind_lab_app/core/common/widgets/loader.dart';
@@ -160,237 +159,271 @@ class _ProjectPageState extends State<ProjectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        actions: [
-          if (roleId == 4 || roleId == 1 || roleId == 6)
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, notificationsRoute,
-                    arguments: notifications);
-              },
-              icon: Badge(
-                isLabelVisible: true,
-                offset: const Offset(8, 8),
-                backgroundColor: Theme.of(context).colorScheme.error,
-                child: const Icon(
-                  Icons.notifications_outlined,
+        appBar: AppBar(
+          title: const Text('Home Page'),
+          actions: [
+            if (roleId == 4 || roleId == 1 || roleId == 6)
+              IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, notificationsRoute,
+                      arguments: notifications);
+                },
+                icon: Badge(
+                  isLabelVisible: true,
+                  offset: const Offset(8, 8),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                  ),
                 ),
               ),
-            ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const UserDetailPage(),
-                ),
-              );
-            },
-            icon: const Icon(
-              IconlyLight.profile,
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              _siOutDialog(context);
-            },
-            icon: const Icon(
-              Icons.logout,
-            ),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          profileId =
-              (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
-          context
-              .read<ProjectBloc>()
-              .add(ProjectFetchAllProjects(studentId: studentId!));
-          context
-              .read<NotificationsBloc>()
-              .add(GetNotifications(userId: profileId!));
-        },
-        child: AppUpgraderDialog(
-          upgrader: _upgrader,
-          child: MultiBlocListener(
-              listeners: [
-                BlocListener<ProjectBloc, ProjectState>(
-                  listener: (context, state) {
-                    if (state is ProjectFailure) {
-                      showFlashBar(
-                        context,
-                        state.error,
-                        FlashBarAction.error,
-                      );
-                    }
-                  },
-                ),
-                BlocListener<NotificationsBloc, NotificationsState>(
-                  listener: (context, state) {
-                    log("Notification state: $state");
-                    if (state is NotificationsListSuccess) {
-                      notifications = state.notifications;
-
-                      final List<NotificationEntity> filteredNotification =
-                          notifications!
-                              .where((notification) =>
-                                  notification.notificationType ==
-                                      'parent_request' &&
-                                  notification.status == 'pending')
-                              .toList();
-
-                      if (filteredNotification.isNotEmpty) {
-                        for (var entity in filteredNotification) {
-                          _allowParentAccessDialog(context, entity);
-                        }
-                      }
-                    }
-
-                    if (state is ParentChildAccessSuccess) {
-                      showFlashBar(
-                        context,
-                        "Access granted",
-                        FlashBarAction.success,
-                      );
-                    }
-
-                    if (state is NotificationsFailure) {
-                      if (state.error == "Permission already granted") {
-                        return;
-                      }
-                      showFlashBar(context, state.error, FlashBarAction.error);
-                    }
-
-                    if (state is ReadNotificationSuccess) {
-                      if (state.notification.status == 'read' &&
-                          state.notification.notificationType ==
-                              'parent_request') {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Parent request has been declined'),
-                        ));
-                      }
-                    }
-                  },
-                ),
-              ],
-              child: BlocBuilder<ProjectBloc, ProjectState>(
-                builder: (context, state) {
-                  if (state is ProjectLoading || state is ProjectInitial) {
-                    return const Loader();
-                  }
-
-                  if (state is ProjectDisplaySuccess) {
-                    return GridView.builder(
-                      padding: const EdgeInsets.only(top: 20),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: (MediaQuery.of(context).orientation ==
-                                  Orientation.portrait)
-                              ? 2
-                              : 3),
-                      itemCount: state.projectList.length,
-                      itemBuilder: (BuildContext context, index) {
-                        final project = state.projectList[index];
-                        final subscribedProjects = state.subscribedProjectList;
-                        final imageAsset = listProjectImages.firstWhere(
-                            (element) => element['id'] == project.id);
-
-                        bool isSubscribed = subscribedProjects.any(
-                            (subscribedProject) =>
-                                subscribedProject.project.id == project.id);
-
-                        if (project.id == 1) {
-                          isSubscribed = true;
-                        }
-
-                        return CardItem(
-                            color: isSubscribed
-                                ? Colors.grey.withValues(alpha: 0.3)
-                                : Colors.grey.withValues(alpha: 0.1),
-                            elevation: isSubscribed ? 2 : 0,
-                            text: project.name,
-                            image: imageAsset['image_asset'].toString(),
-                            onTap: () {
-                              log(project.id.toString());
-                              if (isSubscribed) {
-                                switch (project.id) {
-                                  case 1:
-                                    Navigator.pushNamed(
-                                        context, roverMainPageRoute);
-                                    break;
-                                  case 7:
-                                    Navigator.pushNamed(
-                                        context, arcadeGameOneRoute);
-                                    break;
-                                  case 8:
-                                    Navigator.pushNamed(
-                                        context, harmonograpghRoute);
-                                }
-                              } else {
-                                // showFlushBar(context, 'Feature Coming soon',
-                                //     FlushBarAction.info);
-                                showFlashBar(context, "Feature Coming soon",
-                                    FlashBarAction.info);
-                              }
-                            });
-                      },
-                    );
-                  }
-
-                  return const Center(
-                    child: Text("To get access, Please subscribe to a project"),
-                  );
-                },
-              )),
-        ),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.extended(
-              icon: const Icon(CupertinoIcons.line_horizontal_3),
-              heroTag: 'herotag3',
+            IconButton(
               onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const UserDetailPage(),
+                  ),
+                );
+              },
+              icon: const Icon(
+                IconlyLight.profile,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                _siOutDialog(context);
+              },
+              icon: const Icon(
+                Icons.logout,
+              ),
+            ),
+          ],
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            profileId =
+                (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+            context
+                .read<ProjectBloc>()
+                .add(ProjectFetchAllProjects(studentId: studentId!));
+            context
+                .read<NotificationsBloc>()
+                .add(GetNotifications(userId: profileId!));
+          },
+          child: AppUpgraderDialog(
+            upgrader: _upgrader,
+            child: MultiBlocListener(
+                listeners: [
+                  BlocListener<ProjectBloc, ProjectState>(
+                    listener: (context, state) {
+                      if (state is ProjectFailure) {
+                        showFlashBar(
+                          context,
+                          state.error,
+                          FlashBarAction.error,
+                        );
+                      }
+                    },
+                  ),
+                  BlocListener<NotificationsBloc, NotificationsState>(
+                    listener: (context, state) {
+                      log("Notification state: $state");
+                      if (state is NotificationsListSuccess) {
+                        notifications = state.notifications;
+
+                        final List<NotificationEntity> filteredNotification =
+                            notifications!
+                                .where((notification) =>
+                                    notification.notificationType ==
+                                        'parent_request' &&
+                                    notification.status == 'pending')
+                                .toList();
+
+                        if (filteredNotification.isNotEmpty) {
+                          for (var entity in filteredNotification) {
+                            _allowParentAccessDialog(context, entity);
+                          }
+                        }
+                      }
+
+                      if (state is ParentChildAccessSuccess) {
+                        showFlashBar(
+                          context,
+                          "Access granted",
+                          FlashBarAction.success,
+                        );
+                      }
+
+                      if (state is NotificationsFailure) {
+                        if (state.error == "Permission already granted") {
+                          return;
+                        }
+                        showFlashBar(
+                            context, state.error, FlashBarAction.error);
+                      }
+
+                      if (state is ReadNotificationSuccess) {
+                        if (state.notification.status == 'read' &&
+                            state.notification.notificationType ==
+                                'parent_request') {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Parent request has been declined'),
+                          ));
+                        }
+                      }
+                    },
+                  ),
+                ],
+                child: BlocBuilder<ProjectBloc, ProjectState>(
+                  builder: (context, state) {
+                    if (state is ProjectLoading || state is ProjectInitial) {
+                      return const Loader();
+                    }
+
+                    if (state is ProjectDisplaySuccess) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.only(top: 20),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                (MediaQuery.of(context).orientation ==
+                                        Orientation.portrait)
+                                    ? 2
+                                    : 3),
+                        itemCount: state.projectList.length,
+                        itemBuilder: (BuildContext context, index) {
+                          final project = state.projectList[index];
+                          final subscribedProjects =
+                              state.subscribedProjectList;
+                          final imageAsset = listProjectImages.firstWhere(
+                              (element) => element['id'] == project.id);
+
+                          bool isSubscribed = subscribedProjects.any(
+                              (subscribedProject) =>
+                                  subscribedProject.project.id == project.id);
+
+                          if (project.id == 1) {
+                            isSubscribed = true;
+                          }
+
+                          return CardItem(
+                              color: isSubscribed
+                                  ? Colors.grey.withValues(alpha: 0.3)
+                                  : Colors.grey.withValues(alpha: 0.1),
+                              elevation: isSubscribed ? 2 : 0,
+                              text: project.name,
+                              image: imageAsset['image_asset'].toString(),
+                              onTap: () {
+                                log(project.id.toString());
+                                if (isSubscribed) {
+                                  switch (project.id) {
+                                    case 1:
+                                      Navigator.pushNamed(
+                                          context, roverMainPageRoute);
+                                      break;
+                                    case 7:
+                                      Navigator.pushNamed(
+                                          context, arcadeGameOneRoute);
+                                      break;
+                                    case 8:
+                                      Navigator.pushNamed(
+                                          context, harmonograpghRoute);
+                                  }
+                                } else {
+                                  // showFlushBar(context, 'Feature Coming soon',
+                                  //     FlushBarAction.info);
+                                  showFlashBar(context, "Feature Coming soon",
+                                      FlashBarAction.info);
+                                }
+                              });
+                        },
+                      );
+                    }
+
+                    return const Center(
+                      child:
+                          Text("To get access, Please subscribe to a project"),
+                    );
+                  },
+                )),
+          ),
+        ),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.4,
+          children: [
+            SpeedDialChild(
+              child: const Icon(Icons.person),
+              label: 'My Id',
+              onTap: () {
                 Navigator.pushNamed(context, myIdRoute);
               },
-              label: const Text('My Id')),
-          const SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton.extended(
-              icon: const Icon(CupertinoIcons.add),
-              heroTag: 'herotag1',
-              onPressed: () {
+            ),
+            SpeedDialChild(
+              child: const Icon(Icons.add),
+              label: 'Request Project',
+              onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const ProjectListPage()));
               },
-              label: const Text('Request Project')),
-          const SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton.extended(
-              icon: const Icon(CupertinoIcons.doc),
-              heroTag: 'herotag2',
-              onPressed: () {
-                // Navigator.of(context).push(MaterialPageRoute(
-                //     builder: (context) => const ProjectListPage()));
-
+            ),
+            SpeedDialChild(
+              child: const Icon(Icons.upload_file),
+              label: 'Upload Certificate',
+              onTap: () {
                 Navigator.pushNamed(context, addCertificateRoute);
               },
-              label: const Text('Upload Certificate')),
-          const SizedBox(
-            height: 10,
-          ),
-          // FloatingActionButton.extended(
-          //     icon: const Icon(CupertinoIcons.line_horizontal_3),
-          //     heroTag: 'herotag4',
-          //     onPressed: () {
-          //       Navigator.pushNamed(context, harmonograpghRoute);
-          //     },
-          //     label: const Text('Harmonograph')),
-        ],
-      ),
-    );
+            ),
+          ],
+        )
+        //
+        // Column(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   crossAxisAlignment: CrossAxisAlignment.end,
+        //   children: [
+        //     FloatingActionButton.extended(
+        //         icon: const Icon(CupertinoIcons.line_horizontal_3),
+        //         heroTag: 'herotag3',
+        //         onPressed: () {
+        //           Navigator.pushNamed(context, myIdRoute);
+        //         },
+        //         label: const Text('My Id')),
+        //     const SizedBox(
+        //       height: 10,
+        //     ),
+        //     FloatingActionButton.extended(
+        //         icon: const Icon(CupertinoIcons.add),
+        //         heroTag: 'herotag1',
+        //         onPressed: () {
+        //           Navigator.of(context).push(MaterialPageRoute(
+        //               builder: (context) => const ProjectListPage()));
+        //         },
+        //         label: const Text('Request Project')),
+        //     const SizedBox(
+        //       height: 10,
+        //     ),
+        //     FloatingActionButton.extended(
+        //         icon: const Icon(CupertinoIcons.doc),
+        //         heroTag: 'herotag2',
+        //         onPressed: () {
+        //           // Navigator.of(context).push(MaterialPageRoute(
+        //           //     builder: (context) => const ProjectListPage()));
+
+        //           Navigator.pushNamed(context, addCertificateRoute);
+        //         },
+        //         label: const Text('Upload Certificate')),
+        //     const SizedBox(
+        //       height: 10,
+        //     ),
+        //     // FloatingActionButton.extended(
+        //     //     icon: const Icon(CupertinoIcons.line_horizontal_3),
+        //     //     heroTag: 'herotag4',
+        //     //     onPressed: () {
+        //     //       Navigator.pushNamed(context, harmonograpghRoute);
+        //     //     },
+        //     //     label: const Text('Harmonograph')),
+        //   ],
+        // ),
+        );
   }
 }

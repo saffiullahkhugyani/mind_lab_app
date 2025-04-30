@@ -46,6 +46,7 @@ dependencies:
   flutter_blue_classic: ^0.0.2
   flutter_blue_plus: ^1.32.7
   flutter_iconly: ^1.0.2
+  flutter_speed_dial: ^7.0.0
   fpdart: ^1.1.0
   get_it: ^8.0.0
   google_fonts: ^6.2.1
