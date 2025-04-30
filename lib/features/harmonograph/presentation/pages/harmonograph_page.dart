@@ -164,6 +164,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
         showTicks: true,
         showDividers: true,
         interval: 2,
+        stepSize: 1,
         value: _sliderValues[index],
         onChanged: (value) {
           setState(() {

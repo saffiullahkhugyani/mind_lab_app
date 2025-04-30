@@ -29,7 +29,7 @@ final listProjectImages = [
   {"id": 5, "image_asset": 'lib/assets/images/airplane.png'},
   {"id": 6, "image_asset": 'lib/assets/images/rocket.png'},
   {"id": 7, "image_asset": 'lib/assets/icons/car.png'},
-  {"id": 8, "image_asset": 'lib/assets/icons/car.png'},
+  {"id": 8, "image_asset": 'lib/assets/images/harmonograph.png'},
 ];
 
 final listProjectIcons = [
@@ -382,13 +382,13 @@ class _ProjectPageState extends State<ProjectPage> {
           const SizedBox(
             height: 10,
           ),
-          FloatingActionButton.extended(
-              icon: const Icon(CupertinoIcons.line_horizontal_3),
-              heroTag: 'herotag4',
-              onPressed: () {
-                Navigator.pushNamed(context, harmonograpghRoute);
-              },
-              label: const Text('Harmonograph')),
+          // FloatingActionButton.extended(
+          //     icon: const Icon(CupertinoIcons.line_horizontal_3),
+          //     heroTag: 'herotag4',
+          //     onPressed: () {
+          //       Navigator.pushNamed(context, harmonograpghRoute);
+          //     },
+          //     label: const Text('Harmonograph')),
         ],
       ),
     );
