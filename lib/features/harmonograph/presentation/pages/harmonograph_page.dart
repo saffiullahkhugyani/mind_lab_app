@@ -33,7 +33,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
   // Timer for
   Timer? _timer;
 
-  // bool _isStopFlag = false;
+  bool _isStopFlag = false;
 
   @override
   void initState() {
@@ -58,25 +58,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
     }
   }
 
-  void _sendSliderValues(FlutterBluetoothPlus bluetoothManager) {
-    final Map<String, String> allMotorSpeeds = {};
-
-    for (int i = 0; i < motorCount; i++) {
-      final motor = 'M${i + 1}';
-      final speed = _sliderValues[i].toInt().toString();
-      allMotorSpeeds[motor] = speed;
-    }
-
-    // Log the whole command
-    log(allMotorSpeeds.toString());
-
-    // Send the entire command
-    sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
-  }
-
   // void _sendSliderValues(FlutterBluetoothPlus bluetoothManager) {
-  //   _timer?.cancel(); // Just in case it's already running
-
   //   final Map<String, String> allMotorSpeeds = {};
 
   //   for (int i = 0; i < motorCount; i++) {
@@ -85,39 +67,57 @@ class _HarmonographPageState extends State<HarmonographPage> {
   //     allMotorSpeeds[motor] = speed;
   //   }
 
-  //   if (_isStopFlag) {
-  //     // Log the whole command
-  //     log(allMotorSpeeds.toString());
+  //   // Log the whole command
+  //   log(allMotorSpeeds.toString());
 
-  //     // Send the entire command
-  //     // sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
-  //     _isStopFlag = false; // Reset the stop flag
-  //   } else {
-  //     _timer = Timer.periodic(
-  //       const Duration(milliseconds: 1000),
-  //       (_) {
-  //         // Log the whole command
-  //         log(allMotorSpeeds.toString());
-
-  //         // Send the entire command
-  //         sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
-  //       },
-  //     );
-  //   }
+  //   // Send the entire command
+  //   sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
   // }
 
-  void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
-    _resetSliders(bluetoothManager);
-    _sendSliderValues(bluetoothManager);
+  void _sendSliderValues(FlutterBluetoothPlus bluetoothManager) {
+    _timer?.cancel(); // Just in case it's already running
+
+    final Map<String, String> allMotorSpeeds = {};
+
+    for (int i = 0; i < motorCount; i++) {
+      final motor = 'M${i + 1}';
+      final speed = _sliderValues[i].toInt().toString();
+      allMotorSpeeds[motor] = speed;
+    }
+
+    if (_isStopFlag) {
+      // Log the whole command
+      log(allMotorSpeeds.toString());
+
+      // Send the entire command
+      // sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+      _isStopFlag = false; // Reset the stop flag
+    } else {
+      _timer = Timer.periodic(
+        const Duration(milliseconds: 50),
+        (_) {
+          // Log the whole command
+          log(allMotorSpeeds.toString());
+
+          // Send the entire command
+          sendBluetoothCommand(bluetoothManager, allMotorSpeeds);
+        },
+      );
+    }
   }
 
   // void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
-  //   if (!_isStopFlag) {
-  //     _isStopFlag = true;
-  //   }
   //   _resetSliders(bluetoothManager);
   //   _sendSliderValues(bluetoothManager);
   // }
+
+  void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
+    if (!_isStopFlag) {
+      _isStopFlag = true;
+    }
+    _resetSliders(bluetoothManager);
+    _sendSliderValues(bluetoothManager);
+  }
 
   void _resetSliders(FlutterBluetoothPlus bluetoothManager) {
     _timer?.cancel(); // Stop the timer
