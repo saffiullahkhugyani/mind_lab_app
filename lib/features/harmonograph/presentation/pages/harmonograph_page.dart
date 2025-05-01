@@ -94,7 +94,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
       _isStopFlag = false; // Reset the stop flag
     } else {
       _timer = Timer.periodic(
-        const Duration(milliseconds: 50),
+        const Duration(milliseconds: 1000),
         (_) {
           // Log the whole command
           log(allMotorSpeeds.toString());
@@ -112,11 +112,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
   // }
 
   void _stopSliders(FlutterBluetoothPlus bluetoothManager) {
-    if (!_isStopFlag) {
-      _isStopFlag = true;
-    }
     _resetSliders(bluetoothManager);
-    _sendSliderValues(bluetoothManager);
   }
 
   void _resetSliders(FlutterBluetoothPlus bluetoothManager) {
@@ -131,6 +127,11 @@ class _HarmonographPageState extends State<HarmonographPage> {
         }
       });
     }
+
+    if (!_isStopFlag) {
+      _isStopFlag = true;
+    }
+    _sendSliderValues(bluetoothManager);
   }
 
   Widget _buildSliderControl(int index) {
@@ -142,7 +143,6 @@ class _HarmonographPageState extends State<HarmonographPage> {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         Expanded(child: _buildVerticalSlider(index)),
-        const SizedBox(height: 8),
         _buildValueField(index),
       ],
     );
@@ -163,7 +163,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
         showLabels: true,
         showTicks: true,
         showDividers: true,
-        interval: 13,
+        interval: 1,
         stepSize: 1,
         value: _sliderValues[index],
         onChanged: (value) {
@@ -231,7 +231,7 @@ class _HarmonographPageState extends State<HarmonographPage> {
               connectionStatusColor: isConnected ? Colors.green : Colors.red,
               onTap: () => Navigator.pushNamed(context, flutterBluePlusRoute),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
             ProjectButton(
               onPressed: () {
                 _sendSliderValues(bluetoothManager);
@@ -286,11 +286,11 @@ class _HarmonographPageState extends State<HarmonographPage> {
                     child: Column(
                       children: [
                         Expanded(
-                          flex: 1,
+                          flex: 7,
                           child: _buildSlidersSection(),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 4,
                           child: _buildControlButtons(
                               isConnected, bluetoothManager),
                         ),

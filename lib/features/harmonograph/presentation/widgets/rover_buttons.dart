@@ -19,7 +19,7 @@ class ProjectButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
       ),
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(4),
       child: Material(
         elevation: 2,
         borderRadius: BorderRadius.circular(8),
